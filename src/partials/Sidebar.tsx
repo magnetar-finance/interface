@@ -16,17 +16,17 @@ export const Sidebar: React.FC = () => {
   const pathname = usePathname();
   return (
     <NavigationMenu.Root className="bg-[#050508] min-h-screen border-r border-[rgb(82,82,91)] py-15 w-full">
-      <NavigationMenu.List className="w-full text-[#a1a1aa] text-sm gap-3 flex flex-col justify-center items-start px-4">
+      <NavigationMenu.List className="w-full text-[#a1a1aa] text-lg gap-3 flex flex-col justify-center items-start px-4">
         <NavigationMenu.Item className="w-full mb-10 mt-3 flex justify-center">
           <div className="w-full flex justify-start items-center gap-5">
             <Image
-              src="/assets/images/magnetar.png"
+              src="/assets/images/magnetar.svg"
               alt="logo"
               width={40}
               height={40}
               className="rounded-full border border-[#7c3aed]"
             />
-            <h3 className="text-white text-xl font-semibold">Magnetar</h3>
+            <h3 className="text-white text-2xl font-semibold">Magnetar</h3>
           </div>
         </NavigationMenu.Item>
         <NavigationMenu.Item
