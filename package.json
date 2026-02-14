@@ -18,15 +18,18 @@
     "@safe-global/safe-apps-sdk": "^9.1.0",
     "@tanstack/react-query": "^5.90.20",
     "@walletconnect/ethereum-provider": "^2.23.4",
+    "axios": "^1.13.5",
     "clsx": "^2.1.1",
     "lucide-react": "^0.562.0",
     "next": "16.1.1",
+    "octokit": "^5.0.5",
     "porto": "^0.2.37",
     "radix-ui": "^1.4.3",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "viem": "^2.45.1",
-    "wagmi": "^3.4.2"
+    "viem": "^2.45.3",
+    "wagmi": "^3.4.2",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

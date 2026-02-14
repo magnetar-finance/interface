@@ -11,6 +11,7 @@ import {
 } from "@rainbow-me/rainbowkit/wallets";
 import { type Chain } from "viem";
 
+// Chains
 const duskTestnet = {
   id: 745,
   name: "Dusk Testnet",
@@ -33,10 +34,21 @@ const pharosTestnet = {
   testnet: true,
 } as const satisfies Chain;
 
+const seismicTestnet = {
+  id: 5124,
+  name: "Seismic Testnet",
+  nativeCurrency: { name: "Seismic", symbol: "SEI", decimals: 18 },
+  rpcUrls: { default: { http: ["https://gcp-2.seismictest.net/rpc"] } },
+  blockExplorers: {
+    default: { name: "Socialscan", url: "https://seismic-testnet.socialscan.io" },
+  },
+  testnet: true,
+} as const satisfies Chain;
+
 const rainbowkitConfig = getDefaultConfig({
   appName: "Magnetar Finance - MegaDEX",
   projectId: "152620a47ef5579fde16db96cbb1a308",
-  chains: [duskTestnet, pharosTestnet],
+  chains: [duskTestnet, pharosTestnet, seismicTestnet],
   ssr: true,
   wallets: [
     {
