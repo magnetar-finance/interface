@@ -11,7 +11,7 @@ function mapZodErrors(errors: $ZodIssue[]): string[] {
 export async function register() {
   const validationResult = validateEnv();
 
-  if (!validationResult.success) {
+  if (!validationResult.success && validationResult.error) {
     const errorMessages = mapZodErrors(validationResult.error.issues);
     console.error("Environment variable validation failed with the following errors:");
     errorMessages.forEach((message) => console.error(message));

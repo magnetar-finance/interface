@@ -1,26 +1,15 @@
-import { z } from "zod";
+import { validateClientEnv } from "./env/client";
+import { validateServerEnv } from "./env/server";
 
-export enum ENV {
-  DEVELOPMENT = "development",
-  PRODUCTION = "production",
-  TEST = "test",
-}
+export function validateEnv() {
+  const serverValidation = validateServerEnv();
+  const clientValidation = validateClientEnv();
 
-const envSchema = z.object({
-  APP_ENV: z.enum(ENV).optional().default(ENV.DEVELOPMENT),
-  API_URI: z.url(),
-  GITHUB_TOKEN: z.string(),
-  ASSETS_REPO_SLUG: z.string(),
-});
-
-export type ENVType = z.infer<typeof envSchema>;
-
-export const validateEnv = () => envSchema.safeParse(process.env);
-
-export function getEnv() {
-  const { data, error } = validateEnv();
-  if (!error && data) {
-    return data;
+  if (!serverValidation.success) {
+    return { success: false, error: serverValidation.error };
   }
-  return {} as ENVType;
+  if (!clientValidation.success) {
+    return { success: false, error: clientValidation.error };
+  }
+  return { success: true };
 }

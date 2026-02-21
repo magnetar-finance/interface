@@ -1,10 +1,10 @@
 "use server";
 
-import { getEnv } from "@/config/env.config";
+import { serverEnv } from "@/config/env/server";
 import { AssetResponseSchema, AssetResponseType } from "@/config/github-assets.config";
 import { Octokit } from "octokit";
 
-const { GITHUB_TOKEN, ASSETS_REPO_SLUG } = getEnv();
+const { GITHUB_TOKEN, ASSETS_REPO_SLUG } = serverEnv;
 
 const octokit = new Octokit({ auth: GITHUB_TOKEN });
 

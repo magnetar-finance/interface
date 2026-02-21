@@ -45,26 +45,26 @@ const seismicTestnet = {
   testnet: true,
 } as const satisfies Chain;
 
-const rainbowkitConfig = getDefaultConfig({
-  appName: "Magnetar Finance - MegaDEX",
-  projectId: "152620a47ef5579fde16db96cbb1a308",
-  chains: [duskTestnet, pharosTestnet, seismicTestnet],
-  ssr: true,
-  wallets: [
-    {
-      groupName: "Available Wallets",
-      wallets: [
-        rainbowWallet,
-        trustWallet,
-        metaMaskWallet,
-        baseAccount,
-        walletConnectWallet,
-        geminiWallet,
-        safeWallet,
-        injectedWallet,
-      ],
-    },
-  ],
-});
-
-export default rainbowkitConfig;
+export function loadRainbowkitConfig(projectId: string) {
+  return getDefaultConfig({
+    appName: "Magnetar Finance - MegaDEX",
+    projectId,
+    chains: [duskTestnet, pharosTestnet, seismicTestnet],
+    ssr: true,
+    wallets: [
+      {
+        groupName: "Available Wallets",
+        wallets: [
+          rainbowWallet,
+          trustWallet,
+          metaMaskWallet,
+          baseAccount,
+          walletConnectWallet,
+          geminiWallet,
+          safeWallet,
+          injectedWallet,
+        ],
+      },
+    ],
+  });
+}

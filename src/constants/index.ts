@@ -1,6 +1,7 @@
 export const CHAINS = {
   DUSK_TESTNET: 745,
   PHAROS_TESTNET: 688689,
+  SEISMIC_TESTNET: 5124,
 };
 
 export const CHAINS_INFORMATION = {
@@ -20,4 +21,19 @@ export const CHAINS_INFORMATION = {
     name: "Pharos Testnet",
     symbol: "PHRS",
   },
+  [CHAINS.SEISMIC_TESTNET]: {
+    chainId: CHAINS.SEISMIC_TESTNET,
+    rpcUrl: "https://gcp-2.seismictest.net/rpc",
+    explorerUrl: "https://seismic-testnet.socialscan.io",
+    img: "/assets/images/seismic.png",
+    name: "Seismic Testnet",
+    symbol: "SEI",
+  },
+};
+
+export const SCREEN_WIDTHS = {
+  mobile: 640,
+  tablet: 768,
+  laptop: 1024,
+  desktop: 1280,
 };

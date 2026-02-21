@@ -1,6 +1,4 @@
-"use server";
-
-import { getEnv } from "@/config/env.config";
+import { clientEnv } from "@/config/env/client";
 import axios, { AxiosInstance } from "axios";
 
 export interface APIResponse<T> {
@@ -334,13 +332,19 @@ export interface Statistics {
   updatedAt: Date;
 }
 
+export interface PositionsStats {
+  totalPositions: number;
+  portfolioValue: number;
+  portfolioHourlyChange: number;
+  portfolioChangeType: "increase" | "decrease" | "stable";
+}
+
 export class Fetcher {
   private httpInstance: AxiosInstance;
 
   constructor() {
-    const env = getEnv();
     this.httpInstance = axios.create({
-      baseURL: env.API_URI,
+      baseURL: clientEnv.NEXT_PUBLIC_API_URI,
     });
   }
 
@@ -361,6 +365,20 @@ export class Fetcher {
         `/positions/${account}`,
         {
           params: { page, limit, chainId },
+        },
+      );
+      return response.data.data;
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  }
+
+  async getPositionStats(account: string, chainId?: number) {
+    try {
+      const response = await this.httpInstance.get<APIResponse<PositionsStats>>(
+        `/positions/${account}/stats`,
+        {
+          params: { chainId },
         },
       );
       return response.data.data;

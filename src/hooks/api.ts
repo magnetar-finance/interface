@@ -33,3 +33,14 @@ export function useAccountPositions(
   });
   return { positions: data, isLoading, error };
 }
+
+export function useAccountPositionStats(refetchInterval: number | false = 60000) {
+  const chainId = useChainId();
+  const { address = zeroAddress } = useConnection();
+  const { data, isLoading, error } = useQuery({
+    queryKey: [`${chainId}-position-stats`, address],
+    queryFn: () => baseFetcher.getPositionStats(address, chainId),
+    refetchInterval,
+  });
+  return { positionStats: data, isLoading, error };
+}
