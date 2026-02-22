@@ -63,14 +63,15 @@ export const WalletConnectButton: React.FC<ConnectButtonProperties> = ({ hasIcon
         if (!isConnected)
           return (
             <PrimaryButton onClick={openConnectModal} {...props}>
-              {hasIcon && <Plug2Icon size={25} />} <span>Connect Wallet</span>
+              {hasIcon && <Plug2Icon size={25} />}{" "}
+              <span className="text-xs md:text-sm">Connect Wallet</span>
             </PrimaryButton>
           );
 
         if (chain.unsupported)
           return (
             <SecondaryButton onClick={openChainModal} {...props}>
-              <span className="text-red-400 font-light">Wrong Network</span>
+              <span className="text-red-400 font-light text-xs md:text-sm">Wrong Network</span>
             </SecondaryButton>
           );
         return (

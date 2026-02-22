@@ -18,7 +18,7 @@ export const Header: React.FC = () => {
 
   return (
     <div className="flex justify-between items-center gap-5 w-full text-white">
-      <h3 className="font-semibold text-2xl md:text-4xl">
+      <h3 className="hidden lg:block font-semibold text-2xl md:text-4xl">
         {pathname === "/" && "Dashboard"}
         {pathname.startsWith("/swap") && "Swap"}
         {pathname.startsWith("/liquidity") && "Liquidity"}
@@ -29,14 +29,14 @@ export const Header: React.FC = () => {
       <div className="flex justify-center items-start gap-3">
         <div className="flex flex-col justify-start items-center gap-1 relative">
           <SecondaryButton onClick={() => setShowChainSwitch((show) => !show)}>
-            <div className="flex justify-between items-center gap-2">
+            <div className="flex justify-between items-center gap-2 text-xs md:text-sm">
               <Image
                 src={selectedChainInformation.img}
-                height={20}
-                width={20}
+                height={16}
+                width={16}
                 alt={selectedChainInformation.symbol}
               />
-              <span>{selectedChainInformation.name}</span>
+              <span className="text-xs md:text-sm">{selectedChainInformation.name}</span>
               {showChainSwitch ? <ChevronUp /> : <ChevronDown />}
             </div>
           </SecondaryButton>
@@ -51,7 +51,7 @@ export const Header: React.FC = () => {
                     value.chainId === chainId
                       ? "bg-[#2962ff]/60 text-[#2962ff]"
                       : "hover:bg-[#2962ff] text-white"
-                  } flex justify-between items-center gap-3 text-sm px-1 py-3`}
+                  } flex justify-between items-center gap-3 text-xs md:text-sm px-1 py-3`}
                 >
                   <div className="flex justify-center items-center gap-2">
                     <Image src={value.img} height={20} width={20} alt={value.symbol} />
