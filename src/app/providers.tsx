@@ -2,6 +2,7 @@
 
 import { clientEnv } from "@/config/env/client";
 import { loadRainbowkitConfig } from "@/config/rainbowkit.config";
+import { GithubAssetsProvider } from "@/contexts/github-assets";
 import { darkTheme, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React from "react";
@@ -14,7 +15,7 @@ export const Providers: React.FC<{ children: React.ReactNode }> = ({ children })
     <WagmiProvider config={loadRainbowkitConfig(clientEnv.NEXT_PUBLIC_WALLET_CONNECT_ID)}>
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider theme={darkTheme()} modalSize="compact">
-          {children}
+          <GithubAssetsProvider>{children}</GithubAssetsProvider>
         </RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>
