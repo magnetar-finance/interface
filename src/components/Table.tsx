@@ -26,9 +26,7 @@ export const Table = <T,>({ headerLabels, data, renderRow, renderEmpty }: TableP
           </div>
         ))
       ) : (
-        <div className="table-row">
-          <div className="table-cell">{renderEmpty ? renderEmpty() : "No data available"}</div>
-        </div>
+        <div className="table-row">{renderEmpty ? renderEmpty() : "No data available"}</div>
       )}
     </div>
   </div>

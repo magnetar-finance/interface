@@ -96,7 +96,7 @@ export const Sidebar: React.FC = () => {
         <NavigationMenu.Item className="bg-black border border-[rgba(255,255,255,0.06)] w-full flex flex-col gap-2 justify-center items-center mt-20 px-2 py-4">
           <div className="flex w-full justify-between items-center gap-3">
             <div className="flex justify-center gap-1 items-center">
-              <span className="px-1 py-1 bg-[#00ff9d]"></span>
+              <span className="px-1 py-1 bg-[#00ff9d] animate-pulse"></span>
               <h6 className="text-[#64748b] font-normal text-sm">Network</h6>
             </div>
             <span className="text-[#00ff9d] font-normal text-sm">{networkInfo.name}</span>

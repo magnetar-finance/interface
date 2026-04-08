@@ -105,7 +105,7 @@ export const PositionsView: React.FC = () => {
                   </div>
                   {!isMobile && (
                     <>
-                      <div className="table-cell md:py-5">{item.pool.gauge?.rewardRate}</div>
+                      <div className="table-cell md:py-5">{item.pool.gauge?.rewardRate || 0}%</div>
                       <div className="table-cell text-[#00ff9d] font-bold text-sm md:text-lg md:py-5">
                         {formatNumber(item.pool.totalFeesUSD, "en-US", 3, true)}
                       </div>
