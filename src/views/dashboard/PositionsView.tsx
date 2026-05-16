@@ -53,10 +53,20 @@ export const PositionsView: React.FC = () => {
             </span>
           </div>
           <Table<LiquidityPosition>
-            headerLabels={
+            headers={
               isMobile
-                ? ["Pool", "Value", "Actions"]
-                : ["Pool", "Value", "APR", "Unclaimed Fees", "Actions"]
+                ? [
+                    { label: "Pool", align: "left" },
+                    { label: "Value", align: "right" },
+                    { label: "Actions", align: "right" },
+                  ]
+                : [
+                    { label: "Pool", align: "left" },
+                    { label: "Value", align: "right" },
+                    { label: "APR", align: "right" },
+                    { label: "Unclaimed Fees", align: "right" },
+                    { label: "Actions", align: "right" },
+                  ]
             }
             data={positions}
             renderRow={(item) => {
@@ -64,81 +74,83 @@ export const PositionsView: React.FC = () => {
               const token1Info = getAssetInfo(item.pool.token1.address);
               return (
                 <>
-                  <div className="table-cell md:py-5 md:px-3">
-                    <div className="flex justify-start items-center gap-2 lg:gap-7 w-full">
-                      <div className="-space-x-4 flex justify-center items-center">
+                  <td className="py-3 pr-4">
+                    <div className="flex justify-start items-center gap-3 w-full">
+                      <div className="-space-x-3 flex justify-center items-center">
                         {token0Info ? (
                           <Image
                             src={token0Info.logoURI}
                             alt={item.pool.token0.symbol}
-                            width={30}
-                            height={30}
-                            className="w-8 h-8 md:w-12 md:h-12 rounded-full border-2 border-black bg-amber-100"
+                            width={24}
+                            height={24}
+                            className="w-6 h-6 rounded-full border border-black bg-amber-100"
                           />
                         ) : (
-                          <div className="w-8 h-8 md:w-12 md:h-12 rounded-full border-2 border-black bg-amber-100" />
+                          <div className="w-6 h-6 rounded-full border border-black bg-amber-100" />
                         )}
                         {token1Info ? (
                           <Image
                             src={token1Info.logoURI}
                             alt={item.pool.token1.symbol}
-                            width={30}
-                            height={30}
-                            className="w-8 h-8 md:w-12 md:h-12 rounded-full border-2 border-black bg-blue-100"
+                            width={24}
+                            height={24}
+                            className="w-6 h-6 rounded-full border border-black bg-blue-100"
                           />
                         ) : (
-                          <div className="w-8 h-8 md:w-12 md:h-12 rounded-full border-2 border-black bg-blue-100" />
+                          <div className="w-6 h-6 rounded-full border border-black bg-blue-100" />
                         )}
                       </div>
-                      <div className="flex flex-col gap-1 justify-start items-start">
-                        <h3 className="font-semibold text-sm md:text-lg text-white uppercase">
+                      <div className="flex flex-col gap-0 justify-start items-start">
+                        <h3 className="font-bold text-white uppercase whitespace-nowrap">
                           {item.pool.name}
                         </h3>
-                        <p className="text-[#94a3b8] capitalize text-xs md:text-sm">
-                          {item.pool.poolType.toLowerCase()}
+                        <p className="text-[#64748b] uppercase text-[10px] tracking-widest hidden sm:block">
+                          {item.pool.poolType}
                         </p>
                       </div>
                     </div>
-                  </div>
-                  <div className="table-cell text-white font-bold text-sm md:text-lg md:py-5">
-                    {formatNumber(positionToUSD(item), "en-US", 3, true)}
-                  </div>
+                  </td>
+                  <td className="py-3 pr-4 text-white font-bold text-right w-1/4">
+                    ${formatNumber(positionToUSD(item), "en-US", 2, true)}
+                  </td>
                   {!isMobile && (
                     <>
-                      <div className="table-cell md:py-5">{item.pool.gauge?.rewardRate || 0}%</div>
-                      <div className="table-cell text-[#00ff9d] font-bold text-sm md:text-lg md:py-5">
-                        {formatNumber(item.pool.totalFeesUSD, "en-US", 3, true)}
-                      </div>
+                      <td className="py-3 pr-4 text-[#00ff9d] text-right font-bold w-1/6">
+                        {item.pool.gauge?.rewardRate || 0}%
+                      </td>
+                      <td className="py-3 pr-4 text-[#ffaf52] text-right font-bold w-1/6">
+                        ${formatNumber(item.pool.totalFeesUSD, "en-US", 2, true)}
+                      </td>
                     </>
                   )}
-                  <div className="table-cell py-5 text-center">
+                  <td className="py-3 text-right">
                     <DropdownMenu.Root key={item.id}>
                       <DropdownMenu.Trigger asChild>
-                        <button className="text-[#64748b]">
-                          <MoreVerticalIcon size={isMobile ? 16 : 20} />
+                        <button className="text-[#64748b] hover:text-white transition-colors">
+                          <MoreVerticalIcon size={16} />
                         </button>
                       </DropdownMenu.Trigger>
                       <DropdownMenu.Portal>
                         <DropdownMenu.Content
-                          className="border border-[rgb(34,34,34)] bg-black w-3xs px-3 py-2 space-y-2"
+                          className="border border-[rgb(34,34,34)] bg-black w-3xs px-3 py-2 space-y-2 z-50 font-mono text-xs"
                           sideOffset={4}
                         >
-                          <DropdownMenu.Item className="flex justify-start items-center gap-2 text-white cursor-pointer hover:bg-white/10 py-3 px-3">
-                            <ShieldPlusIcon size={16} color="#94a3b8" /> <span>Stake</span>
+                          <DropdownMenu.Item className="flex justify-start items-center gap-2 text-[#94a3b8] cursor-pointer hover:bg-white/10 hover:text-white py-2 px-3 transition-colors">
+                            <ShieldPlusIcon size={14} /> <span>Stake</span>
                           </DropdownMenu.Item>
-                          <DropdownMenu.Item className="flex justify-start items-center gap-2 text-white cursor-pointer hover:bg-white/10 py-3 px-3">
-                            <ShieldXIcon size={16} color="#94a3b8" /> <span>Unstake</span>
+                          <DropdownMenu.Item className="flex justify-start items-center gap-2 text-[#94a3b8] cursor-pointer hover:bg-white/10 hover:text-white py-2 px-3 transition-colors">
+                            <ShieldXIcon size={14} /> <span>Unstake</span>
                           </DropdownMenu.Item>
-                          <DropdownMenu.Item className="flex justify-start items-center gap-2 text-white cursor-pointer hover:bg-white/10 py-3 px-3">
-                            <PlusIcon size={16} color="#94a3b8" /> <span>Increase</span>
+                          <DropdownMenu.Item className="flex justify-start items-center gap-2 text-[#94a3b8] cursor-pointer hover:bg-white/10 hover:text-white py-2 px-3 transition-colors">
+                            <PlusIcon size={14} /> <span>Increase</span>
                           </DropdownMenu.Item>
-                          <DropdownMenu.Item className="flex justify-start items-center gap-2 text-[#ff4757] cursor-pointer hover:bg-white/10 py-3 px-3">
-                            <MinusIcon size={16} /> <span>Remove</span>
+                          <DropdownMenu.Item className="flex justify-start items-center gap-2 text-[#ff4757] cursor-pointer hover:bg-[#ff4757]/10 py-2 px-3 transition-colors">
+                            <MinusIcon size={14} /> <span>Remove</span>
                           </DropdownMenu.Item>
                         </DropdownMenu.Content>
                       </DropdownMenu.Portal>
                     </DropdownMenu.Root>
-                  </div>
+                  </td>
                 </>
               );
             }}

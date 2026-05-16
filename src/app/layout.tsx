@@ -31,7 +31,7 @@ export default function RootLayout({
               <Sidebar />
             </div>
             <div className="container mx-auto">
-              <div className="w-full flex justify-start items-center gap-12 flex-col py-3 md:py-6 px-4 md:px-7 overflow-x-hidden">
+              <div className="w-full flex justify-start items-center gap-12 flex-col pt-3 pb-28 md:py-6 px-4 md:px-7 overflow-x-hidden">
                 <Header />
                 {children}
               </div>

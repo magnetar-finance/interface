@@ -4,7 +4,6 @@ import { SecondaryButton, WalletConnectButton } from "@/components/Button";
 import { CHAINS_INFORMATION } from "@/constants";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
 import { DropdownMenu } from "radix-ui";
 import React, { useMemo, useState } from "react";
 import { useChainId, useSwitchChain } from "wagmi";
@@ -15,31 +14,36 @@ export const Header: React.FC = () => {
   const [showChainSwitch, setShowChainSwitch] = useState(false);
   const switchChain = useSwitchChain();
 
-  const pathname = usePathname();
-
   return (
-    <div className="flex justify-between items-center gap-5 w-full text-white">
-      <h3 className="hidden lg:block font-semibold text-2xl md:text-4xl">
-        {pathname === "/" && "Dashboard"}
-        {pathname.startsWith("/swap") && "Swap"}
-        {pathname.startsWith("/liquidity") && "Liquidity"}
-        {pathname.startsWith("/vote") && "Vote"}
-        {pathname.startsWith("/locks") && "Locks"}
-        {pathname.startsWith("/incentivize") && "Incentivize"}
-      </h3>
-      <div className="flex justify-center items-start gap-3">
+    <div className="flex justify-between items-center gap-3 md:gap-5 w-full text-white">
+      <div className="flex items-center gap-3">
+        {/* Mobile Logo */}
+        <div className="md:hidden relative flex-shrink-0">
+          <div className="absolute inset-0 bg-[#2962ff]/20 blur-sm rounded-sm" />
+          <Image
+            src="/assets/images/magnetar.svg"
+            alt="logo"
+            width={24}
+            height={24}
+            className="relative border border-[#2962ff]/60 p-0.5"
+          />
+        </div>
+      </div>
+      <div className="flex justify-center items-start gap-2 md:gap-3">
         <DropdownMenu.Root onOpenChange={(isOpen) => setShowChainSwitch(isOpen)}>
           <DropdownMenu.Trigger asChild>
-            <SecondaryButton>
-              <div className="flex justify-between items-center gap-2 text-xs md:text-sm">
+            <SecondaryButton className="pl-2 pr-2 md:px-3">
+              <div className="flex justify-between items-center gap-1.5 md:gap-2 text-xs md:text-sm">
                 <Image
                   src={selectedChainInformation.img}
                   height={16}
                   width={16}
                   alt={selectedChainInformation.symbol}
                 />
-                <span className="text-xs md:text-sm">{selectedChainInformation.name}</span>
-                {showChainSwitch ? <ChevronUp /> : <ChevronDown />}
+                <span className="hidden md:inline text-xs md:text-sm">
+                  {selectedChainInformation.name}
+                </span>
+                {showChainSwitch ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
               </div>
             </SecondaryButton>
           </DropdownMenu.Trigger>

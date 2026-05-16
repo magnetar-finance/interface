@@ -1,33 +1,60 @@
 import React from "react";
 
-interface TableProps<T> {
-  headerLabels: React.ReactNode[];
-  data: T[];
-  renderRow: (item: T) => React.ReactNode;
-  renderEmpty?: () => React.ReactNode;
+export interface TableHeader {
+  label: React.ReactNode;
+  align?: "left" | "right" | "center";
 }
 
-export const Table = <T,>({ headerLabels, data, renderRow, renderEmpty }: TableProps<T>) => (
-  <div className="w-full bg-black overflow-auto border-separate border-spacing-x-0 border-spacing-y-3 md:border-spacing-y-6 table table-auto">
-    <div className="table-header-group font-bold text-sm md:text-lg">
-      <div className="table-row">
-        {headerLabels.map((label, index) => (
-          <div className="text-[#64748b] text-left uppercase table-cell" key={index}>
-            {label}
-          </div>
-        ))}
-      </div>
-    </div>
-    <div className="overflow-auto table-row-group">
-      {data.length > 0 ? (
-        data.map((item, index) => (
-          <div className="table-row hover:bg-white/10 cursor-pointer" key={index}>
-            {renderRow(item)}
-          </div>
-        ))
-      ) : (
-        <div className="table-row">{renderEmpty ? renderEmpty() : "No data available"}</div>
-      )}
-    </div>
+interface TableProps<T> {
+  headers: TableHeader[];
+  data: T[];
+  renderRow: (item: T, index: number) => React.ReactNode;
+  renderEmpty?: () => React.ReactNode;
+  onRowClick?: (item: T) => void;
+}
+
+export const Table = <T,>({ headers, data, renderRow, renderEmpty, onRowClick }: TableProps<T>) => (
+  <div className="w-full overflow-x-auto">
+    <table className="w-full text-xs font-mono">
+      <thead>
+        <tr className="text-[#64748b] border-b border-white/5">
+          {headers.map((header, index) => (
+            <th
+              className={`py-2 pr-4 uppercase tracking-widest ${
+                header.align === "right"
+                  ? "text-right"
+                  : header.align === "center"
+                  ? "text-center"
+                  : "text-left"
+              }`}
+              key={index}
+            >
+              {header.label}
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {data.length > 0 ? (
+          data.map((item, index) => (
+            <tr
+              className={`border-b border-white/5 transition-colors ${
+                onRowClick ? "hover:bg-white/5 cursor-pointer" : ""
+              }`}
+              key={index}
+              onClick={() => onRowClick?.(item)}
+            >
+              {renderRow(item, index)}
+            </tr>
+          ))
+        ) : (
+          <tr>
+            <td colSpan={headers.length} className="py-4 text-center">
+              {renderEmpty ? renderEmpty() : "No data available"}
+            </td>
+          </tr>
+        )}
+      </tbody>
+    </table>
   </div>
 );
