@@ -14,7 +14,7 @@ export const clientEnv = createEnv({
     NEXT_PUBLIC_API_URI: z.string().min(1),
   },
   server: {},
-  runtimeEnv: {
+  experimental__runtimeEnv: {
     NEXT_PUBLIC_WALLET_CONNECT_ID: process.env.NEXT_PUBLIC_WALLET_CONNECT_ID,
     NEXT_PUBLIC_API_URI: process.env.NEXT_PUBLIC_API_URI,
   },
