@@ -1,4 +1,5 @@
-import { Fetcher } from "@/utils/http-api";
+import { API_QUERY_SETTINGS } from "@/constants";
+import { Fetcher, PoolType } from "@/utils/http-api";
 import { useQuery } from "@tanstack/react-query";
 import { zeroAddress } from "viem";
 import { useChainId, useConnection } from "wagmi";
@@ -43,4 +44,23 @@ export function useAccountPositionStats(refetchInterval: number | false = 60000)
     refetchInterval,
   });
   return { positionStats: data, isLoading, error };
+}
+
+export function useFetchPools(
+  refetchInterval: number | false = 60000,
+  poolType?: PoolType,
+  page: number = 1,
+  limit: number = API_QUERY_SETTINGS.default_pools_per_page,
+) {
+  const chainId = useChainId();
+  const {
+    data = [],
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: [`${chainId}-pools-${page}-${limit}-${poolType}`, page, limit, poolType],
+    queryFn: () => baseFetcher.getPools(chainId, poolType, page, limit),
+    refetchInterval,
+  });
+  return { pools: data, isLoading, error };
 }

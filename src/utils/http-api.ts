@@ -1,4 +1,5 @@
 import { clientEnv } from "@/config/env/client";
+import { API_QUERY_SETTINGS } from "@/constants";
 import axios, { AxiosInstance } from "axios";
 
 export interface APIResponse<T> {
@@ -352,6 +353,22 @@ export class Fetcher {
     try {
       const response = await this.httpInstance.get<APIResponse<Statistics>>("/analytics", {
         params: { chainId },
+      });
+      return response.data.data;
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  }
+
+  async getPools(
+    chainId?: number,
+    poolType?: PoolType,
+    page: number = 1,
+    limit: number = API_QUERY_SETTINGS.default_pools_per_page,
+  ) {
+    try {
+      const response = await this.httpInstance.get<APIResponse<Pool[]>>("/pools", {
+        params: { chainId, poolType, page, limit },
       });
       return response.data.data;
     } catch (error) {

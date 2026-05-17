@@ -37,3 +37,7 @@ export const SCREEN_WIDTHS = {
   laptop: 1024,
   desktop: 1280,
 };
+
+export const API_QUERY_SETTINGS = {
+  default_pools_per_page: 10,
+};

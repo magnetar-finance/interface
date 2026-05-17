@@ -1,4 +1,6 @@
 import { type LiquidityPosition, type Pool, type User, type Token, PoolType } from "./http-api";
+import type { TimeSeriesDataPoint } from "@/ui/charts/TimeSeriesChart";
+import type { Timeframe } from "@/ui/charts/TimeSeriesChart";
 
 // Mock Tokens
 const mockTokenUSDC: Token = {
@@ -444,5 +446,268 @@ export function getmockUserLPPositionsSummary() {
   };
 }
 
-// Example usage:
-// console.log(getmockUserLPPositionsSummary());
+// ─── Analytics Mock Data ─────────────────────────────────────────────────────
+
+/** Generate a smooth time-series with slight random walk */
+function generateSeries(days: number, seed: number, volatility = 0.04): TimeSeriesDataPoint[] {
+  const now = new Date();
+  const points: TimeSeriesDataPoint[] = [];
+  let value = seed;
+  for (let i = days - 1; i >= 0; i--) {
+    const d = new Date(now);
+    d.setDate(now.getDate() - i);
+    value = Math.max(seed * 0.5, value * (1 + (Math.random() - 0.48) * volatility));
+    points.push({
+      date: d.toLocaleDateString("en-US", { month: "short", day: "numeric" }),
+      value: Math.round(value),
+    });
+  }
+  return points;
+}
+
+/** Protocol TVL over time */
+export const MOCK_TVL_SERIES: Record<Timeframe, TimeSeriesDataPoint[]> = {
+  "1D": generateSeries(24, 28_000_000, 0.01).map((p, i) => ({
+    ...p,
+    date: `${i}:00`,
+  })),
+  "7D": generateSeries(7, 26_000_000, 0.04),
+  "30D": generateSeries(30, 22_000_000, 0.05),
+};
+
+/** Protocol trading volume over time */
+export const MOCK_VOLUME_SERIES: Record<Timeframe, TimeSeriesDataPoint[]> = {
+  "1D": generateSeries(24, 1_200_000, 0.08).map((p, i) => ({
+    ...p,
+    date: `${i}:00`,
+  })),
+  "7D": generateSeries(7, 900_000, 0.1),
+  "30D": generateSeries(30, 750_000, 0.12),
+};
+
+/** Mock top tokens for analytics */
+export const MOCK_TOP_TOKENS: (Token & {
+  priceUSD: number;
+  priceChange24h: number;
+  volume24h: number;
+})[] = [
+  { ...mockTokenWETH, priceUSD: 2413.5, priceChange24h: 2.3, volume24h: 4_200_000 },
+  { ...mockTokenUSDC, priceUSD: 1.0, priceChange24h: 0.01, volume24h: 3_800_000 },
+  { ...mockTokenUSDT, priceUSD: 1.0, priceChange24h: -0.02, volume24h: 3_100_000 },
+  { ...mockTokenDAI, priceUSD: 1.0, priceChange24h: 0.0, volume24h: 1_900_000 },
+  { ...mockTokenMAG, priceUSD: 0.82, priceChange24h: -4.1, volume24h: 540_000 },
+];
+
+/** Mock top pools for analytics */
+export const MOCK_TOP_POOLS: Pool[] = [
+  mockPoolWETHDAI,
+  mockPoolUSDCWETH,
+  mockPoolDAIUSDT,
+  mockPoolMAGUSDC,
+  mockPoolMAGWETH,
+];
+
+export type TxType = "Swap" | "Add" | "Remove";
+
+export interface MockTransaction {
+  id: string;
+  type: TxType;
+  pair: string;
+  amountUSD: number;
+  account: string;
+  timeAgo: string;
+  poolId: string;
+}
+
+/** Static mock recent transactions */
+export const MOCK_TRANSACTIONS: MockTransaction[] = [
+  {
+    id: "tx01",
+    type: "Swap",
+    pair: "WETH → DAI",
+    amountUSD: 8_412,
+    account: "0xaBcD...1234",
+    timeAgo: "12s ago",
+    poolId: mockPoolWETHDAI.id,
+  },
+  {
+    id: "tx02",
+    type: "Add",
+    pair: "USDC/WETH",
+    amountUSD: 25_000,
+    account: "0x1234...5678",
+    timeAgo: "45s ago",
+    poolId: mockPoolUSDCWETH.id,
+  },
+  {
+    id: "tx03",
+    type: "Swap",
+    pair: "USDC → WETH",
+    amountUSD: 1_200,
+    account: "0xDeAd...bEeF",
+    timeAgo: "1m ago",
+    poolId: mockPoolUSDCWETH.id,
+  },
+  {
+    id: "tx04",
+    type: "Remove",
+    pair: "DAI/USDT",
+    amountUSD: 6_700,
+    account: "0xF00D...cAfE",
+    timeAgo: "2m ago",
+    poolId: mockPoolDAIUSDT.id,
+  },
+  {
+    id: "tx05",
+    type: "Swap",
+    pair: "MAG → USDC",
+    amountUSD: 530,
+    account: "0xBabe...0001",
+    timeAgo: "3m ago",
+    poolId: mockPoolMAGUSDC.id,
+  },
+  {
+    id: "tx06",
+    type: "Add",
+    pair: "MAG/WETH",
+    amountUSD: 4_100,
+    account: "0x9999...aaaa",
+    timeAgo: "5m ago",
+    poolId: mockPoolMAGWETH.id,
+  },
+  {
+    id: "tx07",
+    type: "Swap",
+    pair: "DAI → USDT",
+    amountUSD: 3_280,
+    account: "0xCCCC...1111",
+    timeAgo: "7m ago",
+    poolId: mockPoolDAIUSDT.id,
+  },
+  {
+    id: "tx08",
+    type: "Swap",
+    pair: "WETH → USDC",
+    amountUSD: 11_050,
+    account: "0x4444...7777",
+    timeAgo: "9m ago",
+    poolId: mockPoolUSDCWETH.id,
+  },
+  {
+    id: "tx09",
+    type: "Remove",
+    pair: "USDC/WETH",
+    amountUSD: 18_900,
+    account: "0xAAAA...BBBB",
+    timeAgo: "11m ago",
+    poolId: mockPoolUSDCWETH.id,
+  },
+  {
+    id: "tx10",
+    type: "Add",
+    pair: "DAI/USDT",
+    amountUSD: 9_000,
+    account: "0x1111...2222",
+    timeAgo: "15m ago",
+    poolId: mockPoolDAIUSDT.id,
+  },
+  {
+    id: "tx11",
+    type: "Swap",
+    pair: "USDC → MAG",
+    amountUSD: 750,
+    account: "0x8888...3333",
+    timeAgo: "18m ago",
+    poolId: mockPoolMAGUSDC.id,
+  },
+  {
+    id: "tx12",
+    type: "Swap",
+    pair: "WETH → MAG",
+    amountUSD: 2_200,
+    account: "0x5555...6666",
+    timeAgo: "22m ago",
+    poolId: mockPoolMAGWETH.id,
+  },
+  {
+    id: "tx13",
+    type: "Add",
+    pair: "WETH/DAI",
+    amountUSD: 40_000,
+    account: "0x7777...8888",
+    timeAgo: "28m ago",
+    poolId: mockPoolWETHDAI.id,
+  },
+  {
+    id: "tx14",
+    type: "Remove",
+    pair: "MAG/USDC",
+    amountUSD: 3_100,
+    account: "0x0000...DEAD",
+    timeAgo: "35m ago",
+    poolId: mockPoolMAGUSDC.id,
+  },
+  {
+    id: "tx15",
+    type: "Swap",
+    pair: "DAI → WETH",
+    amountUSD: 5_600,
+    account: "0xBEEF...CAFE",
+    timeAgo: "41m ago",
+    poolId: mockPoolWETHDAI.id,
+  },
+];
+
+/** Per-pool time-series for pool analytics page */
+export const MOCK_POOL_TVL: Record<string, Record<Timeframe, TimeSeriesDataPoint[]>> = {
+  [mockPoolWETHDAI.id]: {
+    "1D": generateSeries(24, 8_000_000, 0.01).map((p, i) => ({ ...p, date: `${i}:00` })),
+    "7D": generateSeries(7, 7_500_000, 0.04),
+    "30D": generateSeries(30, 6_000_000, 0.06),
+  },
+  [mockPoolUSDCWETH.id]: {
+    "1D": generateSeries(24, 5_000_000, 0.01).map((p, i) => ({ ...p, date: `${i}:00` })),
+    "7D": generateSeries(7, 4_800_000, 0.04),
+    "30D": generateSeries(30, 4_000_000, 0.06),
+  },
+};
+
+export const MOCK_POOL_VOLUME: Record<string, Record<Timeframe, TimeSeriesDataPoint[]>> = {
+  [mockPoolWETHDAI.id]: {
+    "1D": generateSeries(24, 600_000, 0.12).map((p, i) => ({ ...p, date: `${i}:00` })),
+    "7D": generateSeries(7, 500_000, 0.14),
+    "30D": generateSeries(30, 400_000, 0.16),
+  },
+  [mockPoolUSDCWETH.id]: {
+    "1D": generateSeries(24, 400_000, 0.1).map((p, i) => ({ ...p, date: `${i}:00` })),
+    "7D": generateSeries(7, 350_000, 0.12),
+    "30D": generateSeries(30, 280_000, 0.14),
+  },
+};
+
+/** Per-token price + volume time-series */
+export const MOCK_TOKEN_PRICE: Record<string, Record<Timeframe, TimeSeriesDataPoint[]>> = {
+  [mockTokenWETH.id]: {
+    "1D": generateSeries(24, 2413, 0.005).map((p, i) => ({ ...p, date: `${i}:00` })),
+    "7D": generateSeries(7, 2300, 0.03),
+    "30D": generateSeries(30, 2100, 0.05),
+  },
+  [mockTokenMAG.id]: {
+    "1D": generateSeries(24, 0.82, 0.01).map((p, i) => ({ ...p, date: `${i}:00` })),
+    "7D": generateSeries(7, 0.85, 0.05),
+    "30D": generateSeries(30, 0.75, 0.08),
+  },
+};
+
+export const MOCK_TOKEN_VOLUME: Record<string, Record<Timeframe, TimeSeriesDataPoint[]>> = {
+  [mockTokenWETH.id]: {
+    "1D": generateSeries(24, 420_000, 0.15).map((p, i) => ({ ...p, date: `${i}:00` })),
+    "7D": generateSeries(7, 350_000, 0.18),
+    "30D": generateSeries(30, 280_000, 0.2),
+  },
+  [mockTokenMAG.id]: {
+    "1D": generateSeries(24, 54_000, 0.2).map((p, i) => ({ ...p, date: `${i}:00` })),
+    "7D": generateSeries(7, 48_000, 0.22),
+    "30D": generateSeries(30, 40_000, 0.25),
+  },
+};
