@@ -1,3 +1,4 @@
+import { cookieStorage, createStorage } from "wagmi";
 import { getDefaultConfig } from "@rainbow-me/rainbowkit";
 import {
   baseAccount,
@@ -51,17 +52,24 @@ export function loadRainbowkitConfig(projectId: string) {
     projectId,
     chains: [duskTestnet, pharosTestnet, seismicTestnet],
     ssr: true,
+    storage: createStorage({
+      storage: cookieStorage,
+    }),
     wallets: [
       {
         groupName: "Available Wallets",
         wallets: [
-          rainbowWallet,
-          trustWallet,
-          metaMaskWallet,
-          baseAccount,
-          walletConnectWallet,
-          geminiWallet,
-          safeWallet,
+          ...(typeof window !== "undefined"
+            ? [
+                rainbowWallet,
+                trustWallet,
+                metaMaskWallet,
+                baseAccount,
+                walletConnectWallet,
+                geminiWallet,
+                safeWallet,
+              ]
+            : []),
           injectedWallet,
         ],
       },

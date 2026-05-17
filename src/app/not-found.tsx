@@ -1,4 +1,3 @@
-import React from "react";
 import Link from "next/link";
 import { TerminalIcon, HomeIcon, RefreshCwIcon } from "lucide-react";
 import { PrimaryButton, SecondaryButton } from "@/components/Button";

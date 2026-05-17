@@ -4,10 +4,10 @@ import { ConnectWalletPromptView } from "@/views/dashboard/ConnectWalletPromptVi
 import { MainView } from "@/views/dashboard/MainView";
 import { PositionsView } from "@/views/dashboard/PositionsView";
 import { PageHeader } from "@/components/PageHeader";
-import { useConnection } from "wagmi";
+import { useAccount } from "wagmi";
 
 export default function Home() {
-  const { isConnected } = useConnection();
+  const { isConnected } = useAccount();
   return (
     <main className="w-full flex justify-center items-center">
       {isConnected ? (
