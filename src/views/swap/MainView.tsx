@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import React, { useCallback, useMemo, useState } from "react";
-import { useConnection } from "wagmi";
+import { useAccount } from "wagmi";
 import { TokenSelectModal } from "@/ui/modals/TokenSelectModal";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
@@ -291,7 +291,7 @@ const PriceInfoRow: React.FC<PriceInfoRowProps> = ({ tokenIn, tokenOut, amountIn
 // ─── Main View ────────────────────────────────────────────────────────────────
 
 export const MainView: React.FC = () => {
-  const { isConnected } = useConnection();
+  const { isConnected } = useAccount();
 
   // Token state
   const [tokenIn, setTokenIn] = useState<Token | null>(null);

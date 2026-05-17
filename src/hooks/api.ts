@@ -2,7 +2,7 @@ import { API_QUERY_SETTINGS } from "@/constants";
 import { Fetcher, PoolType } from "@/utils/http-api";
 import { useQuery } from "@tanstack/react-query";
 import { zeroAddress } from "viem";
-import { useChainId, useConnection } from "wagmi";
+import { useChainId, useAccount } from "wagmi";
 
 const baseFetcher = new Fetcher();
 
@@ -22,7 +22,7 @@ export function useAccountPositions(
   refetchInterval: number | false = 60000,
 ) {
   const chainId = useChainId();
-  const { address = zeroAddress } = useConnection();
+  const { address = zeroAddress } = useAccount();
   const {
     data = [],
     isLoading,
@@ -37,7 +37,7 @@ export function useAccountPositions(
 
 export function useAccountPositionStats(refetchInterval: number | false = 60000) {
   const chainId = useChainId();
-  const { address = zeroAddress } = useConnection();
+  const { address = zeroAddress } = useAccount();
   const { data, isLoading, error } = useQuery({
     queryKey: [`${chainId}-position-stats`, address],
     queryFn: () => baseFetcher.getPositionStats(address, chainId),

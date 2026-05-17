@@ -6,7 +6,7 @@ import { TokenSelectModal } from "@/ui/modals/TokenSelectModal";
 import { PlusIcon } from "lucide-react";
 import React, { useCallback, useMemo, useState } from "react";
 import { RangeDistributionChart } from "@/ui/charts/RangeDistributionChart";
-import { useConnection } from "wagmi";
+import { useAccount } from "wagmi";
 import { TokenInputRow } from "./components/TokenInputRow";
 
 // Simulated distribution data for the Recharts graph
@@ -30,7 +30,7 @@ export const ConcentratedDepositView: React.FC<{
   initialTokenA: AssetResponseType[number] | null;
   initialTokenB: AssetResponseType[number] | null;
 }> = ({ initialTokenA, initialTokenB }) => {
-  const { isConnected } = useConnection();
+  const { isConnected } = useAccount();
 
   const [tokenA, setTokenA] = useState<AssetResponseType[number] | null>(initialTokenA);
   const [tokenB, setTokenB] = useState<AssetResponseType[number] | null>(initialTokenB);

@@ -6,7 +6,7 @@ import { AssetResponseType } from "@/config/github-assets.config";
 import { TokenSelectModal } from "@/ui/modals/TokenSelectModal";
 import { PlusIcon } from "lucide-react";
 import React, { useCallback, useMemo, useState } from "react";
-import { useConnection } from "wagmi";
+import { useAccount } from "wagmi";
 import { TokenInputRow } from "./components/TokenInputRow";
 
 export const StandardDepositView: React.FC<{
@@ -14,7 +14,7 @@ export const StandardDepositView: React.FC<{
   initialTokenB: AssetResponseType[number] | null;
   initialPoolTypeIndex: number;
 }> = ({ initialTokenA, initialTokenB, initialPoolTypeIndex }) => {
-  const { isConnected } = useConnection();
+  const { isConnected } = useAccount();
 
   const [tokenA, setTokenA] = useState<AssetResponseType[number] | null>(initialTokenA);
   const [tokenB, setTokenB] = useState<AssetResponseType[number] | null>(initialTokenB);

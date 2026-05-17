@@ -53,7 +53,7 @@ export const Header: React.FC = () => {
                 <DropdownMenu.Item
                   key={key}
                   disabled={value.chainId === chainId}
-                  onClick={() => switchChain.mutate({ chainId: value.chainId })}
+                  onClick={() => switchChain.switchChain({ chainId: value.chainId })}
                   className={`w-full ${
                     value.chainId === chainId
                       ? "bg-[#2962ff]/60 text-[#2962ff]"
