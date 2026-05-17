@@ -18,7 +18,7 @@ export const Header: React.FC = () => {
     <div className="flex justify-between items-center gap-3 md:gap-5 w-full text-white">
       <div className="flex items-center gap-3">
         {/* Mobile Logo */}
-        <div className="md:hidden relative flex-shrink-0">
+        <div className="md:hidden relative shrink-0">
           <div className="absolute inset-0 bg-[#2962ff]/20 blur-sm rounded-sm" />
           <Image
             src="/assets/images/magnetar.svg"
