@@ -1,5 +1,5 @@
-"use client";
-import { AnalyticsMainView } from "@/views/analytics/MainView";
+'use client';
+import { AnalyticsMainView } from '@/views/analytics/MainView';
 
 export default function Page() {
   return (

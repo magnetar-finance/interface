@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import { SecondaryButton, WalletConnectButton } from "@/components/Button";
-import { CHAINS_INFORMATION } from "@/constants";
-import { ChevronDown, ChevronUp } from "lucide-react";
-import Image from "next/image";
-import { DropdownMenu } from "radix-ui";
-import React, { useMemo, useState } from "react";
-import { useChainId, useSwitchChain } from "wagmi";
+import { SecondaryButton, WalletConnectButton } from '@/components/Button';
+import { CHAINS_INFORMATION } from '@/constants';
+import { ChevronDown, ChevronUp } from 'lucide-react';
+import Image from 'next/image';
+import { DropdownMenu } from 'radix-ui';
+import React, { useMemo, useState } from 'react';
+import { useChainId, useSwitchChain } from 'wagmi';
 
 export const Header: React.FC = () => {
   const chainId = useChainId();
@@ -56,8 +56,8 @@ export const Header: React.FC = () => {
                   onClick={() => switchChain.switchChain({ chainId: value.chainId })}
                   className={`w-full ${
                     value.chainId === chainId
-                      ? "bg-[#2962ff]/60 text-[#2962ff]"
-                      : "hover:bg-[#2962ff] text-white"
+                      ? 'bg-[#2962ff]/60 text-[#2962ff]'
+                      : 'hover:bg-[#2962ff] text-white'
                   } flex justify-between items-center gap-3 text-xs md:text-sm px-1 py-3`}
                 >
                   <div className="flex justify-center items-center gap-2">

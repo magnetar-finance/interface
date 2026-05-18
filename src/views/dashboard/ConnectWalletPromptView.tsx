@@ -1,6 +1,6 @@
-import { WalletConnectButton } from "@/components/Button";
-import { WalletMinimalIcon } from "lucide-react";
-import React from "react";
+import { WalletConnectButton } from '@/components/Button';
+import { WalletMinimalIcon } from 'lucide-react';
+import React from 'react';
 
 export const ConnectWalletPromptView: React.FC = () => (
   <div className="w-full md:w-1/3 flex justify-center items-center my-20 flex-col py-5 gap-10">
@@ -8,7 +8,9 @@ export const ConnectWalletPromptView: React.FC = () => (
       <WalletMinimalIcon size={90} color="#2962ff" />
     </div>
     <div className="w-full flex justify-center items-center flex-col py-2 gap-5">
-      <h4 className="text-3xl md:text-4xl text-white font-extrabold">Connect Your Wallet</h4>
+      <h4 className="text-3xl md:text-4xl text-white font-extrabold text-center">
+        Connect Your Wallet
+      </h4>
       <p className="text-[#94a3b8] font-normal text-sm md:text-xl text-center text-wrap w-full lg:w-132">
         Connect your wallet to view your portfolio, voting power, and active liquidity positions.
       </p>

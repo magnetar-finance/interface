@@ -1,19 +1,19 @@
-"use client";
+'use client';
 
-import { clientEnv } from "@/config/env/client";
-import { loadRainbowkitConfig } from "@/config/rainbowkit.config";
-import { GithubAssetsProvider } from "@/contexts/github-assets";
-import { darkTheme, RainbowKitProvider } from "@rainbow-me/rainbowkit";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import React from "react";
-import { WagmiProvider } from "wagmi";
+import { clientEnv } from '@/config/env/client';
+import { loadRainbowkitConfig } from '@/config/rainbowkit.config';
+import { GithubAssetsProvider } from '@/contexts/github-assets';
+import { darkTheme, RainbowKitProvider } from '@rainbow-me/rainbowkit';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import React from 'react';
+import { WagmiProvider } from 'wagmi';
 
 const queryClient = new QueryClient();
 
 // Polyfill for Node 22 global localStorage bug
-if (typeof window === "undefined" && typeof globalThis !== "undefined") {
+if (typeof window === 'undefined' && typeof globalThis !== 'undefined') {
   try {
-    Object.defineProperty(globalThis, "localStorage", {
+    Object.defineProperty(globalThis, 'localStorage', {
       value: {
         getItem: () => null,
         setItem: () => {},

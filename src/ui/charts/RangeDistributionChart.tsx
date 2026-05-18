@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Bar, BarChart, Cell, ResponsiveContainer } from "recharts";
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Bar, BarChart, Cell, ResponsiveContainer } from 'recharts';
 
 export interface RangeDistributionChartProps {
   data: { value: number }[];
@@ -15,14 +15,14 @@ export interface RangeDistributionChartProps {
   onMaxIndexChange?: (index: number) => void;
 }
 
-type DragTarget = "min" | "max" | null;
+type DragTarget = 'min' | 'max' | null;
 
 export const RangeDistributionChart: React.FC<RangeDistributionChartProps> = ({
   data,
   chartMinIndex,
   chartMaxIndex,
-  activeColor = "#2962ff",
-  inactiveColor = "rgba(255,255,255,0.05)",
+  activeColor = '#2962ff',
+  inactiveColor = 'rgba(255,255,255,0.05)',
   onMinIndexChange,
   onMaxIndexChange,
 }) => {
@@ -44,7 +44,7 @@ export const RangeDistributionChart: React.FC<RangeDistributionChartProps> = ({
     [data.length],
   );
 
-  const handlePointerDown = useCallback((e: React.PointerEvent, target: "min" | "max") => {
+  const handlePointerDown = useCallback((e: React.PointerEvent, target: 'min' | 'max') => {
     e.preventDefault();
     e.stopPropagation();
     (e.currentTarget as Element).setPointerCapture(e.pointerId);
@@ -57,7 +57,7 @@ export const RangeDistributionChart: React.FC<RangeDistributionChartProps> = ({
       if (!dragTarget.current) return;
       const newIndex = clientXToIndex(e.clientX);
 
-      if (dragTarget.current === "min") {
+      if (dragTarget.current === 'min') {
         // min can't go past max-1
         const clamped = Math.min(newIndex, chartMaxIndex - 1);
         onMinIndexChange?.(clamped);
@@ -79,13 +79,13 @@ export const RangeDistributionChart: React.FC<RangeDistributionChartProps> = ({
   useEffect(() => {
     const el = wrapperRef.current;
     if (!el) return;
-    el.addEventListener("pointermove", handlePointerMove);
-    el.addEventListener("pointerup", handlePointerUp);
-    el.addEventListener("pointercancel", handlePointerUp);
+    el.addEventListener('pointermove', handlePointerMove);
+    el.addEventListener('pointerup', handlePointerUp);
+    el.addEventListener('pointercancel', handlePointerUp);
     return () => {
-      el.removeEventListener("pointermove", handlePointerMove);
-      el.removeEventListener("pointerup", handlePointerUp);
-      el.removeEventListener("pointercancel", handlePointerUp);
+      el.removeEventListener('pointermove', handlePointerMove);
+      el.removeEventListener('pointerup', handlePointerUp);
+      el.removeEventListener('pointercancel', handlePointerUp);
     };
   }, [handlePointerMove, handlePointerUp]);
 
@@ -99,7 +99,7 @@ export const RangeDistributionChart: React.FC<RangeDistributionChartProps> = ({
     <div
       ref={wrapperRef}
       className="relative w-full h-full"
-      style={{ userSelect: "none", touchAction: "none" }}
+      style={{ userSelect: 'none', touchAction: 'none' }}
     >
       {/* Recharts Bar Chart */}
       <ResponsiveContainer width="100%" height="100%">
@@ -133,21 +133,21 @@ export const RangeDistributionChart: React.FC<RangeDistributionChartProps> = ({
           className="absolute inset-y-0 flex flex-col items-center"
           style={{
             left: `${minPct}%`,
-            transform: "translateX(-50%)",
-            cursor: isDragging === "min" ? "grabbing" : "ew-resize",
+            transform: 'translateX(-50%)',
+            cursor: isDragging === 'min' ? 'grabbing' : 'ew-resize',
             zIndex: 10,
           }}
-          onPointerDown={(e) => handlePointerDown(e, "min")}
+          onPointerDown={(e) => handlePointerDown(e, 'min')}
         >
           {/* vertical line */}
           <div
             className="w-px flex-1"
-            style={{ background: "#2962ff", boxShadow: "0 0 6px #2962ff" }}
+            style={{ background: '#2962ff', boxShadow: '0 0 6px #2962ff' }}
           />
           {/* grip bar */}
           <div
             className="w-1.5 h-5 rounded-sm mb-1 flex-shrink-0"
-            style={{ background: "#F5F5F5", boxShadow: "0 0 6px rgba(245,245,245,0.4)" }}
+            style={{ background: '#F5F5F5', boxShadow: '0 0 6px rgba(245,245,245,0.4)' }}
           />
         </div>
       )}
@@ -158,21 +158,21 @@ export const RangeDistributionChart: React.FC<RangeDistributionChartProps> = ({
           className="absolute inset-y-0 flex flex-col items-center"
           style={{
             left: `${maxPct}%`,
-            transform: "translateX(-50%)",
-            cursor: isDragging === "max" ? "grabbing" : "ew-resize",
+            transform: 'translateX(-50%)',
+            cursor: isDragging === 'max' ? 'grabbing' : 'ew-resize',
             zIndex: 10,
           }}
-          onPointerDown={(e) => handlePointerDown(e, "max")}
+          onPointerDown={(e) => handlePointerDown(e, 'max')}
         >
           {/* vertical line */}
           <div
             className="w-px flex-1"
-            style={{ background: "#2962ff", boxShadow: "0 0 6px #2962ff" }}
+            style={{ background: '#2962ff', boxShadow: '0 0 6px #2962ff' }}
           />
           {/* grip bar */}
           <div
             className="w-1.5 h-5 rounded-sm mb-1 flex-shrink-0"
-            style={{ background: "#F5F5F5", boxShadow: "0 0 6px rgba(245,245,245,0.4)" }}
+            style={{ background: '#F5F5F5', boxShadow: '0 0 6px rgba(245,245,245,0.4)' }}
           />
         </div>
       )}

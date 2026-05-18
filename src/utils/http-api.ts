@@ -1,6 +1,6 @@
-import { clientEnv } from "@/config/env/client";
-import { API_QUERY_SETTINGS } from "@/constants";
-import axios, { AxiosInstance } from "axios";
+import { clientEnv } from '@/config/env/client';
+import { API_QUERY_SETTINGS } from '@/constants';
+import axios, { AxiosInstance } from 'axios';
 
 export interface APIResponse<T> {
   status: number;
@@ -9,14 +9,14 @@ export interface APIResponse<T> {
 
 // Enums
 export enum PoolType {
-  STABLE = "STABLE",
-  VOLATILE = "VOLATILE",
-  CONCENTRATED = "CONCENTRATED",
+  STABLE = 'STABLE',
+  VOLATILE = 'VOLATILE',
+  CONCENTRATED = 'CONCENTRATED',
 }
 
 export enum LockType {
-  MANAGED = "MANAGED",
-  NORMAL = "NORMAL",
+  MANAGED = 'MANAGED',
+  NORMAL = 'NORMAL',
 }
 
 // Base Interfaces
@@ -337,7 +337,7 @@ export interface PositionsStats {
   totalPositions: number;
   portfolioValue: number;
   portfolioHourlyChange: number;
-  portfolioChangeType: "increase" | "decrease" | "stable";
+  portfolioChangeType: 'increase' | 'decrease' | 'stable';
 }
 
 export class Fetcher {
@@ -351,7 +351,7 @@ export class Fetcher {
 
   async getStats(chainId?: number) {
     try {
-      const response = await this.httpInstance.get<APIResponse<Statistics>>("/analytics", {
+      const response = await this.httpInstance.get<APIResponse<Statistics>>('/analytics', {
         params: { chainId },
       });
       return response.data.data;
@@ -367,7 +367,7 @@ export class Fetcher {
     limit: number = API_QUERY_SETTINGS.default_pools_per_page,
   ) {
     try {
-      const response = await this.httpInstance.get<APIResponse<Pool[]>>("/pools", {
+      const response = await this.httpInstance.get<APIResponse<Pool[]>>('/pools', {
         params: { chainId, poolType, page, limit },
       });
       return response.data.data;

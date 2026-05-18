@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import { PrimaryButton } from "@/components/Button";
-import { SwitchGroup } from "@/components/SwitchGroup";
-import { AssetResponseType } from "@/config/github-assets.config";
-import { TokenSelectModal } from "@/ui/modals/TokenSelectModal";
-import { PlusIcon } from "lucide-react";
-import React, { useCallback, useMemo, useState } from "react";
-import { useAccount } from "wagmi";
-import { TokenInputRow } from "./components/TokenInputRow";
+import { PrimaryButton, WalletConnectButton } from '@/components/Button';
+import { SwitchGroup } from '@/components/SwitchGroup';
+import { AssetResponseType } from '@/config/github-assets.config';
+import { TokenSelectModal } from '@/ui/modals/TokenSelectModal';
+import { PlusIcon } from 'lucide-react';
+import React, { useCallback, useMemo, useState } from 'react';
+import { useAccount } from 'wagmi';
+import { TokenInputRow } from './components/TokenInputRow';
 
 export const StandardDepositView: React.FC<{
   initialTokenA: AssetResponseType[number] | null;
@@ -18,8 +18,8 @@ export const StandardDepositView: React.FC<{
 
   const [tokenA, setTokenA] = useState<AssetResponseType[number] | null>(initialTokenA);
   const [tokenB, setTokenB] = useState<AssetResponseType[number] | null>(initialTokenB);
-  const [amountA, setAmountA] = useState("");
-  const [amountB, setAmountB] = useState("");
+  const [amountA, setAmountA] = useState('');
+  const [amountB, setAmountB] = useState('');
 
   // Standard Pools only support Stable (0) or Volatile (1).
   // If concentrated was passed, default to volatile.
@@ -27,11 +27,11 @@ export const StandardDepositView: React.FC<{
     initialPoolTypeIndex === 0 ? 0 : 1,
   );
 
-  const [modalType, setModalType] = useState<"A" | "B" | null>(null);
+  const [modalType, setModalType] = useState<'A' | 'B' | null>(null);
 
   const handleTokenSelect = useCallback(
     (token: AssetResponseType[number]) => {
-      if (modalType === "A") {
+      if (modalType === 'A') {
         if (tokenB?.address === token.address) setTokenB(tokenA);
         setTokenA(token);
       } else {
@@ -45,23 +45,22 @@ export const StandardDepositView: React.FC<{
   const isSupplyDisabled = useMemo(() => {
     if (!tokenA || !tokenB) return true;
     if (!amountA && !amountB) return true;
-    if (parseFloat(amountA || "0") <= 0 && parseFloat(amountB || "0") <= 0) return true;
+    if (parseFloat(amountA || '0') <= 0 && parseFloat(amountB || '0') <= 0) return true;
     return false;
   }, [tokenA, tokenB, amountA, amountB]);
 
   const buttonText = useMemo(() => {
-    if (!isConnected) return "Connect Wallet";
-    if (!tokenA || !tokenB) return "Select tokens";
-    if (!amountA && !amountB) return "Enter an amount";
-    return "Supply Standard Liquidity";
-  }, [isConnected, tokenA, tokenB, amountA, amountB]);
+    if (!tokenA || !tokenB) return 'Select tokens';
+    if (!amountA && !amountB) return 'Enter an amount';
+    return 'Supply Standard Liquidity';
+  }, [tokenA, tokenB, amountA, amountB]);
 
   return (
     <div className="w-full flex flex-col gap-6 mt-4">
       {/* Type Selector */}
       <div className="w-full relative z-10">
         <SwitchGroup
-          switchLabels={["Stable", "Volatile"]}
+          switchLabels={['Stable', 'Volatile']}
           activeSwitchIndex={activePoolTypeIndex}
           onSwitchClicked={setActivePoolTypeIndex}
           fullWidth
@@ -75,8 +74,8 @@ export const StandardDepositView: React.FC<{
           token={tokenA}
           amount={amountA}
           onAmountChange={setAmountA}
-          onSelectClick={() => setModalType("A")}
-          usdValue={amountA ? `≈ $${(parseFloat(amountA) * 1.5).toFixed(2)}` : "$0.00"}
+          onSelectClick={() => setModalType('A')}
+          usdValue={amountA ? `≈ $${(parseFloat(amountA) * 1.5).toFixed(2)}` : '$0.00'}
         />
 
         {/* Plus Divider */}
@@ -94,19 +93,23 @@ export const StandardDepositView: React.FC<{
           token={tokenB}
           amount={amountB}
           onAmountChange={setAmountB}
-          onSelectClick={() => setModalType("B")}
-          usdValue={amountB ? `≈ $${(parseFloat(amountB) * 1.5).toFixed(2)}` : "$0.00"}
+          onSelectClick={() => setModalType('B')}
+          usdValue={amountB ? `≈ $${(parseFloat(amountB) * 1.5).toFixed(2)}` : '$0.00'}
         />
       </div>
 
       {/* Action Button */}
       <div className="w-full">
-        <PrimaryButton
-          disabled={isSupplyDisabled && isConnected}
-          className="w-full py-4 text-base tracking-widest font-bold"
-        >
-          {buttonText}
-        </PrimaryButton>
+        {isConnected ? (
+          <PrimaryButton
+            disabled={isSupplyDisabled && isConnected}
+            className="w-full py-4 text-base tracking-widest font-bold"
+          >
+            {buttonText}
+          </PrimaryButton>
+        ) : (
+          <WalletConnectButton className="w-full py-4 tracking-widest font-bold" />
+        )}
       </div>
 
       {/* Select Token Modal */}
@@ -114,7 +117,7 @@ export const StandardDepositView: React.FC<{
         open={modalType !== null}
         onOpenChange={(v) => !v && setModalType(null)}
         selectedToken={null}
-        disabledToken={modalType === "A" ? tokenB : tokenA}
+        disabledToken={modalType === 'A' ? tokenB : tokenA}
         onTokenSelect={handleTokenSelect}
       />
     </div>

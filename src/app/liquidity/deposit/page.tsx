@@ -1,6 +1,6 @@
-"use client";
-import { MainView } from "@/views/liquidity/deposit/MainView";
-import { Suspense } from "react";
+'use client';
+import { MainView } from '@/views/liquidity/deposit/MainView';
+import { Suspense } from 'react';
 
 export default function Page() {
   return (

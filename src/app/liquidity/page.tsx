@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { MainView } from "@/views/liquidity/main/MainView";
-import { PageHeader } from "@/components/PageHeader";
+import { MainView } from '@/views/liquidity/main/MainView';
+import { PageHeader } from '@/components/PageHeader';
 
 export default function Liquidity() {
   return (
@@ -9,7 +9,7 @@ export default function Liquidity() {
       <PageHeader
         title="Liquidity"
         subtitle="Deposit into pools to earn fees & gauge rewards"
-        chips={[{ label: "ve(3,3)", color: "blue" }]}
+        chips={[{ label: 've(3,3)', color: 'blue' }]}
       />
       <MainView />
     </main>

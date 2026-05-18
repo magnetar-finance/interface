@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { AssetResponseType } from "@/config/github-assets.config";
-import { PrimaryButton, SecondaryButton, WalletConnectButton } from "@/components/Button";
-import { FancyCard } from "@/components/Card";
+import { AssetResponseType } from '@/config/github-assets.config';
+import { PrimaryButton, SecondaryButton, WalletConnectButton } from '@/components/Button';
+import { FancyCard } from '@/components/Card';
 import {
   ArrowDownUpIcon,
   ChevronDownIcon,
@@ -10,11 +10,11 @@ import {
   SettingsIcon,
   InfoIcon,
   ZapIcon,
-} from "lucide-react";
-import Image from "next/image";
-import React, { useCallback, useMemo, useState } from "react";
-import { useAccount } from "wagmi";
-import { TokenSelectModal } from "@/ui/modals/TokenSelectModal";
+} from 'lucide-react';
+import Image from 'next/image';
+import React, { useCallback, useMemo, useState } from 'react';
+import { useAccount } from 'wagmi';
+import { TokenSelectModal } from '@/ui/modals/TokenSelectModal';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -22,8 +22,8 @@ type Token = AssetResponseType[number];
 
 // ─── Slippage options ────────────────────────────────────────────────────────
 
-const SLIPPAGE_PRESETS = ["0.1", "0.5", "1.0"];
-const DEFAULT_DEADLINE = "20"; // minutes
+const SLIPPAGE_PRESETS = ['0.1', '0.5', '1.0'];
+const DEFAULT_DEADLINE = '20'; // minutes
 
 // ─── Settings Panel ──────────────────────────────────────────────────────────
 
@@ -64,16 +64,16 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
               className={`px-3 py-1.5 text-xs font-semibold transition-colors
                 ${
                   slippage === preset && !isCustom
-                    ? "bg-[#2962ff] text-white"
-                    : "bg-white/5 text-[#94a3b8] hover:bg-white/10 hover:text-white"
+                    ? 'bg-[#2962ff] text-white'
+                    : 'bg-white/5 text-[#94a3b8] hover:bg-white/10 hover:text-white'
                 }`}
             >
               {preset}%
             </button>
           ))}
           <div
-            className={`flex items-center border px-2 py-1 gap-1 flex-1 min-w-[80px]
-              ${isCustom ? "border-[#2962ff]" : "border-white/10"}`}
+            className={`flex items-center border px-2 py-1 gap-1 flex-1 min-w-20
+              ${isCustom ? 'border-[#2962ff]' : 'border-white/10'}`}
           >
             <input
               type="number"
@@ -167,8 +167,8 @@ const TokenInputRow: React.FC<TokenInputRowProps> = ({
         className={`flex items-center gap-2 px-3 py-2 border shrink-0 transition-colors
           ${
             token
-              ? "border-white/10 hover:border-[#2962ff] bg-white/5"
-              : "border-[#2962ff] bg-[#2962ff]/10 animate-pulse"
+              ? 'border-white/10 hover:border-[#2962ff] bg-white/5'
+              : 'border-[#2962ff] bg-[#2962ff]/10 animate-pulse'
           }`}
       >
         {token ? (
@@ -205,12 +205,12 @@ const TokenInputRow: React.FC<TokenInputRowProps> = ({
         onChange={(e) => onAmountChange?.(e.target.value)}
         className={`bg-transparent text-right text-2xl md:text-3xl font-bold text-white
           outline-none flex-1 min-w-0 placeholder:text-[#374151]
-          ${readOnly ? "cursor-default" : ""}`}
+          ${readOnly ? 'cursor-default' : ''}`}
       />
     </div>
 
     <div className="flex justify-end">
-      <span className="text-[#64748b] text-xs">{usdValue ? `≈ $${usdValue}` : "—"}</span>
+      <span className="text-[#64748b] text-xs">{usdValue ? `≈ $${usdValue}` : '—'}</span>
     </div>
   </div>
 );
@@ -231,10 +231,10 @@ const PriceInfoRow: React.FC<PriceInfoRowProps> = ({ tokenIn, tokenOut, amountIn
 
   if (!hasData) return null;
 
-  const exchangeRate = "1.00"; // stub
-  const priceImpact = "< 0.01";
+  const exchangeRate = '1.00'; // stub
+  const priceImpact = '< 0.01';
   const minReceived = (parseFloat(amountIn) * (1 - parseFloat(slippage) / 100)).toFixed(6);
-  const fee = "0.05";
+  const fee = '0.05';
 
   return (
     <div className="w-full bg-black/40 border border-white/10 px-4 py-3">
@@ -246,7 +246,7 @@ const PriceInfoRow: React.FC<PriceInfoRowProps> = ({ tokenIn, tokenOut, amountIn
         <div className="flex items-center gap-1.5">
           <ZapIcon size={12} color="#00ff9d" />
           <span className="text-[#94a3b8] text-xs">
-            1 {tokenIn.symbol} = <span className="text-white font-semibold">{exchangeRate}</span>{" "}
+            1 {tokenIn.symbol} = <span className="text-white font-semibold">{exchangeRate}</span>{' '}
             {tokenOut.symbol}
           </span>
         </div>
@@ -296,29 +296,29 @@ export const MainView: React.FC = () => {
   // Token state
   const [tokenIn, setTokenIn] = useState<Token | null>(null);
   const [tokenOut, setTokenOut] = useState<Token | null>(null);
-  const [amountIn, setAmountIn] = useState("");
-  const [selectingFor, setSelectingFor] = useState<"in" | "out" | null>(null);
+  const [amountIn, setAmountIn] = useState('');
+  const [selectingFor, setSelectingFor] = useState<'in' | 'out' | null>(null);
 
   // Settings state
   const [showSettings, setShowSettings] = useState(false);
-  const [slippage, setSlippage] = useState("0.5");
-  const [customSlippage, setCustomSlippage] = useState("");
+  const [slippage, setSlippage] = useState('0.5');
+  const [customSlippage, setCustomSlippage] = useState('');
   const [deadline, setDeadline] = useState(DEFAULT_DEADLINE);
 
   // Derived state
   const amountOut = useMemo(() => {
     // Stub: 1:1 ratio for now, real implementation will call router
-    if (!amountIn || isNaN(parseFloat(amountIn))) return "";
+    if (!amountIn || isNaN(parseFloat(amountIn))) return '';
     return (parseFloat(amountIn) * 1.0).toFixed(6);
   }, [amountIn]);
 
   const usdValueIn = useMemo(() => {
-    if (!amountIn || isNaN(parseFloat(amountIn))) return "";
+    if (!amountIn || isNaN(parseFloat(amountIn))) return '';
     return (parseFloat(amountIn) * 1.5).toFixed(2); // stub price
   }, [amountIn]);
 
   const usdValueOut = useMemo(() => {
-    if (!amountOut || isNaN(parseFloat(amountOut))) return "";
+    if (!amountOut || isNaN(parseFloat(amountOut))) return '';
     return (parseFloat(amountOut) * 1.5).toFixed(2);
   }, [amountOut]);
 
@@ -331,8 +331,8 @@ export const MainView: React.FC = () => {
 
   const handleTokenSelect = useCallback(
     (token: Token) => {
-      if (selectingFor === "in") setTokenIn(token);
-      else if (selectingFor === "out") setTokenOut(token);
+      if (selectingFor === 'in') setTokenIn(token);
+      else if (selectingFor === 'out') setTokenOut(token);
       setSelectingFor(null);
     },
     [selectingFor],
@@ -340,14 +340,14 @@ export const MainView: React.FC = () => {
 
   const handleSwap = useCallback(() => {
     // Stub: wire up wagmi write hook here
-    console.log("Swap!", { tokenIn, tokenOut, amountIn, slippage, deadline });
+    console.log('Swap!', { tokenIn, tokenOut, amountIn, slippage, deadline });
   }, [tokenIn, tokenOut, amountIn, slippage, deadline]);
 
   // Button state
   const { label: actionLabel, disabled: actionDisabled } = useMemo(() => {
-    if (!tokenIn || !tokenOut) return { label: "Select Tokens", disabled: true };
-    if (!amountIn || parseFloat(amountIn) <= 0) return { label: "Enter an Amount", disabled: true };
-    return { label: "Swap", disabled: false };
+    if (!tokenIn || !tokenOut) return { label: 'Select Tokens', disabled: true };
+    if (!amountIn || parseFloat(amountIn) <= 0) return { label: 'Enter an Amount', disabled: true };
+    return { label: 'Swap', disabled: false };
   }, [tokenIn, tokenOut, amountIn]);
 
   return (
@@ -358,8 +358,8 @@ export const MainView: React.FC = () => {
         onOpenChange={(open) => {
           if (!open) setSelectingFor(null);
         }}
-        selectedToken={selectingFor === "in" ? tokenIn : tokenOut}
-        disabledToken={selectingFor === "in" ? tokenOut : tokenIn}
+        selectedToken={selectingFor === 'in' ? tokenIn : tokenOut}
+        disabledToken={selectingFor === 'in' ? tokenOut : tokenIn}
         onTokenSelect={handleTokenSelect}
       />
 
@@ -374,7 +374,7 @@ export const MainView: React.FC = () => {
                 <button
                   onClick={() => setShowSettings((v) => !v)}
                   className={`transition-colors p-1 ${
-                    showSettings ? "text-[#2962ff]" : "text-[#64748b] hover:text-white"
+                    showSettings ? 'text-[#2962ff]' : 'text-[#64748b] hover:text-white'
                   }`}
                   title="Settings"
                 >
@@ -402,8 +402,8 @@ export const MainView: React.FC = () => {
                 usdValue={usdValueIn}
                 balance="0.00"
                 onAmountChange={setAmountIn}
-                onMaxClick={() => setAmountIn("0")} // stub: replace with real balance
-                onTokenClick={() => setSelectingFor("in")}
+                onMaxClick={() => setAmountIn('0')} // stub: replace with real balance
+                onTokenClick={() => setSelectingFor('in')}
               />
 
               {/* Swap Direction Toggle */}
@@ -428,7 +428,7 @@ export const MainView: React.FC = () => {
                 usdValue={usdValueOut}
                 balance="0.00"
                 readOnly
-                onTokenClick={() => setSelectingFor("out")}
+                onTokenClick={() => setSelectingFor('out')}
               />
 
               {/* Price Info */}
@@ -473,7 +473,7 @@ export const MainView: React.FC = () => {
               className="text-xs px-2 py-1"
               onClick={() => setShowSettings((v) => !v)}
             >
-              {showSettings ? "Hide Settings" : "Settings"}
+              {showSettings ? 'Hide Settings' : 'Settings'}
             </SecondaryButton>
           </div>
         </div>

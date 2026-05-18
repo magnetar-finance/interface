@@ -1,24 +1,24 @@
-"use client";
+'use client';
 
-import React from "react";
-import { ArrowLeftIcon, ArrowUpIcon, ArrowDownIcon, ExternalLinkIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { Table } from "@/components/Table";
-import { TimeSeriesChart } from "@/ui/charts/TimeSeriesChart";
-import { VolumeBarChart } from "@/ui/charts/VolumeBarChart";
+import React from 'react';
+import { ArrowLeftIcon, ArrowUpIcon, ArrowDownIcon, ExternalLinkIcon } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { Table } from '@/components/Table';
+import { TimeSeriesChart } from '@/ui/charts/TimeSeriesChart';
+import { VolumeBarChart } from '@/ui/charts/VolumeBarChart';
 import {
   MOCK_TOP_TOKENS,
   MOCK_TOP_POOLS,
   MOCK_TOKEN_PRICE,
   MOCK_TOKEN_VOLUME,
-} from "@/utils/mock-data";
-import { formatNumber } from "@/utils/numbers";
-import { PoolType, type Pool } from "@/utils/http-api";
+} from '@/utils/mock-data';
+import { formatNumber } from '@/utils/numbers';
+import { PoolType, type Pool } from '@/utils/http-api';
 
 const POOL_TYPE_COLORS: Record<PoolType, string> = {
-  [PoolType.STABLE]: "text-[#00ff9d] bg-[#00ff9d]/10",
-  [PoolType.VOLATILE]: "text-[#ffaf52] bg-[#ffaf52]/10",
-  [PoolType.CONCENTRATED]: "text-[#2962ff] bg-[#2962ff]/10",
+  [PoolType.STABLE]: 'text-[#00ff9d] bg-[#00ff9d]/10',
+  [PoolType.VOLATILE]: 'text-[#ffaf52] bg-[#ffaf52]/10',
+  [PoolType.CONCENTRATED]: 'text-[#2962ff] bg-[#2962ff]/10',
 };
 
 const StatCard: React.FC<{ label: string; value: string; sub?: string }> = ({
@@ -35,30 +35,30 @@ const StatCard: React.FC<{ label: string; value: string; sub?: string }> = ({
 
 // Fallback series for tokens without specific mock data
 const FALLBACK_PRICE = {
-  "1D": Array.from({ length: 24 }, (_, i) => ({
+  '1D': Array.from({ length: 24 }, (_, i) => ({
     date: `${i}:00`,
     value: 1 + Math.random() * 0.05,
   })),
-  "7D": Array.from({ length: 7 }, (_, i) => ({
+  '7D': Array.from({ length: 7 }, (_, i) => ({
     date: `Day ${i + 1}`,
     value: 0.99 + Math.random() * 0.02,
   })),
-  "30D": Array.from({ length: 30 }, (_, i) => ({
+  '30D': Array.from({ length: 30 }, (_, i) => ({
     date: `Day ${i + 1}`,
     value: 0.97 + Math.random() * 0.06,
   })),
 } as const;
 
 const FALLBACK_VOL = {
-  "1D": Array.from({ length: 24 }, (_, i) => ({
+  '1D': Array.from({ length: 24 }, (_, i) => ({
     date: `${i}:00`,
     value: 100_000 + Math.random() * 50_000,
   })),
-  "7D": Array.from({ length: 7 }, (_, i) => ({
+  '7D': Array.from({ length: 7 }, (_, i) => ({
     date: `Day ${i + 1}`,
     value: 90_000 + Math.random() * 60_000,
   })),
-  "30D": Array.from({ length: 30 }, (_, i) => ({
+  '30D': Array.from({ length: 30 }, (_, i) => ({
     date: `Day ${i + 1}`,
     value: 80_000 + Math.random() * 70_000,
   })),
@@ -84,7 +84,7 @@ export const TokenAnalyticsView: React.FC<{ tokenId: string }> = ({ tokenId }) =
     <div className="w-full flex flex-col gap-8">
       {/* Back */}
       <button
-        onClick={() => router.push("/analytics")}
+        onClick={() => router.push('/analytics')}
         className="flex items-center gap-2 text-[#94a3b8] hover:text-[#00ff9d] transition-colors group font-mono text-xs uppercase tracking-widest w-fit"
       >
         <ArrowLeftIcon size={14} className="group-hover:-translate-x-1 transition-transform" />
@@ -106,11 +106,11 @@ export const TokenAnalyticsView: React.FC<{ tokenId: string }> = ({ tokenId }) =
               $
               {token.priceUSD < 1
                 ? token.priceUSD.toFixed(4)
-                : formatNumber(token.priceUSD, "en-US", 2)}
+                : formatNumber(token.priceUSD, 'en-US', 2)}
             </span>
             <span
               className={`flex items-center gap-1 font-mono text-sm font-bold ${
-                positive ? "text-[#00ff9d]" : "text-[#ff4d4d]"
+                positive ? 'text-[#00ff9d]' : 'text-[#ff4d4d]'
               }`}
             >
               {positive ? <ArrowUpIcon size={14} /> : <ArrowDownIcon size={14} />}
@@ -127,9 +127,9 @@ export const TokenAnalyticsView: React.FC<{ tokenId: string }> = ({ tokenId }) =
 
       {/* Key metrics */}
       <div className="flex flex-col md:flex-row flex-wrap gap-3">
-        <StatCard label="TVL" value={formatNumber(token.totalLiquidityUSD, "en-US", 2, true)} />
-        <StatCard label="Vol (24h)" value={formatNumber(token.volume24h, "en-US", 2, true)} />
-        <StatCard label="Txns" value={formatNumber(token.txCount, "en-US", 0)} />
+        <StatCard label="TVL" value={formatNumber(token.totalLiquidityUSD, 'en-US', 2, true)} />
+        <StatCard label="Vol (24h)" value={formatNumber(token.volume24h, 'en-US', 2, true)} />
+        <StatCard label="Txns" value={formatNumber(token.txCount, 'en-US', 0)} />
         <StatCard
           label="Decimals"
           value={String(token.decimals)}
@@ -145,7 +145,7 @@ export const TokenAnalyticsView: React.FC<{ tokenId: string }> = ({ tokenId }) =
           </p>
           <TimeSeriesChart
             data={priceSeries}
-            color={positive ? "#00ff9d" : "#ff4d4d"}
+            color={positive ? '#00ff9d' : '#ff4d4d'}
             height={180}
             formatValue={(v) => `$${v < 1 ? v.toFixed(4) : v.toFixed(2)}`}
           />
@@ -163,10 +163,10 @@ export const TokenAnalyticsView: React.FC<{ tokenId: string }> = ({ tokenId }) =
         <p className="text-[#64748b] text-[10px] font-bold uppercase tracking-widest mb-3">Pools</p>
         <Table<Pool>
           headers={[
-            { label: "Pool", align: "left" },
-            { label: "Type", align: "left" },
-            { label: "TVL", align: "right" },
-            { label: "Vol 24h", align: "right" },
+            { label: 'Pool', align: 'left' },
+            { label: 'Type', align: 'left' },
+            { label: 'TVL', align: 'right' },
+            { label: 'Vol 24h', align: 'right' },
           ]}
           data={relatedPools}
           onRowClick={(pool) => router.push(`/analytics/pools/${encodeURIComponent(pool.id)}`)}
@@ -181,10 +181,10 @@ export const TokenAnalyticsView: React.FC<{ tokenId: string }> = ({ tokenId }) =
                 </span>
               </td>
               <td className="py-3 pr-4 text-right text-[#94a3b8]">
-                {formatNumber(pool.reserveUSD, "en-US", 2, true)}
+                {formatNumber(pool.reserveUSD, 'en-US', 2, true)}
               </td>
               <td className="py-3 pr-4 text-right text-[#94a3b8]">
-                {formatNumber(pool.volumeUSD * 0.04, "en-US", 2, true)}
+                {formatNumber(pool.volumeUSD * 0.04, 'en-US', 2, true)}
               </td>
             </>
           )}

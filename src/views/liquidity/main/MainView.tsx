@@ -1,13 +1,12 @@
-import { PrimaryButton, SecondaryButton } from "@/components/Button";
-import { FancyCard } from "@/components/Card";
-import { SwitchGroup } from "@/components/SwitchGroup";
-import { Table } from "@/components/Table";
-import { CHAINS_INFORMATION, SCREEN_WIDTHS } from "@/constants";
-import { useGHAssetsContext } from "@/contexts/github-assets";
-import { useDimensions } from "@/hooks/app";
-import { PoolType, Pool } from "@/utils/http-api";
-import { formatNumber } from "@/utils/numbers";
-import { MOCK_TOP_POOLS } from "@/utils/mock-data";
+import { PrimaryButton, SecondaryButton } from '@/components/Button';
+import { FancyCard } from '@/components/Card';
+import { SwitchGroup } from '@/components/SwitchGroup';
+import { Table } from '@/components/Table';
+import { CHAINS_INFORMATION, OP_SETTINGS, SCREEN_WIDTHS } from '@/constants';
+import { useGHAssetsContext } from '@/contexts/github-assets';
+import { useDimensions } from '@/hooks/app';
+import { PoolType } from '@/gql/codegen/graphql';
+import { formatNumber } from '@/utils/numbers';
 import {
   ChartNoAxesColumnIcon,
   CheckIcon,
@@ -18,19 +17,19 @@ import {
   MoreVerticalIcon,
   PlusIcon,
   SearchIcon,
-} from "lucide-react";
-import Image from "next/image";
-import { usePathname, useRouter } from "next/navigation";
-import { DropdownMenu } from "radix-ui";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { useChainId, useConfig } from "wagmi";
-import { watchChainId } from "wagmi/actions";
+} from 'lucide-react';
+import Image from 'next/image';
+import { usePathname, useRouter } from 'next/navigation';
+import { DropdownMenu } from 'radix-ui';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useChainId, useConfig } from 'wagmi';
+import { watchChainId } from 'wagmi/actions';
+import useAllPools from '@/hooks/api/useAllPools';
 
 enum SortType {
   TVL,
   APR,
   VOLUME,
-  NEWEST,
 }
 
 export const MainView: React.FC = () => {
@@ -49,7 +48,7 @@ export const MainView: React.FC = () => {
 
   const [sortOpen, setSortOpen] = useState(false);
   const [sortType, setSortType] = useState<SortType | null>(null);
-  const [searchValue, setSearchValue] = useState("");
+  const [searchValue, setSearchValue] = useState('');
 
   const switchSortType = useCallback(
     (sortT: SortType) => {
@@ -59,25 +58,29 @@ export const MainView: React.FC = () => {
     [sortType],
   );
 
-  const poolTypeFilter = useMemo(() => {
+  const poolTypeFilter: PoolType | undefined = useMemo(() => {
     switch (activeSwitchIndex) {
       case 0:
         return undefined;
       case 1:
-        return PoolType.STABLE;
+        return 'STABLE';
       case 2:
-        return PoolType.VOLATILE;
+        return 'VOLATILE';
       case 3:
-        return PoolType.CONCENTRATED;
+        return 'CONCENTRATED';
     }
   }, [activeSwitchIndex]);
 
-  const modifiedPools = useMemo(() => {
-    let data = [...MOCK_TOP_POOLS];
+  const ALL_POOLS = useAllPools(
+    0,
+    OP_SETTINGS.default_gql_items_limit,
+    OP_SETTINGS.default_refetch_interval,
+  );
 
-    if (poolTypeFilter) {
-      data = data.filter((p) => p.poolType === poolTypeFilter);
-    }
+  const modifiedPools = useMemo(() => {
+    let data = [...ALL_POOLS];
+
+    if (poolTypeFilter) data = data.filter((pool) => pool.poolType === poolTypeFilter);
 
     if (searchValue) {
       const value = searchValue.toLowerCase();
@@ -92,24 +95,24 @@ export const MainView: React.FC = () => {
     }
 
     if (sortType === SortType.APR)
-      data.sort((a, b) => (b.gauge?.rewardRate || 0) - (a.gauge?.rewardRate || 0));
-    else if (sortType === SortType.NEWEST)
-      data.sort((a, b) => b.createdAtBlockNumber - a.createdAtBlockNumber);
-    else if (sortType === SortType.TVL) data.sort((a, b) => b.reserveUSD - a.reserveUSD);
-    else if (sortType === SortType.VOLUME) data.sort((a, b) => b.volumeUSD - a.volumeUSD);
+      data.sort((a, b) => Number(a.gauge?.rewardRate || '0') - Number(b.gauge?.rewardRate || '0'));
+    else if (sortType === SortType.TVL)
+      data.sort((a, b) => Number(b.reserveUSD) - Number(a.reserveUSD));
+    else if (sortType === SortType.VOLUME)
+      data.sort((a, b) => Number(b.volumeUSD) - Number(a.volumeUSD));
 
     return data;
-  }, [searchValue, sortType, poolTypeFilter]);
+  }, [ALL_POOLS, poolTypeFilter, searchValue, sortType]);
 
   // Styles setters
   const badgeColorForPoolType = useCallback((poolType: PoolType) => {
     switch (poolType) {
-      case PoolType.STABLE:
-        return "bg-[#00ff9d]/10 text-[#00ff9d]";
-      case PoolType.VOLATILE:
-        return "bg-[#ffaf52]/10 text-[#ffaf52]";
-      case PoolType.CONCENTRATED:
-        return "bg-[#2962ff]/10 text-[#2962ff]";
+      case 'STABLE':
+        return 'bg-[#00ff9d]/10 text-[#00ff9d]';
+      case 'VOLATILE':
+        return 'bg-[#ffaf52]/10 text-[#ffaf52]';
+      case 'CONCENTRATED':
+        return 'bg-[#2962ff]/10 text-[#2962ff]';
     }
   }, []);
 
@@ -129,8 +132,8 @@ export const MainView: React.FC = () => {
 
       if (queryObject.toString()) finalUrl += `?${queryObject.toString()}`;
 
-      if (blankPage && typeof window !== "undefined") {
-        window.open(finalUrl, "_blank");
+      if (blankPage && typeof window !== 'undefined') {
+        window.open(finalUrl, '_blank');
         return;
       }
 
@@ -155,11 +158,11 @@ export const MainView: React.FC = () => {
   return (
     <div className="flex flex-col justify-start items-center w-full gap-4 md:gap-12">
       <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 w-full">
-        <div className="w-full">
+        <div className="w-full lg:w-1/3">
           <SwitchGroup
             onSwitchClicked={setActiveSwitchIndex}
             activeSwitchIndex={activeSwitchIndex}
-            switchLabels={["All", "Stable", "Volatile", "Concentrated"]}
+            switchLabels={['All', 'Stable', 'Volatile', 'Concentrated']}
             fullWidth
           />
         </div>
@@ -180,10 +183,9 @@ export const MainView: React.FC = () => {
                   <>
                     <span className="text-[#94a3b8]">Sort By:</span>
                     <span className="text-[#2962ff]">
-                      {sortType === SortType.TVL && "TVL"}
-                      {sortType === SortType.NEWEST && "Newest"}
-                      {sortType === SortType.APR && "APR"}
-                      {sortType === SortType.VOLUME && "Volume"}
+                      {sortType === SortType.TVL && 'TVL'}
+                      {sortType === SortType.APR && 'APR'}
+                      {sortType === SortType.VOLUME && 'Volume'}
                     </span>
                   </>
                   {sortOpen ? (
@@ -203,50 +205,40 @@ export const MainView: React.FC = () => {
                   onClick={() => switchSortType(SortType.TVL)}
                   className={`flex justify-start items-center gap-2 ${
                     sortType === SortType.TVL
-                      ? "text-[#2962ff] bg-[#2962ff]/10"
-                      : "text-white bg-transparent hover:text-[#2962ff] hover:bg-white/5"
+                      ? 'text-[#2962ff] bg-[#2962ff]/10'
+                      : 'text-white bg-transparent hover:text-[#2962ff] hover:bg-white/5'
                   } cursor-pointer py-2 px-3 transition-colors`}
                 >
-                  <span>TVL (High to Low)</span>{" "}
+                  <span>TVL (High to Low)</span>{' '}
                   {sortType === SortType.TVL && <CheckIcon size={14} />}
                 </DropdownMenu.Item>
                 <DropdownMenu.Item
                   onClick={() => switchSortType(SortType.VOLUME)}
                   className={`flex justify-start items-center gap-2 ${
                     sortType === SortType.VOLUME
-                      ? "text-[#2962ff] bg-[#2962ff]/10"
-                      : "text-white bg-transparent hover:text-[#2962ff] hover:bg-white/5"
+                      ? 'text-[#2962ff] bg-[#2962ff]/10'
+                      : 'text-white bg-transparent hover:text-[#2962ff] hover:bg-white/5'
                   } cursor-pointer py-2 px-3 transition-colors`}
                 >
-                  <span>Volume (24h)</span>{" "}
+                  <span>Volume (24h)</span>{' '}
                   {sortType === SortType.VOLUME && <CheckIcon size={14} />}
                 </DropdownMenu.Item>
                 <DropdownMenu.Item
                   onClick={() => switchSortType(SortType.APR)}
                   className={`flex justify-start items-center gap-2 ${
                     sortType === SortType.APR
-                      ? "text-[#00ff9d] bg-[#00ff9d]/10"
-                      : "text-white bg-transparent hover:text-[#00ff9d] hover:bg-white/5"
+                      ? 'text-[#00ff9d] bg-[#00ff9d]/10'
+                      : 'text-white bg-transparent hover:text-[#00ff9d] hover:bg-white/5'
                   } cursor-pointer py-2 px-3 transition-colors`}
                 >
-                  <span>APR (High to Low)</span>{" "}
+                  <span>APR (High to Low)</span>{' '}
                   {sortType === SortType.APR && <CheckIcon size={14} />}
-                </DropdownMenu.Item>
-                <DropdownMenu.Item
-                  onClick={() => switchSortType(SortType.NEWEST)}
-                  className={`flex justify-start items-center gap-2 ${
-                    sortType === SortType.NEWEST
-                      ? "text-[#2962ff] bg-[#2962ff]/10"
-                      : "text-white bg-transparent hover:text-[#2962ff] hover:bg-white/5"
-                  } cursor-pointer py-2 px-3 transition-colors`}
-                >
-                  <span>Newest</span> {sortType === SortType.NEWEST && <CheckIcon size={14} />}
                 </DropdownMenu.Item>
               </DropdownMenu.Content>
             </DropdownMenu.Portal>
           </DropdownMenu.Root>
           <PrimaryButton
-            onClick={() => navigateTo("/deposit", true, false)}
+            onClick={() => navigateTo('/deposit', true, false)}
             className="w-full md:w-auto flex items-center justify-center gap-2"
           >
             <PlusIcon size={16} />
@@ -257,27 +249,27 @@ export const MainView: React.FC = () => {
 
       <FancyCard>
         <div className="flex flex-col justify-start items-center w-full gap-4 overflow-x-auto">
-          <Table<Pool>
+          <Table<(typeof modifiedPools)[number]>
             headers={
               isMobile
                 ? [
-                    { label: "Pool", align: "left" },
-                    { label: "TVL", align: "right" },
-                    { label: "Volume", align: "right" },
-                    { label: "Actions", align: "right" },
+                    { label: 'Pool', align: 'left' },
+                    { label: 'TVL', align: 'right' },
+                    { label: 'Volume', align: 'right' },
+                    { label: 'Actions', align: 'right' },
                   ]
                 : [
-                    { label: "Pool", align: "left" },
-                    { label: "TVL", align: "right" },
-                    { label: "Volume", align: "right" },
-                    { label: "APR", align: "right" },
-                    { label: "Actions", align: "right" },
+                    { label: 'Pool', align: 'left' },
+                    { label: 'TVL', align: 'right' },
+                    { label: 'Volume', align: 'right' },
+                    { label: 'APR', align: 'right' },
+                    { label: 'Actions', align: 'right' },
                   ]
             }
             data={modifiedPools}
             renderRow={(item) => {
-              const token0Info = getAssetInfo(item.token0.address);
-              const token1Info = getAssetInfo(item.token1.address);
+              const token0Info = getAssetInfo(item.token0.address as string);
+              const token1Info = getAssetInfo(item.token1.address as string);
               return (
                 <>
                   <td className="py-3 pr-4">
@@ -321,14 +313,14 @@ export const MainView: React.FC = () => {
                     </div>
                   </td>
                   <td className="py-3 pr-4 text-white text-right font-bold w-1/4">
-                    {formatNumber(item.reserveUSD, "en-US", 2, true)}
+                    {formatNumber(item.reserveUSD as string, 'en-US', 2, true)}
                   </td>
                   <td className="py-3 pr-4 text-[#94a3b8] text-right font-bold w-1/4">
-                    {formatNumber(item.volumeUSD, "en-US", 2, true)}
+                    {formatNumber(item.volumeUSD as string, 'en-US', 2, true)}
                   </td>
                   {!isMobile && (
                     <td className="py-3 pr-4 text-[#00ff9d] text-right font-bold">
-                      {item.gauge?.rewardRate || 0}%
+                      {(item.gauge?.rewardRate as string) || 0}%
                     </td>
                   )}
                   <td className="py-3 text-right">
@@ -357,9 +349,9 @@ export const MainView: React.FC = () => {
                           </DropdownMenu.Item>
                           <DropdownMenu.Item
                             onClick={() =>
-                              navigateTo("/deposit", true, false, {
-                                token0: item.token0.address,
-                                token1: item.token1.address,
+                              navigateTo('/deposit', true, false, {
+                                token0: item.token0.address as string,
+                                token1: item.token1.address as string,
                                 poolType: item.poolType,
                               })
                             }
@@ -392,10 +384,10 @@ export const MainView: React.FC = () => {
                   <DropletIcon size={90} color="#64748b" />
                 </div>
                 <div className="w-full flex justify-center items-center flex-col py-2 gap-5">
-                  <h4 className="text-3xl md:text-4xl text-white font-extrabold">
+                  <h4 className="text-xl md:text-2xl text-white font-extrabold">
                     No Active Liquidity Pools
                   </h4>
-                  <p className="text-[#94a3b8] font-normal text-sm md:text-xl text-center text-wrap w-full lg:w-132">
+                  <p className="text-[#94a3b8] font-normal text-xs md:text-sm text-center text-wrap w-full lg:w-132">
                     There are no liquidity pools yet. Add liquidity to start earning fees and
                     rewards
                   </p>

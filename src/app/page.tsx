@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { ConnectWalletPromptView } from "@/views/dashboard/ConnectWalletPromptView";
-import { MainView } from "@/views/dashboard/MainView";
-import { PositionsView } from "@/views/dashboard/PositionsView";
-import { PageHeader } from "@/components/PageHeader";
-import { useAccount } from "wagmi";
+import { ConnectWalletPromptView } from '@/views/dashboard/ConnectWalletPromptView';
+import { MainView } from '@/views/dashboard/MainView';
+import { PositionsView } from '@/views/dashboard/PositionsView';
+import { PageHeader } from '@/components/PageHeader';
+import { useAccount } from 'wagmi';
 
 export default function Home() {
   const { isConnected } = useAccount();
@@ -15,7 +15,7 @@ export default function Home() {
           <PageHeader
             title="Dashboard"
             subtitle="Your positions, rewards & voting power"
-            chips={[{ label: "Live", color: "green" }]}
+            chips={[{ label: 'Live', color: 'green' }]}
           />
           <MainView />
           <PositionsView />

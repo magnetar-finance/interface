@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import React from "react";
-import { ArrowUpIcon, ArrowDownIcon, ExternalLinkIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { Table } from "@/components/Table";
-import { TimeSeriesChart } from "@/ui/charts/TimeSeriesChart";
-import { VolumeBarChart } from "@/ui/charts/VolumeBarChart";
+import React from 'react';
+import { ArrowUpIcon, ArrowDownIcon, ExternalLinkIcon } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { Table } from '@/components/Table';
+import { TimeSeriesChart } from '@/ui/charts/TimeSeriesChart';
+import { VolumeBarChart } from '@/ui/charts/VolumeBarChart';
 import {
   MOCK_TVL_SERIES,
   MOCK_VOLUME_SERIES,
@@ -13,23 +13,23 @@ import {
   MOCK_TOP_TOKENS,
   MOCK_TRANSACTIONS,
   type TxType,
-} from "@/utils/mock-data";
-import { formatNumber } from "@/utils/numbers";
-import { PoolType, type Pool } from "@/utils/http-api";
-import { PageHeader } from "@/components/PageHeader";
+} from '@/utils/mock-data';
+import { formatNumber } from '@/utils/numbers';
+import { PoolType, type Pool } from '@/utils/http-api';
+import { PageHeader } from '@/components/PageHeader';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 const TX_COLORS: Record<TxType, string> = {
-  Swap: "text-[#2962ff] bg-[#2962ff]/10 border-[#2962ff]/30",
-  Add: "text-[#00ff9d] bg-[#00ff9d]/10 border-[#00ff9d]/30",
-  Remove: "text-[#ffaf52] bg-[#ffaf52]/10 border-[#ffaf52]/30",
+  Swap: 'text-[#2962ff] bg-[#2962ff]/10 border-[#2962ff]/30',
+  Add: 'text-[#00ff9d] bg-[#00ff9d]/10 border-[#00ff9d]/30',
+  Remove: 'text-[#ffaf52] bg-[#ffaf52]/10 border-[#ffaf52]/30',
 };
 
 const POOL_TYPE_COLORS: Record<PoolType, string> = {
-  [PoolType.STABLE]: "text-[#00ff9d] bg-[#00ff9d]/10",
-  [PoolType.VOLATILE]: "text-[#ffaf52] bg-[#ffaf52]/10",
-  [PoolType.CONCENTRATED]: "text-[#2962ff] bg-[#2962ff]/10",
+  [PoolType.STABLE]: 'text-[#00ff9d] bg-[#00ff9d]/10',
+  [PoolType.VOLATILE]: 'text-[#ffaf52] bg-[#ffaf52]/10',
+  [PoolType.CONCENTRATED]: 'text-[#2962ff] bg-[#2962ff]/10',
 };
 
 const StatCard: React.FC<{ label: string; value: string; sub?: string }> = ({
@@ -64,7 +64,7 @@ export const AnalyticsMainView: React.FC = () => {
       <PageHeader
         title="Analytics"
         subtitle="Protocol-wide metrics, pools & token data"
-        chips={[{ label: "Live", color: "green" }]}
+        chips={[{ label: 'Live', color: 'green' }]}
       />
 
       {/* ── Hero Metrics ───────────────────────────────────────────────── */}
@@ -92,12 +92,12 @@ export const AnalyticsMainView: React.FC = () => {
         <SectionHeader title="Top Pools" />
         <Table<Pool>
           headers={[
-            { label: "#", align: "left" },
-            { label: "Pool", align: "left" },
-            { label: "Type", align: "left" },
-            { label: "TVL", align: "right" },
-            { label: "Vol 24h", align: "right" },
-            { label: "Fees 24h", align: "right" },
+            { label: '#', align: 'left' },
+            { label: 'Pool', align: 'left' },
+            { label: 'Type', align: 'left' },
+            { label: 'TVL', align: 'right' },
+            { label: 'Vol 24h', align: 'right' },
+            { label: 'Fees 24h', align: 'right' },
           ]}
           data={MOCK_TOP_POOLS}
           onRowClick={(pool) => router.push(`/analytics/pools/${encodeURIComponent(pool.id)}`)}
@@ -113,13 +113,13 @@ export const AnalyticsMainView: React.FC = () => {
                 </span>
               </td>
               <td className="py-3 pr-4 text-right text-white">
-                {formatNumber(pool.reserveUSD, "en-US", 2, true)}
+                {formatNumber(pool.reserveUSD, 'en-US', 2, true)}
               </td>
               <td className="py-3 pr-4 text-right text-[#94a3b8]">
-                {formatNumber(pool.volumeUSD * 0.04, "en-US", 2, true)}
+                {formatNumber(pool.volumeUSD * 0.04, 'en-US', 2, true)}
               </td>
               <td className="py-3 pr-4 text-right text-[#00ff9d]">
-                {formatNumber(pool.totalFeesUSD * 0.01, "en-US", 2, true)}
+                {formatNumber(pool.totalFeesUSD * 0.01, 'en-US', 2, true)}
               </td>
             </>
           )}
@@ -131,12 +131,12 @@ export const AnalyticsMainView: React.FC = () => {
         <SectionHeader title="Top Tokens" />
         <Table<(typeof MOCK_TOP_TOKENS)[0]>
           headers={[
-            { label: "#", align: "left" },
-            { label: "Token", align: "left" },
-            { label: "Price", align: "right" },
-            { label: "24h Δ", align: "right" },
-            { label: "Vol 24h", align: "right" },
-            { label: "TVL", align: "right" },
+            { label: '#', align: 'left' },
+            { label: 'Token', align: 'left' },
+            { label: 'Price', align: 'right' },
+            { label: '24h Δ', align: 'right' },
+            { label: 'Vol 24h', align: 'right' },
+            { label: 'TVL', align: 'right' },
           ]}
           data={MOCK_TOP_TOKENS}
           onRowClick={(token) => router.push(`/analytics/token/${encodeURIComponent(token.id)}`)}
@@ -153,12 +153,12 @@ export const AnalyticsMainView: React.FC = () => {
                   $
                   {token.priceUSD < 1
                     ? token.priceUSD.toFixed(4)
-                    : formatNumber(token.priceUSD, "en-US", 2)}
+                    : formatNumber(token.priceUSD, 'en-US', 2)}
                 </td>
                 <td className="py-3 pr-4 text-right">
                   <span
                     className={`flex items-center justify-end gap-0.5 ${
-                      positive ? "text-[#00ff9d]" : "text-[#ff4d4d]"
+                      positive ? 'text-[#00ff9d]' : 'text-[#ff4d4d]'
                     }`}
                   >
                     {positive ? <ArrowUpIcon size={10} /> : <ArrowDownIcon size={10} />}
@@ -166,10 +166,10 @@ export const AnalyticsMainView: React.FC = () => {
                   </span>
                 </td>
                 <td className="py-3 pr-4 text-right text-[#94a3b8]">
-                  {formatNumber(token.volume24h, "en-US", 2, true)}
+                  {formatNumber(token.volume24h, 'en-US', 2, true)}
                 </td>
                 <td className="py-3 pr-4 text-right text-[#94a3b8]">
-                  {formatNumber(token.totalLiquidityUSD, "en-US", 2, true)}
+                  {formatNumber(token.totalLiquidityUSD, 'en-US', 2, true)}
                 </td>
               </>
             );
@@ -182,11 +182,11 @@ export const AnalyticsMainView: React.FC = () => {
         <SectionHeader title="Recent Transactions" />
         <Table<(typeof MOCK_TRANSACTIONS)[0]>
           headers={[
-            { label: "Type", align: "left" },
-            { label: "Pair", align: "left" },
-            { label: "Amount", align: "right" },
-            { label: "Account", align: "right" },
-            { label: "Time", align: "right" },
+            { label: 'Type', align: 'left' },
+            { label: 'Pair', align: 'left' },
+            { label: 'Amount', align: 'right' },
+            { label: 'Account', align: 'right' },
+            { label: 'Time', align: 'right' },
           ]}
           data={MOCK_TRANSACTIONS}
           renderRow={(tx) => (
@@ -198,7 +198,7 @@ export const AnalyticsMainView: React.FC = () => {
               </td>
               <td className="py-2 pr-4 text-[#94a3b8]">{tx.pair}</td>
               <td className="py-2 pr-4 text-right text-white">
-                ${formatNumber(tx.amountUSD, "en-US", 0)}
+                ${formatNumber(tx.amountUSD, 'en-US', 0)}
               </td>
               <td className="py-2 pr-4 text-right">
                 <span className="text-[#2962ff] flex items-center justify-end gap-1">

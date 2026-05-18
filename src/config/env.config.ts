@@ -1,5 +1,5 @@
-import { validateClientEnv } from "./env/client";
-import { validateServerEnv } from "./env/server";
+import { validateClientEnv } from './env/client';
+import { validateServerEnv } from './env/server';
 
 export function validateEnv() {
   const serverValidation = validateServerEnv();

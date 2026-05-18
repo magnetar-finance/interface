@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import { PrimaryButton } from "@/components/Button";
-import { AssetResponseType } from "@/config/github-assets.config";
-import { TokenSelectModal } from "@/ui/modals/TokenSelectModal";
-import { PlusIcon } from "lucide-react";
-import React, { useCallback, useMemo, useState } from "react";
-import { RangeDistributionChart } from "@/ui/charts/RangeDistributionChart";
-import { useAccount } from "wagmi";
-import { TokenInputRow } from "./components/TokenInputRow";
+import { PrimaryButton } from '@/components/Button';
+import { AssetResponseType } from '@/config/github-assets.config';
+import { TokenSelectModal } from '@/ui/modals/TokenSelectModal';
+import { PlusIcon } from 'lucide-react';
+import React, { useCallback, useMemo, useState } from 'react';
+import { RangeDistributionChart } from '@/ui/charts/RangeDistributionChart';
+import { useAccount } from 'wagmi';
+import { TokenInputRow } from './components/TokenInputRow';
 
 // Simulated distribution data for the Recharts graph
 const DATA_LENGTH = 40;
@@ -34,17 +34,17 @@ export const ConcentratedDepositView: React.FC<{
 
   const [tokenA, setTokenA] = useState<AssetResponseType[number] | null>(initialTokenA);
   const [tokenB, setTokenB] = useState<AssetResponseType[number] | null>(initialTokenB);
-  const [amountA, setAmountA] = useState("");
-  const [amountB, setAmountB] = useState("");
+  const [amountA, setAmountA] = useState('');
+  const [amountB, setAmountB] = useState('');
 
-  const [minPrice, setMinPrice] = useState("0.95");
-  const [maxPrice, setMaxPrice] = useState("1.05");
+  const [minPrice, setMinPrice] = useState('0.95');
+  const [maxPrice, setMaxPrice] = useState('1.05');
 
-  const [modalType, setModalType] = useState<"A" | "B" | null>(null);
+  const [modalType, setModalType] = useState<'A' | 'B' | null>(null);
 
   const handleTokenSelect = useCallback(
     (token: AssetResponseType[number]) => {
-      if (modalType === "A") {
+      if (modalType === 'A') {
         if (tokenB?.address === token.address) setTokenB(tokenA);
         setTokenA(token);
       } else {
@@ -58,18 +58,18 @@ export const ConcentratedDepositView: React.FC<{
   const isSupplyDisabled = useMemo(() => {
     if (!tokenA || !tokenB) return true;
     if (!amountA && !amountB) return true;
-    if (parseFloat(amountA || "0") <= 0 && parseFloat(amountB || "0") <= 0) return true;
+    if (parseFloat(amountA || '0') <= 0 && parseFloat(amountB || '0') <= 0) return true;
     if (!minPrice || !maxPrice || parseFloat(minPrice) >= parseFloat(maxPrice)) return true;
     return false;
   }, [tokenA, tokenB, amountA, amountB, minPrice, maxPrice]);
 
   const buttonText = useMemo(() => {
-    if (!isConnected) return "Connect Wallet";
-    if (!tokenA || !tokenB) return "Select tokens";
-    if (!amountA && !amountB) return "Enter an amount";
+    if (!isConnected) return 'Connect Wallet';
+    if (!tokenA || !tokenB) return 'Select tokens';
+    if (!amountA && !amountB) return 'Enter an amount';
     if (!minPrice || !maxPrice || parseFloat(minPrice) >= parseFloat(maxPrice))
-      return "Invalid Price Range";
-    return "Supply Concentrated Liquidity";
+      return 'Invalid Price Range';
+    return 'Supply Concentrated Liquidity';
   }, [isConnected, tokenA, tokenB, amountA, amountB, minPrice, maxPrice]);
 
   // Derive active bounds for the chart highlighting (MOCK calculation)
@@ -148,7 +148,7 @@ export const ConcentratedDepositView: React.FC<{
               />
             </div>
             <span className="text-[#64748b] text-[10px] font-mono mt-1 block">
-              {tokenB?.symbol || "B"} per {tokenA?.symbol || "A"}
+              {tokenB?.symbol || 'B'} per {tokenA?.symbol || 'A'}
             </span>
           </div>
 
@@ -165,7 +165,7 @@ export const ConcentratedDepositView: React.FC<{
               />
             </div>
             <span className="text-[#64748b] text-[10px] font-mono mt-1 block">
-              {tokenB?.symbol || "B"} per {tokenA?.symbol || "A"}
+              {tokenB?.symbol || 'B'} per {tokenA?.symbol || 'A'}
             </span>
           </div>
         </div>
@@ -174,8 +174,8 @@ export const ConcentratedDepositView: React.FC<{
         <div className="flex flex-wrap md:flex-nowrap gap-2 mt-4">
           <button
             onClick={() => {
-              setMinPrice("0.90");
-              setMaxPrice("1.10");
+              setMinPrice('0.90');
+              setMaxPrice('1.10');
             }}
             className="flex-1 py-1 px-2 border border-white/10 text-[#94a3b8] hover:border-[#2962ff]/50 hover:text-[#2962ff] text-xs font-mono font-bold transition-colors bg-black"
           >
@@ -183,8 +183,8 @@ export const ConcentratedDepositView: React.FC<{
           </button>
           <button
             onClick={() => {
-              setMinPrice("0.80");
-              setMaxPrice("1.20");
+              setMinPrice('0.80');
+              setMaxPrice('1.20');
             }}
             className="flex-1 py-1 px-2 border border-white/10 text-[#94a3b8] hover:border-[#2962ff]/50 hover:text-[#2962ff] text-xs font-mono font-bold transition-colors bg-black"
           >
@@ -192,10 +192,10 @@ export const ConcentratedDepositView: React.FC<{
           </button>
           <button
             onClick={() => {
-              setMinPrice("0.00");
-              setMaxPrice("Infinity");
+              setMinPrice('0.00');
+              setMaxPrice('Infinity');
             }}
-            className="flex-[2] py-1 px-2 border border-[#00ff9d]/30 text-[#00ff9d] hover:bg-[#00ff9d]/10 text-xs font-mono font-bold transition-colors bg-[#00ff9d]/5"
+            className="flex-2 py-1 px-2 border border-[#00ff9d]/30 text-[#00ff9d] hover:bg-[#00ff9d]/10 text-xs font-mono font-bold transition-colors bg-[#00ff9d]/5"
           >
             Full Range
           </button>
@@ -209,7 +209,7 @@ export const ConcentratedDepositView: React.FC<{
           token={tokenA}
           amount={amountA}
           onAmountChange={setAmountA}
-          onSelectClick={() => setModalType("A")}
+          onSelectClick={() => setModalType('A')}
         />
 
         {/* Plus Divider */}
@@ -227,7 +227,7 @@ export const ConcentratedDepositView: React.FC<{
           token={tokenB}
           amount={amountB}
           onAmountChange={setAmountB}
-          onSelectClick={() => setModalType("B")}
+          onSelectClick={() => setModalType('B')}
         />
       </div>
 
@@ -246,7 +246,7 @@ export const ConcentratedDepositView: React.FC<{
         open={modalType !== null}
         onOpenChange={(v) => !v && setModalType(null)}
         selectedToken={null}
-        disabledToken={modalType === "A" ? tokenB : tokenA}
+        disabledToken={modalType === 'A' ? tokenB : tokenA}
         onTokenSelect={handleTokenSelect}
       />
     </div>

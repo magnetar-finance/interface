@@ -1,9 +1,9 @@
-import React from "react";
+import React from 'react';
 
 export interface PageHeaderChip {
   label: string;
   /** "green" | "blue" | "amber" | "muted" */
-  color?: "green" | "blue" | "amber" | "muted";
+  color?: 'green' | 'blue' | 'amber' | 'muted';
 }
 
 interface PageHeaderProps {
@@ -13,19 +13,19 @@ interface PageHeaderProps {
   className?: string;
 }
 
-const CHIP_STYLES: Record<NonNullable<PageHeaderChip["color"]>, string> = {
-  green: "border-[#00ff9d]/40 text-[#00ff9d] bg-[#00ff9d]/10 shadow-[0_0_8px_rgba(0,255,157,0.15)]",
-  blue: "border-[#2962ff]/40 text-[#2962ff] bg-[#2962ff]/10 shadow-[0_0_8px_rgba(41,98,255,0.15)]",
+const CHIP_STYLES: Record<NonNullable<PageHeaderChip['color']>, string> = {
+  green: 'border-[#00ff9d]/40 text-[#00ff9d] bg-[#00ff9d]/10 shadow-[0_0_8px_rgba(0,255,157,0.15)]',
+  blue: 'border-[#2962ff]/40 text-[#2962ff] bg-[#2962ff]/10 shadow-[0_0_8px_rgba(41,98,255,0.15)]',
   amber:
-    "border-[#ffaf52]/40 text-[#ffaf52] bg-[#ffaf52]/10 shadow-[0_0_8px_rgba(255,175,82,0.15)]",
-  muted: "border-white/10 text-[#64748b] bg-white/5",
+    'border-[#ffaf52]/40 text-[#ffaf52] bg-[#ffaf52]/10 shadow-[0_0_8px_rgba(255,175,82,0.15)]',
+  muted: 'border-white/10 text-[#64748b] bg-white/5',
 };
 
 export const PageHeader: React.FC<PageHeaderProps> = ({
   title,
   subtitle,
   chips,
-  className = "",
+  className = '',
 }) => (
   <div className={`flex flex-col gap-2 w-full ${className}`}>
     {/* Title row */}
@@ -52,10 +52,10 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
             <span
               key={chip.label}
               className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 border text-[10px] font-mono font-bold uppercase tracking-widest ${
-                CHIP_STYLES[chip.color ?? "muted"]
+                CHIP_STYLES[chip.color ?? 'muted']
               }`}
             >
-              {chip.color === "green" && (
+              {chip.color === 'green' && (
                 <span className="w-1.5 h-1.5 rounded-full bg-[#00ff9d] animate-pulse inline-block" />
               )}
               {chip.label}

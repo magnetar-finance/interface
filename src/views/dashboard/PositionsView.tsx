@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import React, { useCallback, useMemo } from "react";
-import type { LiquidityPosition } from "@/utils/http-api";
-import { useDimensions } from "@/hooks/app";
-import { SCREEN_WIDTHS } from "@/constants";
-import { useAccountPositions, useAccountPositionStats } from "@/hooks/api";
-import { PrimaryButton } from "@/components/Button";
-import { FancyCard } from "@/components/Card";
-import { formatNumber } from "@/utils/numbers";
+import React, { useCallback, useMemo } from 'react';
+import type { LiquidityPosition } from '@/utils/http-api';
+import { useDimensions } from '@/hooks/app';
+import { SCREEN_WIDTHS } from '@/constants';
+import { useAccountPositions, useAccountPositionStats } from '@/hooks/api';
+import { PrimaryButton } from '@/components/Button';
+import { FancyCard } from '@/components/Card';
+import { formatNumber } from '@/utils/numbers';
 import {
   MoreVerticalIcon,
   ShieldPlusIcon,
@@ -15,11 +15,11 @@ import {
   PlusIcon,
   MinusIcon,
   DropletIcon,
-} from "lucide-react";
-import { DropdownMenu } from "radix-ui";
-import { Table } from "@/components/Table";
-import { useGHAssetsContext } from "@/contexts/github-assets";
-import Image from "next/image";
+} from 'lucide-react';
+import { DropdownMenu } from 'radix-ui';
+import { Table } from '@/components/Table';
+import { useGHAssetsContext } from '@/contexts/github-assets';
+import Image from 'next/image';
 
 function positionToUSD(position: LiquidityPosition) {
   const { totalSupply, reserveUSD } = position.pool;
@@ -56,16 +56,16 @@ export const PositionsView: React.FC = () => {
             headers={
               isMobile
                 ? [
-                    { label: "Pool", align: "left" },
-                    { label: "Value", align: "right" },
-                    { label: "Actions", align: "right" },
+                    { label: 'Pool', align: 'left' },
+                    { label: 'Value', align: 'right' },
+                    { label: 'Actions', align: 'right' },
                   ]
                 : [
-                    { label: "Pool", align: "left" },
-                    { label: "Value", align: "right" },
-                    { label: "APR", align: "right" },
-                    { label: "Unclaimed Fees", align: "right" },
-                    { label: "Actions", align: "right" },
+                    { label: 'Pool', align: 'left' },
+                    { label: 'Value', align: 'right' },
+                    { label: 'APR', align: 'right' },
+                    { label: 'Unclaimed Fees', align: 'right' },
+                    { label: 'Actions', align: 'right' },
                   ]
             }
             data={positions}
@@ -111,7 +111,7 @@ export const PositionsView: React.FC = () => {
                     </div>
                   </td>
                   <td className="py-3 pr-4 text-white font-bold text-right w-1/4">
-                    ${formatNumber(positionToUSD(item), "en-US", 2, true)}
+                    ${formatNumber(positionToUSD(item), 'en-US', 2, true)}
                   </td>
                   {!isMobile && (
                     <>
@@ -119,7 +119,7 @@ export const PositionsView: React.FC = () => {
                         {item.pool.gauge?.rewardRate || 0}%
                       </td>
                       <td className="py-3 pr-4 text-[#ffaf52] text-right font-bold w-1/6">
-                        ${formatNumber(item.pool.totalFeesUSD, "en-US", 2, true)}
+                        ${formatNumber(item.pool.totalFeesUSD, 'en-US', 2, true)}
                       </td>
                     </>
                   )}

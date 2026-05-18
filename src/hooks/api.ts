@@ -1,8 +1,8 @@
-import { API_QUERY_SETTINGS } from "@/constants";
-import { Fetcher, PoolType } from "@/utils/http-api";
-import { useQuery } from "@tanstack/react-query";
-import { zeroAddress } from "viem";
-import { useChainId, useAccount } from "wagmi";
+import { API_QUERY_SETTINGS } from '@/constants';
+import { Fetcher, PoolType } from '@/utils/http-api';
+import { useQuery } from '@tanstack/react-query';
+import { zeroAddress } from 'viem';
+import { useChainId, useAccount } from 'wagmi';
 
 const baseFetcher = new Fetcher();
 

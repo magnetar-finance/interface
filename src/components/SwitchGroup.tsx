@@ -18,11 +18,11 @@ export const SwitchGroup: React.FC<SwitchGroupProps> = ({
         key={index}
         onClick={() => onSwitchClicked?.(index)}
         className={`hover:bg-white hover:text-black px-2 sm:px-4 py-1 flex justify-center items-center font-semibold transition-colors text-xs sm:text-sm${
-          fullWidth ? " flex-1 min-w-0 truncate" : ""
+          fullWidth ? ' flex-1 min-w-0 truncate' : ''
         } ${
           index === activeSwitchIndex
-            ? "border border-[#2962ff] text-[#2962ff] bg-[#2962ff]/10"
-            : "bg-transparent text-[#94a3b8] border border-transparent"
+            ? 'border border-[#2962ff] text-[#2962ff] bg-[#2962ff]/10'
+            : 'bg-transparent text-[#94a3b8] border border-transparent'
         }`}
       >
         {label}
