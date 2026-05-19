@@ -7,6 +7,7 @@ export const MIN_IN_SEC = 3600;
 export const REFETCH_INTERVALS = 10000;
 export const V3_SQRT_PRICE_BASIS = BigInt(Math.pow(2, 96));
 export const V3_TICK_BASIS = 1.0001;
+export const BI_ZERO = BigInt(0);
 
 export const CHAINS = {
   ARC_TESTNET: 5042002,
@@ -30,6 +31,7 @@ export const SCREEN_WIDTHS = {
 export const OP_SETTINGS = {
   default_gql_items_limit: 1000,
   default_refetch_interval: 30000, // 30 seconds
+  default_tick_interval: 10000, // 10 seconds
 };
 export const API_QUERY_SETTINGS = {
   default_pools_per_page: 10,
@@ -63,4 +65,10 @@ export const V3_SWAP_EXECUTORS: { [key: number]: `0x${string}` } = {
 };
 export const WETH: { [key: number]: `0x${string}` } = {
   [CHAINS.ARC_TESTNET]: '0x911b4000D3422F482F4062a913885f7b035382Df',
+};
+export const V2_FACTORY: { [key: number]: `0x${string}` } = {
+  [CHAINS.ARC_TESTNET]: '0xE41d241720FEE7cD6BDfA9aB3204d23687703CD5',
+};
+export const ORACLE: { [key: number]: `0x${string}` } = {
+  [CHAINS.ARC_TESTNET]: '0xF6a7F229447FB986195c4dC8305553C8A8518d06',
 };
