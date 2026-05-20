@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Bar, BarChart, Cell, ResponsiveContainer } from 'recharts';
 
 export interface RangeDistributionChartProps {
-  data: { value: number }[];
+  data: { value: number; tick: number }[];
   chartMinIndex: number;
   chartMaxIndex: number;
   activeColor?: string;
@@ -30,18 +30,16 @@ export const RangeDistributionChart: React.FC<RangeDistributionChartProps> = ({
   const dragTarget = useRef<DragTarget>(null);
   const [isDragging, setIsDragging] = useState<DragTarget>(null);
 
-  /**
-   * Convert a pointer clientX into a bar index, clamped to [0, data.length-1].
-   */
-  const clientXToIndex = useCallback(
+  const clientXToTick = useCallback(
     (clientX: number): number => {
       const el = wrapperRef.current;
-      if (!el) return 0;
+      if (!el || data.length === 0) return 0;
       const rect = el.getBoundingClientRect();
       const ratio = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
-      return Math.round(ratio * (data.length - 1));
+      const arrIndex = Math.round(ratio * (data.length - 1));
+      return data[arrIndex].tick;
     },
-    [data.length],
+    [data],
   );
 
   const handlePointerDown = useCallback((e: React.PointerEvent, target: 'min' | 'max') => {
@@ -55,19 +53,19 @@ export const RangeDistributionChart: React.FC<RangeDistributionChartProps> = ({
   const handlePointerMove = useCallback(
     (e: PointerEvent) => {
       if (!dragTarget.current) return;
-      const newIndex = clientXToIndex(e.clientX);
+      const newTick = clientXToTick(e.clientX);
 
       if (dragTarget.current === 'min') {
         // min can't go past max-1
-        const clamped = Math.min(newIndex, chartMaxIndex - 1);
+        const clamped = Math.min(newTick, chartMaxIndex - 1);
         onMinIndexChange?.(clamped);
       } else {
         // max can't go below min+1
-        const clamped = Math.max(newIndex, chartMinIndex + 1);
+        const clamped = Math.max(newTick, chartMinIndex + 1);
         onMaxIndexChange?.(clamped);
       }
     },
-    [clientXToIndex, chartMinIndex, chartMaxIndex, onMinIndexChange, onMaxIndexChange],
+    [clientXToTick, chartMinIndex, chartMaxIndex, onMinIndexChange, onMaxIndexChange],
   );
 
   const handlePointerUp = useCallback(() => {
@@ -89,9 +87,31 @@ export const RangeDistributionChart: React.FC<RangeDistributionChartProps> = ({
     };
   }, [handlePointerMove, handlePointerUp]);
 
-  // Percentage positions for the handle lines
-  const minPct = (chartMinIndex / (data.length - 1)) * 100;
-  const maxPct = (chartMaxIndex / (data.length - 1)) * 100;
+  const minTick = data[0]?.tick ?? 0;
+  const maxTick = data[data.length - 1]?.tick ?? 1;
+  const range = maxTick - minTick || 1;
+
+  const getIndexForTick = (tick: number) => {
+    if (data.length === 0) return 0;
+    if (tick <= data[0].tick) return 0;
+    if (tick >= data[data.length - 1].tick) return data.length - 1;
+
+    for (let i = 0; i < data.length - 1; i++) {
+      if (tick >= data[i].tick && tick <= data[i + 1].tick) {
+        const segmentSpan = data[i + 1].tick - data[i].tick;
+        if (segmentSpan === 0) return i;
+        const t = (tick - data[i].tick) / segmentSpan;
+        return i + t;
+      }
+    }
+    return data.length - 1;
+  };
+
+  const visualMinIndex = getIndexForTick(Math.max(minTick, Math.min(chartMinIndex, maxTick)));
+  const visualMaxIndex = getIndexForTick(Math.max(minTick, Math.min(chartMaxIndex, maxTick)));
+
+  const minPct = (visualMinIndex / Math.max(1, data.length - 1)) * 100;
+  const maxPct = (visualMaxIndex / Math.max(1, data.length - 1)) * 100;
 
   const canInteract = !!(onMinIndexChange || onMaxIndexChange);
 
@@ -105,11 +125,13 @@ export const RangeDistributionChart: React.FC<RangeDistributionChartProps> = ({
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
           <Bar dataKey="value" isAnimationActive={false}>
-            {data.map((_, index) => (
+            {data.map((entry, index) => (
               <Cell
                 key={`cell-${index}`}
                 fill={
-                  index >= chartMinIndex && index <= chartMaxIndex ? activeColor : inactiveColor
+                  entry.tick >= chartMinIndex && entry.tick <= chartMaxIndex
+                    ? activeColor
+                    : inactiveColor
                 }
               />
             ))}
@@ -146,7 +168,7 @@ export const RangeDistributionChart: React.FC<RangeDistributionChartProps> = ({
           />
           {/* grip bar */}
           <div
-            className="w-1.5 h-5 rounded-sm mb-1 flex-shrink-0"
+            className="w-1.5 h-5 rounded-sm mb-1 shrink-0"
             style={{ background: '#F5F5F5', boxShadow: '0 0 6px rgba(245,245,245,0.4)' }}
           />
         </div>
@@ -171,7 +193,7 @@ export const RangeDistributionChart: React.FC<RangeDistributionChartProps> = ({
           />
           {/* grip bar */}
           <div
-            className="w-1.5 h-5 rounded-sm mb-1 flex-shrink-0"
+            className="w-1.5 h-5 rounded-sm mb-1 shrink-0"
             style={{ background: '#F5F5F5', boxShadow: '0 0 6px rgba(245,245,245,0.4)' }}
           />
         </div>

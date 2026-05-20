@@ -195,9 +195,7 @@ export const StandardDepositView: React.FC<{
           amount={amountA}
           onAmountChange={setAmountA}
           onSelectClick={() => setModalType(SelectModalType.TOKEN_A)}
-          usdValue={
-            amountA ? `≈ ${formatNumber(formatUnits(amountAUSD, 18), 'en-US', 3)}` : '$0.00'
-          }
+          usdValue={amountA ? `${formatNumber(formatUnits(amountAUSD, 18), 'en-US', 3)}` : '0.00'}
           balance={balanceA ? formatUnits(balanceA, tokenA?.decimals ?? 18) : '0.00'}
         />
 
@@ -217,9 +215,7 @@ export const StandardDepositView: React.FC<{
           amount={amountB}
           onAmountChange={setAmountB}
           onSelectClick={() => setModalType(SelectModalType.TOKEN_B)}
-          usdValue={
-            amountB ? `≈ ${formatNumber(formatUnits(amountBUSD, 18), 'en-US', 3)}` : '$0.00'
-          }
+          usdValue={amountB ? `${formatNumber(formatUnits(amountBUSD, 18), 'en-US', 3)}` : '0.00'}
           balance={balanceB ? formatUnits(balanceB, tokenB?.decimals ?? 18) : '0.00'}
         />
       </div>

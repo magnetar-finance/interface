@@ -5,7 +5,7 @@ export const BASE_POINT = 1000;
 export const LARGE_BASE_POINT = 10000;
 export const MIN_IN_SEC = 3600;
 export const REFETCH_INTERVALS = 10000;
-export const V3_SQRT_PRICE_BASIS = BigInt(Math.pow(2, 96));
+export const V3_SQRT_PRICE_BASIS = Math.pow(2, 96);
 export const V3_TICK_BASIS = 1.0001;
 export const BI_ZERO = BigInt(0);
 
@@ -52,7 +52,7 @@ export const V2_ROUTERS: { [key: number]: `0x${string}` } = {
   [CHAINS.ARC_TESTNET]: '0x7961c29F9007ADbE089c1C4163a77e453A960583',
 };
 export const NFPM: { [key: number]: `0x${string}` } = {
-  [CHAINS.ARC_TESTNET]: '0x24e95fe9fF4D4F988911cfd9A5D9443b3E640C22',
+  [CHAINS.ARC_TESTNET]: '0x8948f9d59203F9dCF4de4B2baa10887993274C3C',
 };
 export const AUTO_SWAP_EXECUTORS: { [key: number]: `0x${string}` } = {
   [CHAINS.ARC_TESTNET]: '0x3562cceE39adc7465f1bAed088043C5C5B41e4e6',
@@ -68,6 +68,9 @@ export const WETH: { [key: number]: `0x${string}` } = {
 };
 export const V2_FACTORY: { [key: number]: `0x${string}` } = {
   [CHAINS.ARC_TESTNET]: '0xE41d241720FEE7cD6BDfA9aB3204d23687703CD5',
+};
+export const V3_FACTORY: { [key: number]: `0x${string}` } = {
+  [CHAINS.ARC_TESTNET]: '0xf6a6a429a0b9676293Df0E3616A6a33cA673b5C3',
 };
 export const ORACLE: { [key: number]: `0x${string}` } = {
   [CHAINS.ARC_TESTNET]: '0xF6a7F229447FB986195c4dC8305553C8A8518d06',

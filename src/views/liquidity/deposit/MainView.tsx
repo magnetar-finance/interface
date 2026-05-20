@@ -10,6 +10,8 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { ConcentratedDepositView } from './ConcentratedDepositView';
 import { StandardDepositView } from './StandardDepositView';
+import { useAtom } from 'jotai';
+import { deadlineAtom, slippageToleranceAtom } from '@/store';
 
 export const MainView: React.FC = () => {
   const router = useRouter();
@@ -24,8 +26,8 @@ export const MainView: React.FC = () => {
 
   // Settings
   const [showSettings, setShowSettings] = useState(false);
-  const [slippage, setSlippage] = useState('0.5');
-  const [deadline, setDeadline] = useState('20');
+  const [slippage, setSlippage] = useAtom(slippageToleranceAtom);
+  const [deadline, setDeadline] = useAtom(deadlineAtom);
 
   // Parse URL Parameters once
   useEffect(() => {
@@ -86,12 +88,12 @@ export const MainView: React.FC = () => {
                     Slippage Tolerance
                   </span>
                   <div className="flex gap-2">
-                    {['0.1', '0.5', '1.0'].map((val) => (
+                    {['0.1', '0.25', '0.5', '1.0'].map((val) => (
                       <button
                         key={val}
-                        onClick={() => setSlippage(val)}
+                        onClick={() => setSlippage(parseFloat(val))}
                         className={`px-3 py-1.5 text-xs font-mono font-bold transition-colors ${
-                          slippage === val
+                          slippage === parseFloat(val)
                             ? 'bg-[#2962ff] text-white'
                             : 'bg-black border border-white/10 text-[#94a3b8] hover:border-[#2962ff]/50'
                         }`}
@@ -104,8 +106,8 @@ export const MainView: React.FC = () => {
                         type="text"
                         className="bg-transparent text-[#00ff9d] text-xs font-mono w-full outline-none text-right placeholder:text-[#64748b]/50 border-none ring-0 focus:outline-none"
                         placeholder="Custom"
-                        value={['0.1', '0.5', '1.0'].includes(slippage) ? '' : slippage}
-                        onChange={(e) => setSlippage(e.target.value)}
+                        value={['0.1', '0.5', '1.0'].includes(slippage.toString()) ? '' : slippage}
+                        onChange={(e) => setSlippage(parseFloat(e.target.value) || 0)}
                       />
                       <span className="text-[#2962ff] text-xs font-bold ml-1">%</span>
                     </div>
@@ -118,7 +120,7 @@ export const MainView: React.FC = () => {
                   <input
                     type="number"
                     value={deadline}
-                    onChange={(e) => setDeadline(e.target.value)}
+                    onChange={(e) => setDeadline(parseInt(e.target.value) || 0)}
                     className="bg-black border border-white/10 px-3 py-1.5 text-[#00ff9d] text-xs font-mono w-20 outline-none focus:border-[#2962ff] transition-colors text-right border-none ring-0"
                   />
                 </div>
