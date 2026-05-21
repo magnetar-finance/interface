@@ -1,6 +1,7 @@
 'use client';
 
 import { AssetResponseType } from '@/config/github-assets.config';
+import { formatNumber } from '@/utils';
 import Image from 'next/image';
 import React from 'react';
 
@@ -28,7 +29,7 @@ export const TokenInputRow: React.FC<TokenInputRowProps> = ({
       <div className="flex justify-between items-center mb-3">
         <span className="text-[#64748b] text-xs font-bold tracking-widest uppercase">{label}</span>
         <div className="text-xs text-[#64748b] flex gap-2">
-          <span>Balance: {balance}</span>
+          <span>Balance: {formatNumber(balance, 'en-US', 3)}</span>
           <button
             onClick={() => onAmountChange(balance)}
             className="text-[#2962ff] font-bold hover:text-[#00ff9d] transition-colors uppercase cursor-pointer"
