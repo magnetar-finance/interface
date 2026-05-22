@@ -1,6 +1,6 @@
-import { XIcon } from "lucide-react";
-import { Dialog } from "radix-ui";
-import React from "react";
+import { XIcon } from 'lucide-react';
+import { Dialog } from 'radix-ui';
+import React from 'react';
 
 interface ModalProps {
   open: boolean;
@@ -15,7 +15,7 @@ export const Modal: React.FC<ModalProps> = ({
   onOpenChange,
   title,
   children,
-  className = "",
+  className = '',
 }) => {
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>

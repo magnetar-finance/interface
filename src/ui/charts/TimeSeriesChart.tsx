@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   Area,
   AreaChart,
@@ -9,10 +9,10 @@ import {
   Tooltip,
   XAxis,
   YAxis,
-} from "recharts";
-import { formatNumber } from "@/utils/numbers";
+} from 'recharts';
+import { formatNumber } from '@/utils/numbers';
 
-export type Timeframe = "1D" | "7D" | "30D";
+export type Timeframe = '1D' | '7D' | '30D';
 
 export interface TimeSeriesDataPoint {
   date: string;
@@ -28,7 +28,7 @@ export interface TimeSeriesChartProps {
   height?: number;
 }
 
-const TIMEFRAMES: Timeframe[] = ["1D", "7D", "30D"];
+const TIMEFRAMES: Timeframe[] = ['1D', '7D', '30D'];
 
 const CustomTooltip = ({
   active,
@@ -54,14 +54,14 @@ const CustomTooltip = ({
 
 export const TimeSeriesChart: React.FC<TimeSeriesChartProps> = ({
   data,
-  dataKey = "value",
-  color = "#2962ff",
-  formatValue = (v) => formatNumber(v, "en-US", 2, true),
+  dataKey = 'value',
+  color = '#2962ff',
+  formatValue = (v) => formatNumber(v, 'en-US', 2, true),
   height = 200,
 }) => {
-  const [timeframe, setTimeframe] = useState<Timeframe>("7D");
+  const [timeframe, setTimeframe] = useState<Timeframe>('7D');
   const chartData = data[timeframe];
-  const gradientId = `gradient-${color.replace("#", "")}`;
+  const gradientId = `gradient-${color.replace('#', '')}`;
 
   return (
     <div className="w-full flex flex-col gap-3">
@@ -73,8 +73,8 @@ export const TimeSeriesChart: React.FC<TimeSeriesChartProps> = ({
             onClick={() => setTimeframe(tf)}
             className={`px-2 py-0.5 text-[10px] font-mono font-bold uppercase tracking-widest transition-colors border ${
               timeframe === tf
-                ? "border-[#2962ff] text-[#2962ff] bg-[#2962ff]/10"
-                : "border-white/10 text-[#64748b] hover:border-white/30 hover:text-white"
+                ? 'border-[#2962ff] text-[#2962ff] bg-[#2962ff]/10'
+                : 'border-white/10 text-[#64748b] hover:border-white/30 hover:text-white'
             }`}
           >
             {tf}
@@ -93,21 +93,21 @@ export const TimeSeriesChart: React.FC<TimeSeriesChartProps> = ({
           <CartesianGrid stroke="rgba(255,255,255,0.04)" vertical={false} />
           <XAxis
             dataKey="date"
-            tick={{ fill: "#64748b", fontSize: 10, fontFamily: "monospace" }}
+            tick={{ fill: '#64748b', fontSize: 10, fontFamily: 'monospace' }}
             axisLine={false}
             tickLine={false}
             interval="preserveStartEnd"
           />
           <YAxis
-            tick={{ fill: "#64748b", fontSize: 10, fontFamily: "monospace" }}
+            tick={{ fill: '#64748b', fontSize: 10, fontFamily: 'monospace' }}
             axisLine={false}
             tickLine={false}
-            tickFormatter={(v) => formatNumber(v, "en-US", 1, true)}
+            tickFormatter={(v) => formatNumber(v, 'en-US', 1, true)}
             width={52}
           />
           <Tooltip
             content={<CustomTooltip color={color} formatValue={formatValue} />}
-            cursor={{ stroke: color, strokeWidth: 1, strokeDasharray: "4 4" }}
+            cursor={{ stroke: color, strokeWidth: 1, strokeDasharray: '4 4' }}
           />
           <Area
             type="monotone"

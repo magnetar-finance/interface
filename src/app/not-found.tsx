@@ -1,6 +1,6 @@
-import Link from "next/link";
-import { TerminalIcon, HomeIcon, RefreshCwIcon } from "lucide-react";
-import { PrimaryButton, SecondaryButton } from "@/components/Button";
+import Link from 'next/link';
+import { TerminalIcon, HomeIcon, RefreshCwIcon } from 'lucide-react';
+import { PrimaryButton, SecondaryButton } from '@/components/Button';
 
 export default function NotFound() {
   return (
@@ -26,7 +26,7 @@ export default function NotFound() {
           </h1>
           <h1
             className="text-8xl md:text-9xl/[0.8] font-extrabold tracking-tighter text-[#00ff9d] absolute top-0 -left-1 blur-sm opacity-30 mix-blend-screen animate-pulse pointer-events-none"
-            style={{ animationDelay: "150ms" }}
+            style={{ animationDelay: '150ms' }}
           >
             404
           </h1>
@@ -57,15 +57,15 @@ export default function NotFound() {
 
             <div className="space-y-1 block opacity-80">
               <p className="text-[#ffaf52]">
-                <span className="text-[#64748b]">at</span> Router.navigate{" "}
+                <span className="text-[#64748b]">at</span> Router.navigate{' '}
                 <span className="text-[#64748b]">(magnetar/core/router:42)</span>
               </p>
               <p className="text-[#ffaf52]">
-                <span className="text-[#64748b]">at</span> Blockchain.locateSector{" "}
+                <span className="text-[#64748b]">at</span> Blockchain.locateSector{' '}
                 <span className="text-[#64748b]">(0x00000000)</span>
               </p>
               <p className="text-[#ffaf52]">
-                <span className="text-[#64748b]">at</span> Network.resolve{" "}
+                <span className="text-[#64748b]">at</span> Network.resolve{' '}
                 <span className="text-[#64748b]">[FAILED]</span>
               </p>
             </div>

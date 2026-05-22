@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import { AssetResponseType } from "@/config/github-assets.config";
-import { useGHAssetsContext } from "@/contexts/github-assets";
-import { SearchIcon, XIcon } from "lucide-react";
-import Image from "next/image";
-import { Modal } from "@/components/Modal";
-import React, { useMemo, useState } from "react";
+import { AssetResponseType } from '@/config/github-assets.config';
+import { useGHAssetsContext } from '@/contexts/github-assets';
+import { SearchIcon, XIcon } from 'lucide-react';
+import Image from 'next/image';
+import { Modal } from '@/components/Modal';
+import React, { useMemo, useState } from 'react';
 
 interface TokenSelectModalProps {
   open: boolean;
@@ -23,7 +23,7 @@ export const TokenSelectModal: React.FC<TokenSelectModalProps> = ({
   onTokenSelect,
 }) => {
   const { assets, isLoading } = useGHAssetsContext();
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
 
   const filteredAssets = useMemo(() => {
     if (!search.trim()) return assets;
@@ -39,7 +39,7 @@ export const TokenSelectModal: React.FC<TokenSelectModalProps> = ({
   const handleSelect = (token: AssetResponseType[number]) => {
     onTokenSelect(token);
     onOpenChange(false);
-    setSearch("");
+    setSearch('');
   };
 
   return (
@@ -56,7 +56,7 @@ export const TokenSelectModal: React.FC<TokenSelectModalProps> = ({
             autoFocus
           />
           {search && (
-            <button onClick={() => setSearch("")} className="text-[#64748b] hover:text-white">
+            <button onClick={() => setSearch('')} className="text-[#64748b] hover:text-white">
               <XIcon size={12} />
             </button>
           )}
@@ -85,10 +85,10 @@ export const TokenSelectModal: React.FC<TokenSelectModalProps> = ({
                 className={`w-full flex justify-between items-center px-5 py-3 transition-colors
                       ${
                         isSelected
-                          ? "bg-[#2962ff]/20 text-[#2962ff]"
-                          : "text-white hover:bg-white/5"
+                          ? 'bg-[#2962ff]/20 text-[#2962ff]'
+                          : 'text-white hover:bg-white/5'
                       }
-                      ${isDisabled ? "opacity-30 cursor-not-allowed" : "cursor-pointer"}`}
+                      ${isDisabled ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer'}`}
               >
                 <div className="flex items-center gap-3">
                   {token.logoURI ? (

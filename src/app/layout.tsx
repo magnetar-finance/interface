@@ -1,21 +1,21 @@
-import "./globals.css";
-import "@rainbow-me/rainbowkit/styles.css";
-import type { Metadata } from "next";
-import { Fira_Code } from "next/font/google";
-import { Sidebar } from "@/partials/Sidebar";
-import { StickyMobileNavbar } from "@/partials/StickyMobileNavbar";
-import { Header } from "@/partials/Header";
-import { Providers } from "./providers";
+import './globals.css';
+import '@rainbow-me/rainbowkit/styles.css';
+import type { Metadata } from 'next';
+import { Fira_Code } from 'next/font/google';
+import { Sidebar } from '@/partials/Sidebar';
+import { StickyMobileNavbar } from '@/partials/StickyMobileNavbar';
+import { Header } from '@/partials/Header';
+import { Providers } from './providers';
 
 const firaCode = Fira_Code({
-  variable: "--font-fira-code",
-  subsets: ["latin"],
+  variable: '--font-fira-code',
+  subsets: ['latin'],
 });
 
 export const metadata: Metadata = {
-  title: "Magnetar Finance | MetaDEX on EVM",
+  title: 'Magnetar Finance | MetaDEX on EVM',
   description:
-    "Magnetar Finance combines features of Uniswap and Curve to create a powerful MetaDEX on EVM, enabling users to find the best prices across multiple liquidity sources with ease.",
+    'Magnetar Finance combines features of Uniswap and Curve to create a powerful MetaDEX on EVM, enabling users to find the best prices across multiple liquidity sources with ease.',
 };
 
 export default function RootLayout({

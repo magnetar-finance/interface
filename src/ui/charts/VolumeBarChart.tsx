@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   Bar,
   BarChart,
@@ -10,10 +10,10 @@ import {
   Tooltip,
   XAxis,
   YAxis,
-} from "recharts";
-import { formatNumber } from "@/utils/numbers";
+} from 'recharts';
+import { formatNumber } from '@/utils/numbers';
 
-export type Timeframe = "1D" | "7D" | "30D";
+export type Timeframe = '1D' | '7D' | '30D';
 
 export interface VolumeDataPoint {
   date: string;
@@ -27,7 +27,7 @@ export interface VolumeBarChartProps {
   height?: number;
 }
 
-const TIMEFRAMES: Timeframe[] = ["1D", "7D", "30D"];
+const TIMEFRAMES: Timeframe[] = ['1D', '7D', '30D'];
 
 const CustomTooltip = ({
   active,
@@ -53,11 +53,11 @@ const CustomTooltip = ({
 
 export const VolumeBarChart: React.FC<VolumeBarChartProps> = ({
   data,
-  color = "#00ff9d",
-  formatValue = (v) => formatNumber(v, "en-US", 2, true),
+  color = '#00ff9d',
+  formatValue = (v) => formatNumber(v, 'en-US', 2, true),
   height = 200,
 }) => {
-  const [timeframe, setTimeframe] = useState<Timeframe>("7D");
+  const [timeframe, setTimeframe] = useState<Timeframe>('7D');
   const chartData = data[timeframe];
 
   return (
@@ -70,8 +70,8 @@ export const VolumeBarChart: React.FC<VolumeBarChartProps> = ({
             onClick={() => setTimeframe(tf)}
             className={`px-2 py-0.5 text-[10px] font-mono font-bold uppercase tracking-widest transition-colors border ${
               timeframe === tf
-                ? "border-[#00ff9d] text-[#00ff9d] bg-[#00ff9d]/10"
-                : "border-white/10 text-[#64748b] hover:border-white/30 hover:text-white"
+                ? 'border-[#00ff9d] text-[#00ff9d] bg-[#00ff9d]/10'
+                : 'border-white/10 text-[#64748b] hover:border-white/30 hover:text-white'
             }`}
           >
             {tf}
@@ -84,21 +84,21 @@ export const VolumeBarChart: React.FC<VolumeBarChartProps> = ({
           <CartesianGrid stroke="rgba(255,255,255,0.04)" vertical={false} />
           <XAxis
             dataKey="date"
-            tick={{ fill: "#64748b", fontSize: 10, fontFamily: "monospace" }}
+            tick={{ fill: '#64748b', fontSize: 10, fontFamily: 'monospace' }}
             axisLine={false}
             tickLine={false}
             interval="preserveStartEnd"
           />
           <YAxis
-            tick={{ fill: "#64748b", fontSize: 10, fontFamily: "monospace" }}
+            tick={{ fill: '#64748b', fontSize: 10, fontFamily: 'monospace' }}
             axisLine={false}
             tickLine={false}
-            tickFormatter={(v) => formatNumber(v, "en-US", 1, true)}
+            tickFormatter={(v) => formatNumber(v, 'en-US', 1, true)}
             width={52}
           />
           <Tooltip
             content={<CustomTooltip color={color} formatValue={formatValue} />}
-            cursor={{ fill: "rgba(255,255,255,0.03)" }}
+            cursor={{ fill: 'rgba(255,255,255,0.03)' }}
           />
           <Bar dataKey="value" isAnimationActive={false} radius={[2, 2, 0, 0]}>
             {chartData.map((_, i) => (

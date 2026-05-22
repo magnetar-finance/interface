@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Bar, BarChart, Cell, ResponsiveContainer } from "recharts";
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Bar, BarChart, Cell, ResponsiveContainer } from 'recharts';
 
 export interface RangeDistributionChartProps {
-  data: { value: number }[];
+  data: { value: number; tick: number }[];
   chartMinIndex: number;
   chartMaxIndex: number;
   activeColor?: string;
@@ -15,14 +15,14 @@ export interface RangeDistributionChartProps {
   onMaxIndexChange?: (index: number) => void;
 }
 
-type DragTarget = "min" | "max" | null;
+type DragTarget = 'min' | 'max' | null;
 
 export const RangeDistributionChart: React.FC<RangeDistributionChartProps> = ({
   data,
   chartMinIndex,
   chartMaxIndex,
-  activeColor = "#2962ff",
-  inactiveColor = "rgba(255,255,255,0.05)",
+  activeColor = '#2962ff',
+  inactiveColor = 'rgba(255,255,255,0.05)',
   onMinIndexChange,
   onMaxIndexChange,
 }) => {
@@ -30,21 +30,19 @@ export const RangeDistributionChart: React.FC<RangeDistributionChartProps> = ({
   const dragTarget = useRef<DragTarget>(null);
   const [isDragging, setIsDragging] = useState<DragTarget>(null);
 
-  /**
-   * Convert a pointer clientX into a bar index, clamped to [0, data.length-1].
-   */
-  const clientXToIndex = useCallback(
+  const clientXToTick = useCallback(
     (clientX: number): number => {
       const el = wrapperRef.current;
-      if (!el) return 0;
+      if (!el || data.length === 0) return 0;
       const rect = el.getBoundingClientRect();
       const ratio = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
-      return Math.round(ratio * (data.length - 1));
+      const arrIndex = Math.round(ratio * (data.length - 1));
+      return data[arrIndex].tick;
     },
-    [data.length],
+    [data],
   );
 
-  const handlePointerDown = useCallback((e: React.PointerEvent, target: "min" | "max") => {
+  const handlePointerDown = useCallback((e: React.PointerEvent, target: 'min' | 'max') => {
     e.preventDefault();
     e.stopPropagation();
     (e.currentTarget as Element).setPointerCapture(e.pointerId);
@@ -55,19 +53,19 @@ export const RangeDistributionChart: React.FC<RangeDistributionChartProps> = ({
   const handlePointerMove = useCallback(
     (e: PointerEvent) => {
       if (!dragTarget.current) return;
-      const newIndex = clientXToIndex(e.clientX);
+      const newTick = clientXToTick(e.clientX);
 
-      if (dragTarget.current === "min") {
+      if (dragTarget.current === 'min') {
         // min can't go past max-1
-        const clamped = Math.min(newIndex, chartMaxIndex - 1);
+        const clamped = Math.min(newTick, chartMaxIndex - 1);
         onMinIndexChange?.(clamped);
       } else {
         // max can't go below min+1
-        const clamped = Math.max(newIndex, chartMinIndex + 1);
+        const clamped = Math.max(newTick, chartMinIndex + 1);
         onMaxIndexChange?.(clamped);
       }
     },
-    [clientXToIndex, chartMinIndex, chartMaxIndex, onMinIndexChange, onMaxIndexChange],
+    [clientXToTick, chartMinIndex, chartMaxIndex, onMinIndexChange, onMaxIndexChange],
   );
 
   const handlePointerUp = useCallback(() => {
@@ -79,19 +77,41 @@ export const RangeDistributionChart: React.FC<RangeDistributionChartProps> = ({
   useEffect(() => {
     const el = wrapperRef.current;
     if (!el) return;
-    el.addEventListener("pointermove", handlePointerMove);
-    el.addEventListener("pointerup", handlePointerUp);
-    el.addEventListener("pointercancel", handlePointerUp);
+    el.addEventListener('pointermove', handlePointerMove);
+    el.addEventListener('pointerup', handlePointerUp);
+    el.addEventListener('pointercancel', handlePointerUp);
     return () => {
-      el.removeEventListener("pointermove", handlePointerMove);
-      el.removeEventListener("pointerup", handlePointerUp);
-      el.removeEventListener("pointercancel", handlePointerUp);
+      el.removeEventListener('pointermove', handlePointerMove);
+      el.removeEventListener('pointerup', handlePointerUp);
+      el.removeEventListener('pointercancel', handlePointerUp);
     };
   }, [handlePointerMove, handlePointerUp]);
 
-  // Percentage positions for the handle lines
-  const minPct = (chartMinIndex / (data.length - 1)) * 100;
-  const maxPct = (chartMaxIndex / (data.length - 1)) * 100;
+  const minTick = data[0]?.tick ?? 0;
+  const maxTick = data[data.length - 1]?.tick ?? 1;
+  const range = maxTick - minTick || 1;
+
+  const getIndexForTick = (tick: number) => {
+    if (data.length === 0) return 0;
+    if (tick <= data[0].tick) return 0;
+    if (tick >= data[data.length - 1].tick) return data.length - 1;
+
+    for (let i = 0; i < data.length - 1; i++) {
+      if (tick >= data[i].tick && tick <= data[i + 1].tick) {
+        const segmentSpan = data[i + 1].tick - data[i].tick;
+        if (segmentSpan === 0) return i;
+        const t = (tick - data[i].tick) / segmentSpan;
+        return i + t;
+      }
+    }
+    return data.length - 1;
+  };
+
+  const visualMinIndex = getIndexForTick(Math.max(minTick, Math.min(chartMinIndex, maxTick)));
+  const visualMaxIndex = getIndexForTick(Math.max(minTick, Math.min(chartMaxIndex, maxTick)));
+
+  const minPct = (visualMinIndex / Math.max(1, data.length - 1)) * 100;
+  const maxPct = (visualMaxIndex / Math.max(1, data.length - 1)) * 100;
 
   const canInteract = !!(onMinIndexChange || onMaxIndexChange);
 
@@ -99,17 +119,19 @@ export const RangeDistributionChart: React.FC<RangeDistributionChartProps> = ({
     <div
       ref={wrapperRef}
       className="relative w-full h-full"
-      style={{ userSelect: "none", touchAction: "none" }}
+      style={{ userSelect: 'none', touchAction: 'none' }}
     >
       {/* Recharts Bar Chart */}
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
           <Bar dataKey="value" isAnimationActive={false}>
-            {data.map((_, index) => (
+            {data.map((entry, index) => (
               <Cell
                 key={`cell-${index}`}
                 fill={
-                  index >= chartMinIndex && index <= chartMaxIndex ? activeColor : inactiveColor
+                  entry.tick >= chartMinIndex && entry.tick <= chartMaxIndex
+                    ? activeColor
+                    : inactiveColor
                 }
               />
             ))}
@@ -133,21 +155,21 @@ export const RangeDistributionChart: React.FC<RangeDistributionChartProps> = ({
           className="absolute inset-y-0 flex flex-col items-center"
           style={{
             left: `${minPct}%`,
-            transform: "translateX(-50%)",
-            cursor: isDragging === "min" ? "grabbing" : "ew-resize",
+            transform: 'translateX(-50%)',
+            cursor: isDragging === 'min' ? 'grabbing' : 'ew-resize',
             zIndex: 10,
           }}
-          onPointerDown={(e) => handlePointerDown(e, "min")}
+          onPointerDown={(e) => handlePointerDown(e, 'min')}
         >
           {/* vertical line */}
           <div
             className="w-px flex-1"
-            style={{ background: "#2962ff", boxShadow: "0 0 6px #2962ff" }}
+            style={{ background: '#2962ff', boxShadow: '0 0 6px #2962ff' }}
           />
           {/* grip bar */}
           <div
-            className="w-1.5 h-5 rounded-sm mb-1 flex-shrink-0"
-            style={{ background: "#F5F5F5", boxShadow: "0 0 6px rgba(245,245,245,0.4)" }}
+            className="w-1.5 h-5 rounded-sm mb-1 shrink-0"
+            style={{ background: '#F5F5F5', boxShadow: '0 0 6px rgba(245,245,245,0.4)' }}
           />
         </div>
       )}
@@ -158,21 +180,21 @@ export const RangeDistributionChart: React.FC<RangeDistributionChartProps> = ({
           className="absolute inset-y-0 flex flex-col items-center"
           style={{
             left: `${maxPct}%`,
-            transform: "translateX(-50%)",
-            cursor: isDragging === "max" ? "grabbing" : "ew-resize",
+            transform: 'translateX(-50%)',
+            cursor: isDragging === 'max' ? 'grabbing' : 'ew-resize',
             zIndex: 10,
           }}
-          onPointerDown={(e) => handlePointerDown(e, "max")}
+          onPointerDown={(e) => handlePointerDown(e, 'max')}
         >
           {/* vertical line */}
           <div
             className="w-px flex-1"
-            style={{ background: "#2962ff", boxShadow: "0 0 6px #2962ff" }}
+            style={{ background: '#2962ff', boxShadow: '0 0 6px #2962ff' }}
           />
           {/* grip bar */}
           <div
-            className="w-1.5 h-5 rounded-sm mb-1 flex-shrink-0"
-            style={{ background: "#F5F5F5", boxShadow: "0 0 6px rgba(245,245,245,0.4)" }}
+            className="w-1.5 h-5 rounded-sm mb-1 shrink-0"
+            style={{ background: '#F5F5F5', boxShadow: '0 0 6px rgba(245,245,245,0.4)' }}
           />
         </div>
       )}

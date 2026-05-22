@@ -1,7 +1,7 @@
-import { splitString } from "@/utils/strings";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { Plug2Icon } from "lucide-react";
-import { ButtonHTMLAttributes } from "react";
+import { splitString } from '@/utils/strings';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { Plug2Icon } from 'lucide-react';
+import { ButtonHTMLAttributes } from 'react';
 
 interface CustomButtonProperties extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
@@ -53,17 +53,17 @@ export const WalletConnectButton: React.FC<ConnectButtonProperties> = ({ hasIcon
         authenticationStatus,
         mounted,
       }) => {
-        const isReady = mounted && authenticationStatus !== "loading";
+        const isReady = mounted && authenticationStatus !== 'loading';
         const isConnected =
           isReady &&
           account &&
           chain &&
-          (!authenticationStatus || authenticationStatus === "authenticated");
+          (!authenticationStatus || authenticationStatus === 'authenticated');
 
         if (!isConnected)
           return (
             <PrimaryButton onClick={openConnectModal} {...props}>
-              {hasIcon && <Plug2Icon size={25} />}{" "}
+              {hasIcon && <Plug2Icon size={25} />}{' '}
               <span className="text-xs md:text-sm">Connect Wallet</span>
             </PrimaryButton>
           );

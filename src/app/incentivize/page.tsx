@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { PageHeader } from "@/components/PageHeader";
-import { GiftIcon } from "lucide-react";
+import { PageHeader } from '@/components/PageHeader';
+import { GiftIcon } from 'lucide-react';
 
 export default function Page() {
   return (
@@ -10,8 +10,8 @@ export default function Page() {
         title="Incentivize"
         subtitle="Add bribes to attract votes & boost your pool"
         chips={[
-          { label: "Bribe Market", color: "amber" },
-          { label: "Coming Soon", color: "amber" },
+          { label: 'Bribe Market', color: 'amber' },
+          { label: 'Coming Soon', color: 'amber' },
         ]}
       />
       <div className="w-full flex flex-col items-center justify-center py-24 gap-8">

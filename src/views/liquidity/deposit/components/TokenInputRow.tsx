@@ -1,8 +1,9 @@
-"use client";
+'use client';
 
-import { AssetResponseType } from "@/config/github-assets.config";
-import Image from "next/image";
-import React from "react";
+import { AssetResponseType } from '@/config/github-assets.config';
+import { formatNumber } from '@/utils';
+import Image from 'next/image';
+import React from 'react';
 
 export interface TokenInputRowProps {
   label: string;
@@ -20,15 +21,15 @@ export const TokenInputRow: React.FC<TokenInputRowProps> = ({
   amount,
   onAmountChange,
   onSelectClick,
-  balance = "0.00",
-  usdValue = "$0.00",
+  balance = '0.00',
+  usdValue = '0.00',
 }) => {
   return (
     <div className="w-full flex flex-col bg-black border border-white/5 p-4 hover:border-[#2962ff]/30 transition-colors group focus-within:border-[#2962ff]/80">
       <div className="flex justify-between items-center mb-3">
         <span className="text-[#64748b] text-xs font-bold tracking-widest uppercase">{label}</span>
         <div className="text-xs text-[#64748b] flex gap-2">
-          <span>Balance: {balance}</span>
+          <span>Balance: {formatNumber(balance, 'en-US', 3)}</span>
           <button
             onClick={() => onAmountChange(balance)}
             className="text-[#2962ff] font-bold hover:text-[#00ff9d] transition-colors uppercase cursor-pointer"
@@ -42,7 +43,7 @@ export const TokenInputRow: React.FC<TokenInputRowProps> = ({
         {/* Token Selector */}
         <button
           onClick={onSelectClick}
-          className="flex items-center gap-2 bg-[#050508] border border-white/10 hover:bg-[#2962ff]/10 hover:border-[#2962ff]/50 px-3 py-2 transition-all min-w-[120px]"
+          className="flex items-center gap-2 bg-[#050508] border border-white/10 hover:bg-[#2962ff]/10 hover:border-[#2962ff]/50 px-3 py-2 transition-all min-w-30"
         >
           {token ? (
             <>
@@ -76,12 +77,12 @@ export const TokenInputRow: React.FC<TokenInputRowProps> = ({
             value={amount}
             onChange={(e) => {
               const val = e.target.value;
-              if (val === "" || /^\d*\.?\d*$/.test(val)) onAmountChange(val);
+              if (val === '' || /^\d*\.?\d*$/.test(val)) onAmountChange(val);
             }}
             placeholder="0.0"
             className="w-full bg-transparent text-right text-3xl md:text-4xl text-[#00ff9d] font-mono outline-none placeholder:text-[#64748b]/50 border-none ring-0 focus:outline-none"
           />
-          <span className="text-[#64748b] text-xs font-mono mt-1">{amount ? usdValue : ""}</span>
+          <span className="text-[#64748b] text-xs font-mono mt-1">${amount ? usdValue : ''}</span>
         </div>
       </div>
     </div>

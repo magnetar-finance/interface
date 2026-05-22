@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { PageHeader } from "@/components/PageHeader";
-import { Vote } from "lucide-react";
+import { PageHeader } from '@/components/PageHeader';
+import { Vote } from 'lucide-react';
 
 export default function Page() {
   return (
@@ -10,8 +10,8 @@ export default function Page() {
         title="Vote"
         subtitle="Direct MAG emissions to your favourite pools"
         chips={[
-          { label: "Epoch Voting", color: "blue" },
-          { label: "Coming Soon", color: "amber" },
+          { label: 'Epoch Voting', color: 'blue' },
+          { label: 'Coming Soon', color: 'amber' },
         ]}
       />
       <div className="w-full flex flex-col items-center justify-center py-24 gap-8">

@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { AssetResponseType } from "@/config/github-assets.config";
-import { PrimaryButton, SecondaryButton, WalletConnectButton } from "@/components/Button";
-import { FancyCard } from "@/components/Card";
+import { AssetResponseType } from '@/config/github-assets.config';
+import { PrimaryButton, SecondaryButton, WalletConnectButton } from '@/components/Button';
+import { FancyCard } from '@/components/Card';
 import {
   ArrowDownUpIcon,
   ChevronDownIcon,
@@ -10,11 +10,39 @@ import {
   SettingsIcon,
   InfoIcon,
   ZapIcon,
-} from "lucide-react";
-import Image from "next/image";
-import React, { useCallback, useMemo, useState } from "react";
-import { useAccount } from "wagmi";
-import { TokenSelectModal } from "@/ui/modals/TokenSelectModal";
+} from 'lucide-react';
+import Image from 'next/image';
+import React, { Fragment, useCallback, useMemo, useState } from 'react';
+import { useAccount, useChainId } from 'wagmi';
+import { TokenSelectModal } from '@/ui/modals/TokenSelectModal';
+import {
+  AUTO_SWAP_EXECUTORS,
+  BI_ZERO,
+  CHAINS_INFORMATION,
+  ETHER,
+  REFETCH_INTERVALS,
+  RouterType,
+  V2_SWAP_EXECUTORS,
+  V3_SWAP_EXECUTORS,
+  WETH,
+} from '@/constants';
+import { useAtom } from 'jotai';
+import { deadlineAtom, routerTypeAtom, slippageToleranceAtom } from '@/store';
+import { useGHAssetsContext } from '@/contexts/github-assets';
+import usePredictSwapMovement from '@/hooks/exchange/usePredictSwapMovement';
+import { formatUnits, parseEther, parseUnits, zeroAddress } from 'viem';
+import useMarketValueUSD from '@/hooks/exchange/useMarketValueUSD';
+import useGetAllowance from '@/hooks/wallet/useGetAllowance';
+import useApproveSpend from '@/hooks/wallet/useApproveSpend';
+import useWETHTx from '@/hooks/exchange/useWETHTx';
+import useAutoSwap from '@/hooks/exchange/useAutoSwap';
+import useV2Swap from '@/hooks/exchange/useV2Swap';
+import useCLSwap from '@/hooks/exchange/useCLSwap';
+import { TransactionSuccessModal } from '@/ui/modals/TransactionSuccessModal';
+import { TransactionErrorModal } from '@/ui/modals/TransactionErrorModal';
+import { Spinner } from '@/components/Spinner';
+import { formatNumber } from '@/utils';
+import useGetBalance from '@/hooks/wallet/useGetBalance';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -22,8 +50,8 @@ type Token = AssetResponseType[number];
 
 // ─── Slippage options ────────────────────────────────────────────────────────
 
-const SLIPPAGE_PRESETS = ["0.1", "0.5", "1.0"];
-const DEFAULT_DEADLINE = "20"; // minutes
+const SLIPPAGE_PRESETS = ['0.1', '0.5', '1'];
+const DEFAULT_DEADLINE = '20'; // minutes
 
 // ─── Settings Panel ──────────────────────────────────────────────────────────
 
@@ -31,7 +59,9 @@ interface SettingsPanelProps {
   slippage: string;
   customSlippage: string;
   deadline: string;
+  routerType: (typeof RouterType)[keyof typeof RouterType];
   onSlippageSelect: (value: string) => void;
+  onRouterTypeSelect: (value: (typeof RouterType)[keyof typeof RouterType]) => void;
   onCustomSlippageChange: (value: string) => void;
   onDeadlineChange: (value: string) => void;
 }
@@ -43,6 +73,8 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
   onSlippageSelect,
   onCustomSlippageChange,
   onDeadlineChange,
+  routerType,
+  onRouterTypeSelect,
 }) => {
   const isCustom = !SLIPPAGE_PRESETS.includes(slippage);
 
@@ -64,16 +96,16 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
               className={`px-3 py-1.5 text-xs font-semibold transition-colors
                 ${
                   slippage === preset && !isCustom
-                    ? "bg-[#2962ff] text-white"
-                    : "bg-white/5 text-[#94a3b8] hover:bg-white/10 hover:text-white"
+                    ? 'bg-[#2962ff] text-white'
+                    : 'bg-white/5 text-[#94a3b8] hover:bg-white/10 hover:text-white'
                 }`}
             >
               {preset}%
             </button>
           ))}
           <div
-            className={`flex items-center border px-2 py-1 gap-1 flex-1 min-w-[80px]
-              ${isCustom ? "border-[#2962ff]" : "border-white/10"}`}
+            className={`flex items-center border px-2 py-1 gap-1 flex-1 min-w-20
+              ${isCustom ? 'border-[#2962ff]' : 'border-white/10'}`}
           >
             <input
               type="number"
@@ -96,6 +128,30 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
             ⚠ High slippage — your trade may be frontrun
           </span>
         )}
+      </div>
+      <div className="flex flex-col gap-2">
+        <span className="text-[#94a3b8] text-xs uppercase tracking-widest">Router</span>
+        <div className="flex gap-2 w-full">
+          {Object.keys(RouterType).map((router_type) => {
+            const isSelected = routerType === RouterType[router_type as keyof typeof RouterType];
+
+            return (
+              <button
+                key={router_type}
+                onClick={() =>
+                  onRouterTypeSelect(RouterType[router_type as keyof typeof RouterType])
+                }
+                className={`flex-1 py-2 px-1 border text-[10px] sm:text-xs font-mono font-bold transition-colors ${
+                  isSelected
+                    ? 'bg-[#00ff9d]/10 text-[#00ff9d] border-[#00ff9d]/50'
+                    : 'bg-black border-white/10 text-[#64748b] hover:border-[#00ff9d]/30 hover:text-[#00ff9d]'
+                }`}
+              >
+                {router_type}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {/* Deadline */}
@@ -148,7 +204,7 @@ const TokenInputRow: React.FC<TokenInputRowProps> = ({
     <div className="flex justify-between items-center">
       <span className="text-[#64748b] text-xs uppercase tracking-widest">{label}</span>
       <div className="flex items-center gap-1.5">
-        <span className="text-[#64748b] text-xs">Balance: {balance}</span>
+        <span className="text-[#64748b] text-xs">Balance: {formatNumber(balance, 'en-US', 3)}</span>
         {!readOnly && onMaxClick && (
           <button
             onClick={onMaxClick}
@@ -167,8 +223,8 @@ const TokenInputRow: React.FC<TokenInputRowProps> = ({
         className={`flex items-center gap-2 px-3 py-2 border shrink-0 transition-colors
           ${
             token
-              ? "border-white/10 hover:border-[#2962ff] bg-white/5"
-              : "border-[#2962ff] bg-[#2962ff]/10 animate-pulse"
+              ? 'border-white/10 hover:border-[#2962ff] bg-white/5'
+              : 'border-[#2962ff] bg-[#2962ff]/10 animate-pulse'
           }`}
       >
         {token ? (
@@ -205,12 +261,12 @@ const TokenInputRow: React.FC<TokenInputRowProps> = ({
         onChange={(e) => onAmountChange?.(e.target.value)}
         className={`bg-transparent text-right text-2xl md:text-3xl font-bold text-white
           outline-none flex-1 min-w-0 placeholder:text-[#374151]
-          ${readOnly ? "cursor-default" : ""}`}
+          ${readOnly ? 'cursor-default' : ''}`}
       />
     </div>
 
     <div className="flex justify-end">
-      <span className="text-[#64748b] text-xs">{usdValue ? `≈ $${usdValue}` : "—"}</span>
+      <span className="text-[#64748b] text-xs">{usdValue ? `≈ $${usdValue}` : '—'}</span>
     </div>
   </div>
 );
@@ -221,20 +277,31 @@ interface PriceInfoRowProps {
   tokenIn: Token | null;
   tokenOut: Token | null;
   amountIn: string;
+  amountOut: string;
   slippage: string;
+  route: string[];
+  exchangeRate: string;
 }
 
-const PriceInfoRow: React.FC<PriceInfoRowProps> = ({ tokenIn, tokenOut, amountIn, slippage }) => {
+const PriceInfoRow: React.FC<PriceInfoRowProps> = ({
+  tokenIn,
+  tokenOut,
+  amountIn,
+  amountOut,
+  slippage,
+  route,
+  exchangeRate,
+}) => {
   const [expanded, setExpanded] = useState(false);
 
   const hasData = tokenIn && tokenOut && amountIn && parseFloat(amountIn) > 0;
+  const { assetsDictionary } = useGHAssetsContext();
 
   if (!hasData) return null;
 
-  const exchangeRate = "1.00"; // stub
-  const priceImpact = "< 0.01";
-  const minReceived = (parseFloat(amountIn) * (1 - parseFloat(slippage) / 100)).toFixed(6);
-  const fee = "0.05";
+  const priceImpact = '< 0.01';
+  const fee = (0.0099 * parseFloat(amountIn)).toFixed(3);
+  const minAmountOut = parseFloat(amountOut) - (parseFloat(amountOut) * parseFloat(slippage)) / 100;
 
   return (
     <div className="w-full bg-black/40 border border-white/10 px-4 py-3">
@@ -246,7 +313,7 @@ const PriceInfoRow: React.FC<PriceInfoRowProps> = ({ tokenIn, tokenOut, amountIn
         <div className="flex items-center gap-1.5">
           <ZapIcon size={12} color="#00ff9d" />
           <span className="text-[#94a3b8] text-xs">
-            1 {tokenIn.symbol} = <span className="text-white font-semibold">{exchangeRate}</span>{" "}
+            1 {tokenIn.symbol} = <span className="text-white font-semibold">{exchangeRate}</span>{' '}
             {tokenOut.symbol}
           </span>
         </div>
@@ -267,20 +334,28 @@ const PriceInfoRow: React.FC<PriceInfoRowProps> = ({ tokenIn, tokenOut, amountIn
           <div className="flex justify-between items-center">
             <span className="text-[#64748b] text-xs">Min. Received ({slippage}% slippage)</span>
             <span className="text-white text-xs font-semibold">
-              {minReceived} {tokenOut.symbol}
+              {minAmountOut.toFixed(3)} {tokenOut.symbol}
             </span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-[#64748b] text-xs">Fee (0.05%)</span>
+            <span className="text-[#64748b] text-xs">Fee (1%)</span>
             <span className="text-white text-xs font-semibold">
               {fee} {tokenIn.symbol}
             </span>
           </div>
           <div className="flex justify-between items-center">
             <span className="text-[#64748b] text-xs">Route</span>
-            <span className="text-[#94a3b8] text-xs font-semibold">
-              {tokenIn.symbol} → {tokenOut.symbol}
-            </span>
+            <div className="text-[#94a3b8] text-xs font-semibold flex gap-1">
+              {route.map((r, index) => {
+                const token = assetsDictionary[r.toLowerCase()];
+                return (
+                  <Fragment key={index}>
+                    {index > 0 && '->'}
+                    <span>{token?.symbol || 'Unknown'}</span>
+                  </Fragment>
+                );
+              })}
+            </div>
           </div>
         </div>
       )}
@@ -296,31 +371,156 @@ export const MainView: React.FC = () => {
   // Token state
   const [tokenIn, setTokenIn] = useState<Token | null>(null);
   const [tokenOut, setTokenOut] = useState<Token | null>(null);
-  const [amountIn, setAmountIn] = useState("");
-  const [selectingFor, setSelectingFor] = useState<"in" | "out" | null>(null);
+  const [amountIn, setAmountIn] = useState('');
+  const [selectingFor, setSelectingFor] = useState<'in' | 'out' | null>(null);
 
   // Settings state
   const [showSettings, setShowSettings] = useState(false);
-  const [slippage, setSlippage] = useState("0.5");
-  const [customSlippage, setCustomSlippage] = useState("");
-  const [deadline, setDeadline] = useState(DEFAULT_DEADLINE);
+  const [slippage, setSlippage] = useAtom(slippageToleranceAtom);
+  const [customSlippage, setCustomSlippage] = useState('');
+  const [deadline, setDeadline] = useAtom(deadlineAtom);
+  const [routerType, setRouterType] = useAtom(routerTypeAtom);
 
-  // Derived state
+  // Transaction state
+  const [showSuccess, setShowSuccess] = useState<boolean>(false);
+  const [showError, setShowError] = useState<boolean>(false);
+  const [explorerLink, setExplorerLink] = useState<string>('');
+  const [txHash, setTxHash] = useState<string | undefined>();
+
+  const chainId = useChainId();
+
+  const amountInParsed = useMemo(
+    () => parseUnits(amountIn || '0', tokenIn?.decimals || 18),
+    [amountIn, tokenIn?.decimals],
+  );
+
+  const weth = useMemo(() => WETH[chainId], [chainId]);
+  const isETHER_WETH = useMemo(
+    () =>
+      (tokenIn?.address.toLowerCase() === ETHER.toLowerCase() &&
+        tokenOut?.address.toLowerCase() === weth.toLowerCase()) ||
+      (tokenIn?.address.toLowerCase() === weth.toLowerCase() &&
+        tokenOut?.address.toLowerCase() === ETHER.toLowerCase()),
+    [tokenIn?.address, tokenOut?.address, weth],
+  );
+
+  const isWrap = useMemo(
+    () => isETHER_WETH && tokenIn?.address.toLowerCase() === ETHER.toLowerCase(),
+    [tokenIn?.address, isETHER_WETH],
+  );
+
+  // Predict swap movement
+  const { data: swapMovement } = usePredictSwapMovement(
+    tokenIn?.address || zeroAddress,
+    tokenOut?.address || zeroAddress,
+    amountInParsed,
+    !isETHER_WETH,
+    REFETCH_INTERVALS,
+  );
+  const tokenRoute = useMemo(() => {
+    if (swapMovement.length === 1) return [swapMovement[0].tokenIn, swapMovement[0].tokenOut];
+    return swapMovement.map((movement, index) =>
+      index < swapMovement.length - 1 ? movement.tokenIn : movement.tokenOut,
+    );
+  }, [swapMovement]);
+
   const amountOut = useMemo(() => {
-    // Stub: 1:1 ratio for now, real implementation will call router
-    if (!amountIn || isNaN(parseFloat(amountIn))) return "";
-    return (parseFloat(amountIn) * 1.0).toFixed(6);
-  }, [amountIn]);
+    if (!amountIn || isNaN(parseFloat(amountIn))) return '0';
+    if (isETHER_WETH) return amountIn;
+    if (swapMovement.length) {
+      const amountOutBI = swapMovement[swapMovement.length - 1].amountOut;
+      return parseFloat(formatUnits(amountOutBI, tokenOut?.decimals || 18)).toFixed(3);
+    }
+    return '0';
+  }, [amountIn, isETHER_WETH, swapMovement, tokenOut?.decimals]);
+
+  const exchangeRate = useMemo(
+    () => (parseFloat(amountOut) / parseFloat(amountIn)).toFixed(3),
+    [amountIn, amountOut],
+  );
+
+  // Market values
+  const [amountInUSD] = useMarketValueUSD(tokenIn?.address, amountInParsed, REFETCH_INTERVALS);
+  const [amountOutUSD] = useMarketValueUSD(
+    tokenOut?.address,
+    parseUnits(amountOut, tokenOut?.decimals || 18),
+    REFETCH_INTERVALS,
+  );
 
   const usdValueIn = useMemo(() => {
-    if (!amountIn || isNaN(parseFloat(amountIn))) return "";
-    return (parseFloat(amountIn) * 1.5).toFixed(2); // stub price
-  }, [amountIn]);
+    return parseFloat(formatUnits(amountInUSD, 18)).toFixed(3);
+  }, [amountInUSD]);
 
   const usdValueOut = useMemo(() => {
-    if (!amountOut || isNaN(parseFloat(amountOut))) return "";
-    return (parseFloat(amountOut) * 1.5).toFixed(2);
-  }, [amountOut]);
+    return parseFloat(formatUnits(amountOutUSD, 18)).toFixed(3);
+  }, [amountOutUSD]);
+
+  const autoSwapper = useMemo(() => AUTO_SWAP_EXECUTORS[chainId], [chainId]);
+  const v2Swapper = useMemo(() => V2_SWAP_EXECUTORS[chainId], [chainId]);
+  const clSwapper = useMemo(() => V3_SWAP_EXECUTORS[chainId], [chainId]);
+
+  // Allowances
+  const autoSwapperAllowance = useGetAllowance(tokenIn?.address, autoSwapper, REFETCH_INTERVALS);
+  const v2SwapperAllowance = useGetAllowance(tokenIn?.address, v2Swapper, REFETCH_INTERVALS);
+  const clSwapperAllowance = useGetAllowance(tokenIn?.address, clSwapper, REFETCH_INTERVALS);
+
+  // Approvals
+  const autoSwapperApproval = useApproveSpend(
+    tokenIn?.address || zeroAddress,
+    autoSwapper,
+    amountInParsed,
+  );
+  const v2SwapperApproval = useApproveSpend(
+    tokenIn?.address || zeroAddress,
+    v2Swapper,
+    amountInParsed,
+  );
+  const clSwapperApproval = useApproveSpend(
+    tokenIn?.address || zeroAddress,
+    clSwapper,
+    amountInParsed,
+  );
+
+  const { useDeposit, useWithdrawal } = useWETHTx();
+  const depositETH = useDeposit(
+    parseEther(amountIn),
+    (hash) => {
+      setExplorerLink(CHAINS_INFORMATION[chainId].explorerUrl);
+      setTxHash(hash);
+      setShowSuccess(true);
+    },
+    () => setShowError(true),
+  );
+  const unwrapETH = useWithdrawal(
+    parseEther(amountIn),
+    (hash) => {
+      setExplorerLink(CHAINS_INFORMATION[chainId].explorerUrl);
+      setTxHash(hash);
+      setShowSuccess(true);
+    },
+    () => setShowError(true),
+  );
+
+  const requiresApproval = useMemo(() => {
+    if (isETHER_WETH) return false;
+    switch (routerType) {
+      case RouterType.AUTO:
+        return autoSwapperAllowance < amountInParsed;
+      case RouterType.V2:
+        return v2SwapperAllowance < amountInParsed;
+      case RouterType.V3:
+        return clSwapperAllowance < amountInParsed;
+      default:
+        return false;
+    }
+  }, [
+    isETHER_WETH,
+    routerType,
+    autoSwapperAllowance,
+    amountInParsed,
+    v2SwapperAllowance,
+    clSwapperAllowance,
+  ]);
 
   // Handlers
   const handleSwapDirection = useCallback(() => {
@@ -331,24 +531,114 @@ export const MainView: React.FC = () => {
 
   const handleTokenSelect = useCallback(
     (token: Token) => {
-      if (selectingFor === "in") setTokenIn(token);
-      else if (selectingFor === "out") setTokenOut(token);
+      if (selectingFor === 'in') setTokenIn(token);
+      else if (selectingFor === 'out') setTokenOut(token);
       setSelectingFor(null);
     },
     [selectingFor],
   );
 
-  const handleSwap = useCallback(() => {
-    // Stub: wire up wagmi write hook here
-    console.log("Swap!", { tokenIn, tokenOut, amountIn, slippage, deadline });
-  }, [tokenIn, tokenOut, amountIn, slippage, deadline]);
+  // Swap executions
+  const autoSwap = useAutoSwap(
+    tokenIn?.address || zeroAddress,
+    tokenOut?.address || zeroAddress,
+    parseUnits(amountIn, tokenIn?.decimals || 18),
+    swapMovement[swapMovement.length - 1]?.amountOut || BI_ZERO,
+    (hash) => {
+      setExplorerLink(CHAINS_INFORMATION[chainId].explorerUrl);
+      setTxHash(hash);
+      setShowSuccess(true);
+    },
+    () => setShowError(true),
+  );
+  const v2Swap = useV2Swap(
+    tokenIn?.address || zeroAddress,
+    tokenOut?.address || zeroAddress,
+    parseUnits(amountIn, tokenIn?.decimals ?? 18),
+    swapMovement[swapMovement.length - 1]?.amountOut || BI_ZERO,
+    (hash) => {
+      setExplorerLink(CHAINS_INFORMATION[chainId].explorerUrl);
+      setTxHash(hash);
+      setShowSuccess(true);
+    },
+    () => setShowError(true),
+  );
+  const clSwap = useCLSwap(
+    tokenIn?.address || zeroAddress,
+    tokenOut?.address || zeroAddress,
+    parseUnits(amountIn, tokenIn?.decimals ?? 18),
+    swapMovement[swapMovement.length - 1]?.amountOut || BI_ZERO,
+    (hash) => {
+      setExplorerLink(CHAINS_INFORMATION[chainId].explorerUrl);
+      setTxHash(hash);
+      setShowSuccess(true);
+    },
+    () => setShowError(true),
+  );
+
+  const initiateProcess = useCallback(() => {
+    if (isETHER_WETH) {
+      if (isWrap) depositETH.execute();
+      else unwrapETH.execute();
+
+      return;
+    }
+
+    switch (routerType) {
+      case RouterType.AUTO: {
+        if (requiresApproval) autoSwapperApproval.execute();
+        else autoSwap.execute();
+        break;
+      }
+      case RouterType.V2: {
+        if (requiresApproval) v2SwapperApproval.execute();
+        else v2Swap.execute();
+        break;
+      }
+      case RouterType.V3: {
+        if (requiresApproval) clSwapperApproval.execute();
+        else clSwap.execute();
+        break;
+      }
+    }
+  }, [
+    isETHER_WETH,
+    routerType,
+    isWrap,
+    depositETH,
+    unwrapETH,
+    requiresApproval,
+    autoSwapperApproval,
+    autoSwap,
+    v2SwapperApproval,
+    v2Swap,
+    clSwapperApproval,
+    clSwap,
+  ]);
 
   // Button state
   const { label: actionLabel, disabled: actionDisabled } = useMemo(() => {
-    if (!tokenIn || !tokenOut) return { label: "Select Tokens", disabled: true };
-    if (!amountIn || parseFloat(amountIn) <= 0) return { label: "Enter an Amount", disabled: true };
-    return { label: "Swap", disabled: false };
-  }, [tokenIn, tokenOut, amountIn]);
+    if (!tokenIn || !tokenOut) return { label: 'Select Tokens', disabled: true };
+    if (!amountIn || parseFloat(amountIn) <= 0) return { label: 'Enter an Amount', disabled: true };
+    if (isETHER_WETH) {
+      if (isWrap) return { label: 'Wrap ' + tokenIn.symbol, disabled: false };
+      else return { label: 'Unwrap ' + tokenIn.symbol, disabled: false };
+    }
+    if (requiresApproval) return { label: `Approve ${tokenIn.symbol}`, disabled: false };
+    return { label: 'Swap', disabled: false };
+  }, [tokenIn, tokenOut, amountIn, isETHER_WETH, requiresApproval, isWrap]);
+
+  // Balances
+  const balanceA = useGetBalance(tokenIn?.address || zeroAddress);
+  const balanceB = useGetBalance(tokenOut?.address || zeroAddress);
+  const balanceAParsed = useMemo(
+    () => formatUnits(balanceA, tokenIn?.decimals || 18),
+    [balanceA, tokenIn?.decimals],
+  );
+  const balanceBParsed = useMemo(
+    () => formatUnits(balanceB, tokenOut?.decimals || 18),
+    [balanceB, tokenOut?.decimals],
+  );
 
   return (
     <>
@@ -358,8 +648,8 @@ export const MainView: React.FC = () => {
         onOpenChange={(open) => {
           if (!open) setSelectingFor(null);
         }}
-        selectedToken={selectingFor === "in" ? tokenIn : tokenOut}
-        disabledToken={selectingFor === "in" ? tokenOut : tokenIn}
+        selectedToken={selectingFor === 'in' ? tokenIn : tokenOut}
+        disabledToken={selectingFor === 'in' ? tokenOut : tokenIn}
         onTokenSelect={handleTokenSelect}
       />
 
@@ -374,7 +664,7 @@ export const MainView: React.FC = () => {
                 <button
                   onClick={() => setShowSettings((v) => !v)}
                   className={`transition-colors p-1 ${
-                    showSettings ? "text-[#2962ff]" : "text-[#64748b] hover:text-white"
+                    showSettings ? 'text-[#2962ff]' : 'text-[#64748b] hover:text-white'
                   }`}
                   title="Settings"
                 >
@@ -385,12 +675,14 @@ export const MainView: React.FC = () => {
               {/* Settings Panel */}
               {showSettings && (
                 <SettingsPanel
-                  slippage={slippage}
+                  slippage={slippage.toString()}
                   customSlippage={customSlippage}
-                  deadline={deadline}
-                  onSlippageSelect={setSlippage}
+                  deadline={deadline?.toString() || DEFAULT_DEADLINE}
+                  onSlippageSelect={(s) => setSlippage(parseFloat(s))}
                   onCustomSlippageChange={setCustomSlippage}
-                  onDeadlineChange={setDeadline}
+                  onDeadlineChange={(d) => setDeadline(parseInt(d))}
+                  routerType={routerType}
+                  onRouterTypeSelect={setRouterType}
                 />
               )}
 
@@ -400,10 +692,10 @@ export const MainView: React.FC = () => {
                 token={tokenIn}
                 amount={amountIn}
                 usdValue={usdValueIn}
-                balance="0.00"
+                balance={balanceAParsed}
                 onAmountChange={setAmountIn}
-                onMaxClick={() => setAmountIn("0")} // stub: replace with real balance
-                onTokenClick={() => setSelectingFor("in")}
+                onMaxClick={() => setAmountIn('0')} // stub: replace with real balance
+                onTokenClick={() => setSelectingFor('in')}
               />
 
               {/* Swap Direction Toggle */}
@@ -426,9 +718,9 @@ export const MainView: React.FC = () => {
                 token={tokenOut}
                 amount={amountOut}
                 usdValue={usdValueOut}
-                balance="0.00"
+                balance={balanceBParsed}
                 readOnly
-                onTokenClick={() => setSelectingFor("out")}
+                onTokenClick={() => setSelectingFor('out')}
               />
 
               {/* Price Info */}
@@ -436,7 +728,10 @@ export const MainView: React.FC = () => {
                 tokenIn={tokenIn}
                 tokenOut={tokenOut}
                 amountIn={amountIn}
-                slippage={slippage}
+                amountOut={amountOut}
+                route={tokenRoute}
+                slippage={slippage.toString()}
+                exchangeRate={exchangeRate}
               />
 
               {/* Action Button */}
@@ -445,9 +740,17 @@ export const MainView: React.FC = () => {
                   <PrimaryButton
                     className="w-full py-4 text-sm"
                     disabled={actionDisabled}
-                    onClick={handleSwap}
+                    onClick={initiateProcess}
                   >
-                    {actionLabel}
+                    {actionLabel}{' '}
+                    {(autoSwap.isLoading ||
+                      v2Swap.isLoading ||
+                      clSwap.isLoading ||
+                      autoSwapperApproval.isLoading ||
+                      v2SwapperApproval.isLoading ||
+                      clSwapperApproval.isLoading ||
+                      depositETH.isLoading ||
+                      unwrapETH.isLoading) && <Spinner size="sm" className="ml-2" />}
                   </PrimaryButton>
                 ) : (
                   <WalletConnectButton className="w-full py-4 text-sm" hasIcon />
@@ -473,11 +776,53 @@ export const MainView: React.FC = () => {
               className="text-xs px-2 py-1"
               onClick={() => setShowSettings((v) => !v)}
             >
-              {showSettings ? "Hide Settings" : "Settings"}
+              {showSettings ? 'Hide Settings' : 'Settings'}
             </SecondaryButton>
           </div>
         </div>
       </div>
+      <TransactionSuccessModal
+        open={showSuccess}
+        onOpenChange={(o) => {
+          setShowSuccess(o);
+          v2SwapperApproval.reset();
+          clSwapperApproval.reset();
+          autoSwapperApproval.reset();
+          v2Swap.reset();
+          clSwap.reset();
+          autoSwap.reset();
+          depositETH.reset();
+          unwrapETH.reset();
+          if (!o) {
+            setTxHash(undefined);
+            setExplorerLink('');
+          }
+        }}
+        txHash={txHash}
+        explorerUrl={explorerLink}
+        message={
+          isETHER_WETH
+            ? (isWrap ? 'Successfully wrapped ' : 'Successfully unwrapped') + tokenIn?.symbol
+            : `Successfully swapped ${amountIn} ${tokenIn?.symbol}`
+        }
+      />
+
+      <TransactionErrorModal
+        open={showError}
+        onOpenChange={(o) => {
+          setShowError(o);
+          v2SwapperApproval.reset();
+          clSwapperApproval.reset();
+          autoSwapperApproval.reset();
+          v2Swap.reset();
+          clSwap.reset();
+          autoSwap.reset();
+          depositETH.reset();
+          unwrapETH.reset();
+        }}
+        message={'An error occurred while adding liquidity. Please try again.'}
+        title="Transaction Failed"
+      />
     </>
   );
 };

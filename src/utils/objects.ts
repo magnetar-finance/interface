@@ -2,7 +2,7 @@
 export function getDictionaryFromArray<T extends Record<string, any>>(arr: T[], s: keyof T) {
   return arr.reduce(
     (previous, current) => {
-      const isString = typeof current[s] === "string";
+      const isString = typeof current[s] === 'string';
       const key = isString ? current[s].toLowerCase() : current[s];
       return {
         ...previous,

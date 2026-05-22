@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { PageHeader } from "@/components/PageHeader";
-import { LockIcon } from "lucide-react";
+import { PageHeader } from '@/components/PageHeader';
+import { LockIcon } from 'lucide-react';
 
 export default function Page() {
   return (
@@ -10,8 +10,8 @@ export default function Page() {
         title="Locks"
         subtitle="Lock MAG to earn veMGN voting power"
         chips={[
-          { label: "ve(3,3)", color: "blue" },
-          { label: "Coming Soon", color: "amber" },
+          { label: 've(3,3)', color: 'blue' },
+          { label: 'Coming Soon', color: 'amber' },
         ]}
       />
       <div className="w-full flex flex-col items-center justify-center py-24 gap-8">

@@ -1,8 +1,8 @@
-import React from "react";
+import React from 'react';
 
 export interface TableHeader {
   label: React.ReactNode;
-  align?: "left" | "right" | "center";
+  align?: 'left' | 'right' | 'center';
 }
 
 interface TableProps<T> {
@@ -21,11 +21,11 @@ export const Table = <T,>({ headers, data, renderRow, renderEmpty, onRowClick }:
           {headers.map((header, index) => (
             <th
               className={`py-2 pr-4 uppercase tracking-widest ${
-                header.align === "right"
-                  ? "text-right"
-                  : header.align === "center"
-                  ? "text-center"
-                  : "text-left"
+                header.align === 'right'
+                  ? 'text-right'
+                  : header.align === 'center'
+                  ? 'text-center'
+                  : 'text-left'
               }`}
               key={index}
             >
@@ -39,7 +39,7 @@ export const Table = <T,>({ headers, data, renderRow, renderEmpty, onRowClick }:
           data.map((item, index) => (
             <tr
               className={`border-b border-white/5 transition-colors ${
-                onRowClick ? "hover:bg-white/5 cursor-pointer" : ""
+                onRowClick ? 'hover:bg-white/5 cursor-pointer' : ''
               }`}
               key={index}
               onClick={() => onRowClick?.(item)}
@@ -50,7 +50,7 @@ export const Table = <T,>({ headers, data, renderRow, renderEmpty, onRowClick }:
         ) : (
           <tr>
             <td colSpan={headers.length} className="py-4 text-center">
-              {renderEmpty ? renderEmpty() : "No data available"}
+              {renderEmpty ? renderEmpty() : 'No data available'}
             </td>
           </tr>
         )}

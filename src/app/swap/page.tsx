@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { MainView } from "@/views/swap/MainView";
-import { PageHeader } from "@/components/PageHeader";
+import { MainView } from '@/views/swap/MainView';
+import { PageHeader } from '@/components/PageHeader';
 
 export default function Page() {
   return (

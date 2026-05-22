@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { CHAINS_INFORMATION } from "@/constants";
+import { CHAINS_INFORMATION } from '@/constants';
 import {
   ArrowRightLeftIcon,
   BarChart2Icon,
@@ -10,13 +10,13 @@ import {
   LockIcon,
   VoteIcon,
   ZapIcon,
-} from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import React, { useMemo } from "react";
-import { formatUnits } from "viem";
-import { useBlockNumber, useChainId, useEstimateGas } from "wagmi";
+} from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import React, { useMemo } from 'react';
+import { formatUnits } from 'viem';
+import { useBlockNumber, useChainId, useEstimateGas } from 'wagmi';
 
 interface NavItem {
   href: string;
@@ -25,47 +25,47 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { href: "/", label: "Dashboard", icon: <HomeIcon size={18} /> },
-  { href: "/swap", label: "Swap", icon: <ArrowRightLeftIcon size={18} /> },
-  { href: "/analytics", label: "Analytics", icon: <BarChart2Icon size={18} /> },
-  { href: "/liquidity", label: "Liquidity", icon: <DropletsIcon size={18} /> },
-  { href: "/locks", label: "Locks", icon: <LockIcon size={18} /> },
-  { href: "/vote", label: "Vote", icon: <VoteIcon size={18} /> },
-  { href: "/incentivize", label: "Incentivize", icon: <HandCoinsIcon size={18} /> },
+  { href: '/', label: 'Dashboard', icon: <HomeIcon size={18} /> },
+  { href: '/swap', label: 'Swap', icon: <ArrowRightLeftIcon size={18} /> },
+  { href: '/analytics', label: 'Analytics', icon: <BarChart2Icon size={18} /> },
+  { href: '/liquidity', label: 'Liquidity', icon: <DropletsIcon size={18} /> },
+  { href: '/locks', label: 'Locks', icon: <LockIcon size={18} /> },
+  { href: '/vote', label: 'Vote', icon: <VoteIcon size={18} /> },
+  { href: '/incentivize', label: 'Incentivize', icon: <HandCoinsIcon size={18} /> },
 ];
 
 const NavLink: React.FC<{ item: NavItem }> = ({ item }) => {
   const pathname = usePathname();
   const isActive =
-    item.href === "/"
-      ? pathname === "/"
-      : pathname === item.href || pathname.startsWith(item.href + "/");
+    item.href === '/'
+      ? pathname === '/'
+      : pathname === item.href || pathname.startsWith(item.href + '/');
 
   return (
     <Link
       href={item.href}
       className={`group relative flex items-center gap-3 px-4 py-3 w-full transition-all duration-200 font-mono text-sm tracking-wide ${
-        isActive ? "text-white" : "text-[#64748b] hover:text-white"
+        isActive ? 'text-white' : 'text-[#64748b] hover:text-white'
       }`}
     >
       {/* Active left bar */}
       <span
         className={`absolute left-0 top-0 h-full w-[2px] transition-all duration-200 ${
-          isActive ? "bg-[#2962ff] shadow-[0_0_8px_rgba(41,98,255,0.8)]" : "bg-transparent"
+          isActive ? 'bg-[#2962ff] shadow-[0_0_8px_rgba(41,98,255,0.8)]' : 'bg-transparent'
         }`}
       />
       {/* Active row bg */}
       <span
         className={`absolute inset-0 transition-all duration-200 ${
           isActive
-            ? "bg-gradient-to-r from-[#2962ff]/15 to-transparent"
-            : "bg-transparent group-hover:bg-white/[0.04]"
+            ? 'bg-gradient-to-r from-[#2962ff]/15 to-transparent'
+            : 'bg-transparent group-hover:bg-white/[0.04]'
         }`}
       />
       {/* Icon */}
       <span
         className={`relative z-10 transition-colors ${
-          isActive ? "text-[#2962ff]" : "text-[#64748b] group-hover:text-[#94a3b8]"
+          isActive ? 'text-[#2962ff]' : 'text-[#64748b] group-hover:text-[#94a3b8]'
         }`}
       >
         {item.icon}
