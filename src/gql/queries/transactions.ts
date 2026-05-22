@@ -1,0 +1,209 @@
+import { graphql } from '../codegen';
+
+export const QUERY_ALL_TRANSACTIONS = graphql(`
+  query AllTransactions($skip: Int = 0, $limit: Int = 1000) {
+    transactions {
+      id
+      hash
+      block
+      timestamp
+      mints {
+        id
+        timestamp
+        to
+        liquidity
+        sender
+        amount0
+        amount1
+        amountUSD
+        pool {
+          id
+          name
+          poolType
+          reserve0
+          reserve1
+          reserveETH
+          reserveUSD
+          tickSpacing
+          token0Price
+          token1Price
+          totalBribesUSD
+          totalEmissions
+          totalEmissionsUSD
+          totalFees0
+          totalFees1
+          totalFeesUSD
+          totalSupply
+          totalVotes
+          txCount
+          volumeETH
+          volumeToken0
+          volumeToken1
+          volumeUSD
+          address
+          gaugeFeesUSD
+          gaugeFees1CurrentEpoch
+          gaugeFees0CurrentEpoch
+          token1 {
+            address
+            derivedETH
+            derivedUSD
+            id
+            name
+            symbol
+            decimals
+          }
+          token0 {
+            address
+            derivedETH
+            derivedUSD
+            id
+            name
+            symbol
+            decimals
+          }
+          gauge {
+            rewardRate
+            id
+            address
+            fees0
+            fees1
+            isAlive
+          }
+        }
+      }
+      burns {
+        id
+        timestamp
+        to
+        liquidity
+        sender
+        amount0
+        amount1
+        amountUSD
+        pool {
+          id
+          name
+          poolType
+          reserve0
+          reserve1
+          reserveETH
+          reserveUSD
+          tickSpacing
+          token0Price
+          token1Price
+          totalBribesUSD
+          totalEmissions
+          totalEmissionsUSD
+          totalFees0
+          totalFees1
+          totalFeesUSD
+          totalSupply
+          totalVotes
+          txCount
+          volumeETH
+          volumeToken0
+          volumeToken1
+          volumeUSD
+          address
+          gaugeFeesUSD
+          gaugeFees1CurrentEpoch
+          gaugeFees0CurrentEpoch
+          token1 {
+            address
+            derivedETH
+            derivedUSD
+            id
+            name
+            symbol
+            decimals
+          }
+          token0 {
+            address
+            derivedETH
+            derivedUSD
+            id
+            name
+            symbol
+            decimals
+          }
+          gauge {
+            rewardRate
+            id
+            address
+            fees0
+            fees1
+            isAlive
+          }
+        }
+      }
+      swaps {
+        id
+        timestamp
+        to
+        from
+        sender
+        amount0In
+        amount1In
+        amount0Out
+        amount1Out
+        amountUSD
+        pool {
+          id
+          name
+          poolType
+          reserve0
+          reserve1
+          reserveETH
+          reserveUSD
+          tickSpacing
+          token0Price
+          token1Price
+          totalBribesUSD
+          totalEmissions
+          totalEmissionsUSD
+          totalFees0
+          totalFees1
+          totalFeesUSD
+          totalSupply
+          totalVotes
+          txCount
+          volumeETH
+          volumeToken0
+          volumeToken1
+          volumeUSD
+          address
+          gaugeFeesUSD
+          gaugeFees1CurrentEpoch
+          gaugeFees0CurrentEpoch
+          token1 {
+            address
+            derivedETH
+            derivedUSD
+            id
+            name
+            symbol
+            decimals
+          }
+          token0 {
+            address
+            derivedETH
+            derivedUSD
+            id
+            name
+            symbol
+            decimals
+          }
+          gauge {
+            rewardRate
+            id
+            address
+            fees0
+            fees1
+            isAlive
+          }
+        }
+      }
+    }
+  }
+`);

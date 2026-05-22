@@ -31,3 +31,21 @@ export const QUERY_TOKEN_INFO = graphql(`
     }
   }
 `);
+
+export const QUERY_ALL_TOKENS = graphql(`
+  query AllTokens($skip: Int = 0, $limit: Int = 1000) {
+    tokens(skip: $skip, first: $limit) {
+      id
+      decimals
+      derivedETH
+      derivedUSD
+      name
+      symbol
+      totalLiquidity
+      totalLiquidityUSD
+      totalLiquidityETH
+      tradeVolume
+      tradeVolumeUSD
+    }
+  }
+`);

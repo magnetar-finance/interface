@@ -71,7 +71,7 @@ export const MainView: React.FC = () => {
     }
   }, [activeSwitchIndex]);
 
-  const ALL_POOLS = useAllPools(
+  const { data: ALL_POOLS } = useAllPools(
     0,
     OP_SETTINGS.default_gql_items_limit,
     OP_SETTINGS.default_refetch_interval,

@@ -1,33 +1,46 @@
 'use client';
 
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import { ArrowLeftIcon, ExternalLinkIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Table } from '@/components/Table';
-import { TimeSeriesChart } from '@/ui/charts/TimeSeriesChart';
-import { VolumeBarChart } from '@/ui/charts/VolumeBarChart';
+import { Pagination } from '@/components/Pagination';
 import {
-  MOCK_TOP_POOLS,
-  MOCK_TRANSACTIONS,
-  MOCK_POOL_TVL,
-  MOCK_POOL_VOLUME,
-  type TxType,
-  type MockTransaction,
-} from '@/utils/mock-data';
+  TimeSeriesChart,
+  type Timeframe,
+  type TimeSeriesDataPoint,
+} from '@/ui/charts/TimeSeriesChart';
+import { VolumeBarChart } from '@/ui/charts/VolumeBarChart';
+import { type TxType } from '@/utils/mock-data';
 import { formatNumber } from '@/utils/numbers';
-import { PoolType } from '@/utils/http-api';
+import { PoolType } from '@/gql/codegen/graphql';
+import useSinglePool from '@/hooks/api/useSinglePool';
+import usePoolDayData from '@/hooks/api/usePoolDayData';
+import { CHAINS_INFORMATION, OP_SETTINGS, REFETCH_INTERVALS } from '@/constants';
+import useAllTransactions from '@/hooks/api/useAllTransactions';
+import { useChainId } from 'wagmi';
+import moment from 'moment';
+import { splitString } from '@/utils';
 
-const TX_COLORS: Record<TxType, string> = {
+const Skeleton: React.FC<{ className?: string }> = ({ className = '' }) => (
+  <div className={`animate-pulse bg-white/5 rounded ${className}`} />
+);
+
+function parseQLDate(n: number) {
+  return new Date(n * 1000);
+}
+
+const TX_COLORS: Record<TxType | string, string> = {
   Swap: 'text-[#2962ff] bg-[#2962ff]/10 border-[#2962ff]/30',
   Add: 'text-[#00ff9d] bg-[#00ff9d]/10 border-[#00ff9d]/30',
   Remove: 'text-[#ffaf52] bg-[#ffaf52]/10 border-[#ffaf52]/30',
 };
 
 const POOL_TYPE_COLORS: Record<PoolType, string> = {
-  [PoolType.STABLE]: 'text-[#00ff9d]',
-  [PoolType.VOLATILE]: 'text-[#ffaf52]',
-  [PoolType.CONCENTRATED]: 'text-[#2962ff]',
+  STABLE: 'text-[#00ff9d] bg-[#00ff9d]/10',
+  VOLATILE: 'text-[#ffaf52] bg-[#ffaf52]/10',
+  CONCENTRATED: 'text-[#2962ff] bg-[#2962ff]/10',
 };
 
 const StatCard: React.FC<{ label: string; value: string; sub?: string }> = ({
@@ -42,49 +55,210 @@ const StatCard: React.FC<{ label: string; value: string; sub?: string }> = ({
   </div>
 );
 
-// ─── Fallback time-series when pool has no specific data ─────────────────────
-const FALLBACK_TVL = {
-  '1D': Array.from({ length: 24 }, (_, i) => ({
-    date: `${i}:00`,
-    value: 1_000_000 + Math.random() * 100_000,
-  })),
-  '7D': Array.from({ length: 7 }, (_, i) => ({
-    date: `Day ${i + 1}`,
-    value: 900_000 + Math.random() * 200_000,
-  })),
-  '30D': Array.from({ length: 30 }, (_, i) => ({
-    date: `Day ${i + 1}`,
-    value: 800_000 + Math.random() * 300_000,
-  })),
-} as const;
-
-const FALLBACK_VOL = {
-  '1D': Array.from({ length: 24 }, (_, i) => ({
-    date: `${i}:00`,
-    value: 40_000 + Math.random() * 20_000,
-  })),
-  '7D': Array.from({ length: 7 }, (_, i) => ({
-    date: `Day ${i + 1}`,
-    value: 35_000 + Math.random() * 25_000,
-  })),
-  '30D': Array.from({ length: 30 }, (_, i) => ({
-    date: `Day ${i + 1}`,
-    value: 30_000 + Math.random() * 30_000,
-  })),
-} as const;
-
 // ─── Pool Analytics View ──────────────────────────────────────────────────────
 
 export const PoolAnalyticsView: React.FC<{ poolId: string }> = ({ poolId }) => {
   const router = useRouter();
   const decodedId = decodeURIComponent(poolId);
-  const pool = MOCK_TOP_POOLS.find((p) => p.id === decodedId) ?? MOCK_TOP_POOLS[0];
-  const txns = MOCK_TRANSACTIONS.filter((t) => t.poolId === pool.id);
+  const chainId = useChainId();
+  // eslint-disable-next-line react-hooks/purity
+  const todayInSeconds = useMemo(() => Math.floor(Date.now() / 1000 / 60) * 60, []);
 
-  const tvlSeries = MOCK_POOL_TVL[pool.id] ?? FALLBACK_TVL;
-  const volSeries = MOCK_POOL_VOLUME[pool.id] ?? FALLBACK_VOL;
+  // Single Pool
+  const { data: pool, isLoading: isPoolLoading } = useSinglePool(decodedId, REFETCH_INTERVALS);
 
-  const apr = pool.gauge?.rewardRate ?? 0;
+  // Pool Day Datas
+  const { data: poolDayData1Day, isLoading: isLoading1D } = usePoolDayData(
+    decodedId,
+    0,
+    OP_SETTINGS.default_gql_items_limit,
+    REFETCH_INTERVALS,
+    todayInSeconds - 86400,
+    todayInSeconds,
+  );
+  const { data: poolDayData7Days, isLoading: isLoading7D } = usePoolDayData(
+    decodedId,
+    0,
+    OP_SETTINGS.default_gql_items_limit,
+    REFETCH_INTERVALS,
+    todayInSeconds - 604800,
+    todayInSeconds,
+  );
+  const { data: poolDayData30Days, isLoading: isLoading30D } = usePoolDayData(
+    decodedId,
+    0,
+    OP_SETTINGS.default_gql_items_limit,
+    REFETCH_INTERVALS,
+    todayInSeconds - 2592000,
+    todayInSeconds,
+  );
+
+  // Transactions
+  const { data: allTransactions, isLoading: isLoadingTxns } = useAllTransactions(
+    0,
+    OP_SETTINGS.default_gql_items_limit,
+    REFETCH_INTERVALS,
+  );
+
+  const mergedTransactions = useMemo(() => {
+    const merges = [];
+
+    for (const transaction of allTransactions) {
+      // Loop through for mints
+      for (const mint of transaction.mints) {
+        if (mint.pool.id === decodedId) {
+          merges.push({
+            amount0: parseFloat(mint.amount0 as string).toFixed(3),
+            amount1: parseFloat(mint.amount1 as string).toFixed(3),
+            amountUSD: parseFloat(mint.amountUSD as string).toFixed(3),
+            from: (mint.sender as string) || '',
+            to: mint.to as string,
+            timestamp: parseInt(mint.timestamp as string) * 1000,
+            transactionHash: transaction.hash as string,
+            transactionType: 'Add',
+            token0: mint.pool.token0,
+            token1: mint.pool.token1,
+          });
+        }
+      }
+
+      // Loop through for swaps
+      for (const swap of transaction.swaps) {
+        if (swap.pool.id === decodedId) {
+          merges.push({
+            amount0: (
+              parseFloat(swap.amount0In as string) + parseFloat(swap.amount0Out as string)
+            ).toFixed(3),
+            amount1: (
+              parseFloat(swap.amount1In as string) + parseFloat(swap.amount1Out as string)
+            ).toFixed(3),
+            amountUSD: parseFloat(swap.amountUSD as string).toFixed(3),
+            from: (swap.from as string) || '',
+            to: swap.to as string,
+            timestamp: parseInt(swap.timestamp as string) * 1000,
+            transactionHash: transaction.hash as string,
+            transactionType: 'Swap',
+            token0: swap.pool.token0,
+            token1: swap.pool.token1,
+          });
+        }
+      }
+
+      // Loop through for burns
+      for (const burn of transaction.burns) {
+        if (burn.pool.id === decodedId) {
+          merges.push({
+            amount0: parseFloat(burn.amount0 as string).toFixed(3),
+            amount1: parseFloat(burn.amount1 as string).toFixed(3),
+            amountUSD: parseFloat(burn.amountUSD as string).toFixed(3),
+            from: (burn.sender as string) || '',
+            to: burn.to as string,
+            timestamp: parseInt(burn.timestamp as string) * 1000,
+            transactionHash: transaction.hash as string,
+            transactionType: 'Remove',
+            token0: burn.pool.token0,
+            token1: burn.pool.token1,
+          });
+        }
+      }
+    }
+
+    // Sort by timestamps
+    return merges.sort((a, b) => b.timestamp - a.timestamp);
+  }, [allTransactions, decodedId]);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const totalPages = useMemo(
+    () => Math.ceil(mergedTransactions.length / 20),
+    [mergedTransactions.length],
+  );
+
+  const tvlSeries: Record<Timeframe, TimeSeriesDataPoint[]> = useMemo(() => {
+    return {
+      '1D': poolDayData1Day.map((o) => {
+        const date = parseQLDate(o.date);
+        return {
+          date: `${date.toLocaleDateString('en-us', {
+            month: 'short',
+            day: 'numeric',
+          })} ${date.getHours()}:00`,
+          value: parseFloat(o.reserveUSD as string),
+        };
+      }),
+      '7D': poolDayData7Days.map((o) => {
+        const date = parseQLDate(o.date);
+        return {
+          date: `${date.toLocaleDateString('en-us', {
+            month: 'short',
+            day: 'numeric',
+          })}`,
+          value: parseFloat(o.reserveUSD as string),
+        };
+      }),
+      '30D': poolDayData30Days.map((o) => {
+        const date = parseQLDate(o.date);
+        return {
+          date: `${date.toLocaleDateString('en-us', {
+            month: 'short',
+            day: 'numeric',
+          })}`,
+          value: parseFloat(o.reserveUSD as string),
+        };
+      }),
+    };
+  }, [poolDayData1Day, poolDayData30Days, poolDayData7Days]);
+
+  const volSeries: Record<Timeframe, TimeSeriesDataPoint[]> = useMemo(() => {
+    return {
+      '1D': poolDayData1Day.map((o) => {
+        const date = parseQLDate(o.date);
+        return {
+          date: `${date.toLocaleDateString('en-us', {
+            month: 'short',
+            day: 'numeric',
+          })} ${date.getHours()}:00`,
+          value: parseFloat(o.dailyVolumeUSD as string),
+        };
+      }),
+      '7D': poolDayData7Days.map((o) => {
+        const date = parseQLDate(o.date);
+        return {
+          date: `${date.toLocaleDateString('en-us', {
+            month: 'short',
+            day: 'numeric',
+          })}`,
+          value: parseFloat(o.dailyVolumeUSD as string),
+        };
+      }),
+      '30D': poolDayData30Days.map((o) => {
+        const date = parseQLDate(o.date);
+        return {
+          date: `${date.toLocaleDateString('en-us', {
+            month: 'short',
+            day: 'numeric',
+          })}`,
+          value: parseFloat(o.dailyVolumeUSD as string),
+        };
+      }),
+    };
+  }, [poolDayData1Day, poolDayData30Days, poolDayData7Days]);
+
+  if (isPoolLoading || !pool) {
+    return (
+      <div className="w-full flex flex-col gap-8">
+        <Skeleton className="w-32 h-6 mb-4" />
+        <Skeleton className="w-full h-20 mb-4" />
+        <div className="flex flex-col md:flex-row flex-wrap gap-3">
+          <Skeleton className="h-22.5 flex-1 min-w-50" />
+          <Skeleton className="h-22.5 flex-1 min-w-50" />
+          <Skeleton className="h-22.5 flex-1 min-w-50" />
+          <Skeleton className="h-22.5 flex-1 min-w-50" />
+        </div>
+      </div>
+    );
+  }
+
+  const apr = pool.gauge?.rewardRate ? parseFloat(pool.gauge.rewardRate as string) : 0;
 
   return (
     <div className="w-full flex flex-col gap-8">
@@ -104,14 +278,14 @@ export const PoolAnalyticsView: React.FC<{ poolId: string }> = ({ poolId }) => {
             <h1 className="text-white text-2xl font-bold tracking-wide uppercase">{pool.name}</h1>
             <span
               className={`text-xs px-2 py-0.5 font-mono font-bold uppercase ${
-                POOL_TYPE_COLORS[pool.poolType]
+                POOL_TYPE_COLORS[pool.poolType as PoolType]
               } bg-white/5 border border-white/10`}
             >
               {pool.poolType.toLowerCase()}
             </span>
           </div>
           <p className="text-[#64748b] font-mono text-xs mt-1 flex items-center gap-1">
-            {pool.address}
+            {pool.address as string}
             <ExternalLinkIcon size={10} />
           </p>
         </div>
@@ -125,27 +299,35 @@ export const PoolAnalyticsView: React.FC<{ poolId: string }> = ({ poolId }) => {
 
       {/* Key metrics */}
       <div className="flex flex-col md:flex-row flex-wrap gap-3">
-        <StatCard label="TVL" value={formatNumber(pool.reserveUSD, 'en-US', 2, true)} />
-        <StatCard label="Vol (24h)" value={formatNumber(pool.volumeUSD * 0.04, 'en-US', 2, true)} />
+        <StatCard label="TVL" value={formatNumber(pool.reserveUSD as string, 'en-US', 2, true)} />
+        <StatCard label="Vol" value={formatNumber(pool.volumeUSD as string, 'en-US', 2, true)} />
         <StatCard
-          label="Fees (24h)"
-          value={formatNumber(pool.totalFeesUSD * 0.01, 'en-US', 2, true)}
+          label="Fees"
+          value={formatNumber(pool.totalFeesUSD as string, 'en-US', 2, true)}
         />
         <StatCard label="APR" value={`${apr.toFixed(2)}%`} sub="Current epoch" />
-        <StatCard label="Txns" value={formatNumber(pool.txCount, 'en-US', 0)} />
+        <StatCard label="Txns" value={formatNumber(pool.txCount as string, 'en-US', 0)} />
       </div>
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <div className="bg-black border border-white/5 p-4">
           <p className="text-[#64748b] text-[10px] font-bold uppercase tracking-widest mb-3">TVL</p>
-          <TimeSeriesChart data={tvlSeries} color="#2962ff" height={180} />
+          {isLoading1D || isLoading7D || isLoading30D ? (
+            <Skeleton className="h-45 w-full" />
+          ) : (
+            <TimeSeriesChart data={tvlSeries} color="#2962ff" height={180} />
+          )}
         </div>
         <div className="bg-black border border-white/5 p-4">
           <p className="text-[#64748b] text-[10px] font-bold uppercase tracking-widest mb-3">
             Volume
           </p>
-          <VolumeBarChart data={volSeries} height={180} />
+          {isLoading1D || isLoading7D || isLoading30D ? (
+            <Skeleton className="h-45 w-full" />
+          ) : (
+            <VolumeBarChart data={volSeries} height={180} />
+          )}
         </div>
       </div>
 
@@ -158,13 +340,13 @@ export const PoolAnalyticsView: React.FC<{ poolId: string }> = ({ poolId }) => {
           <div className="flex-1">
             <p className="text-[#64748b] text-xs mb-1">{pool.token0.symbol}</p>
             <p className="text-white font-bold text-xl">
-              {formatNumber(pool.reserve0, 'en-US', 2, true)}
+              {formatNumber(pool.reserve0 as string, 'en-US', 2, true)}
             </p>
             <p className="text-[#64748b] text-xs">
               1 {pool.token0.symbol} ={' '}
-              {pool.token0Price < 0.001
-                ? pool.token0Price.toExponential(2)
-                : pool.token0Price.toFixed(4)}{' '}
+              {parseFloat(pool.token0Price as string) < 0.001
+                ? parseFloat(pool.token0Price as string).toExponential(2)
+                : parseFloat(pool.token0Price as string).toFixed(4)}{' '}
               {pool.token1.symbol}
             </p>
           </div>
@@ -172,13 +354,13 @@ export const PoolAnalyticsView: React.FC<{ poolId: string }> = ({ poolId }) => {
           <div className="flex-1">
             <p className="text-[#64748b] text-xs mb-1">{pool.token1.symbol}</p>
             <p className="text-white font-bold text-xl">
-              {formatNumber(pool.reserve1, 'en-US', 2, true)}
+              {formatNumber(pool.reserve1 as string, 'en-US', 2, true)}
             </p>
             <p className="text-[#64748b] text-xs">
               1 {pool.token1.symbol} ={' '}
-              {pool.token1Price < 0.001
-                ? pool.token1Price.toExponential(2)
-                : pool.token1Price.toFixed(4)}{' '}
+              {parseFloat(pool.token1Price as string) < 0.001
+                ? parseFloat(pool.token1Price as string).toExponential(2)
+                : parseFloat(pool.token1Price as string).toFixed(4)}{' '}
               {pool.token0.symbol}
             </p>
           </div>
@@ -190,38 +372,90 @@ export const PoolAnalyticsView: React.FC<{ poolId: string }> = ({ poolId }) => {
         <p className="text-[#64748b] text-[10px] font-bold uppercase tracking-widest mb-3">
           Transactions
         </p>
-        {txns.length === 0 ? (
+
+        {isLoadingTxns ? (
+          <div className="flex flex-col gap-2">
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+        ) : mergedTransactions.length === 0 ? (
           <p className="text-[#64748b] font-mono text-xs py-4 text-center">
             No recent transactions for this pool
           </p>
         ) : (
-          <Table<MockTransaction>
-            headers={[
-              { label: 'Type', align: 'left' },
-              { label: 'Pair', align: 'left' },
-              { label: 'Amount', align: 'right' },
-              { label: 'Account', align: 'right' },
-              { label: 'Time', align: 'right' },
-            ]}
-            data={txns}
-            renderRow={(tx) => (
-              <>
-                <td className="py-2 pr-4">
-                  <span
-                    className={`px-2 py-0.5 border text-[10px] uppercase ${TX_COLORS[tx.type]}`}
-                  >
-                    {tx.type}
-                  </span>
-                </td>
-                <td className="py-2 pr-4 text-[#94a3b8]">{tx.pair}</td>
-                <td className="py-2 pr-4 text-right text-white">
-                  ${formatNumber(tx.amountUSD, 'en-US', 0)}
-                </td>
-                <td className="py-2 pr-4 text-right text-[#2962ff]">{tx.account}</td>
-                <td className="py-2 pr-4 text-right text-[#64748b]">{tx.timeAgo}</td>
-              </>
-            )}
-          />
+          <>
+            <Table<(typeof mergedTransactions)[number]>
+              headers={[
+                { label: 'Type', align: 'left' },
+                { label: 'Pair', align: 'left' },
+                { label: 'Amount', align: 'right' },
+                { label: 'From', align: 'right' },
+                { label: 'To', align: 'right' },
+                { label: 'Time', align: 'right' },
+                { label: 'Transaction', align: 'right' },
+              ]}
+              data={mergedTransactions.slice((currentPage - 1) * 20, currentPage * 20)}
+              renderRow={(tx) => {
+                const explorerUrl = CHAINS_INFORMATION[chainId].explorerUrl;
+                return (
+                  <>
+                    <td className="py-2 pr-4">
+                      <span
+                        className={`px-2 py-0.5 border text-[10px] uppercase ${
+                          TX_COLORS[tx.transactionType]
+                        }`}
+                      >
+                        {tx.transactionType}
+                      </span>
+                    </td>
+                    <td className="py-2 pr-4 text-[#94a3b8]">
+                      {tx.token0.symbol} / {tx.token1.symbol}
+                    </td>
+                    <td className="py-2 pr-4 text-right text-white">
+                      ${formatNumber(tx.amountUSD, 'en-US', 0)}
+                    </td>
+                    <td className="py-2 pr-4 text-right">
+                      <a href={`${explorerUrl}/address/${tx.from}`} target="_blank">
+                        <span className="text-[#2962ff] flex items-center justify-end gap-1">
+                          {splitString(tx.from)}
+                          <ExternalLinkIcon size={10} />
+                        </span>
+                      </a>
+                    </td>
+                    <td className="py-2 pr-4 text-right">
+                      <a href={`${explorerUrl}/address/${tx.to}`} target="_blank">
+                        <span className="text-[#2962ff] flex items-center justify-end gap-1">
+                          {splitString(tx.to)}
+                          <ExternalLinkIcon size={10} />
+                        </span>
+                      </a>
+                    </td>
+                    <td className="py-2 pr-4 text-right text-[#64748b]">
+                      {moment(tx.timestamp).fromNow()}
+                    </td>
+                    <td className="py-2 pr-4 text-right">
+                      <a href={`${explorerUrl}/tx/${tx.transactionHash}`} target="_blank">
+                        <span className="text-[#2962ff] flex items-center justify-end gap-1">
+                          {splitString(tx.transactionHash)}
+                          <ExternalLinkIcon size={10} />
+                        </span>
+                      </a>
+                    </td>
+                  </>
+                );
+              }}
+            />
+            <div className="mt-6 flex justify-end items-center">
+              <Pagination
+                currentPage={currentPage}
+                onPageChange={setCurrentPage}
+                totalPages={totalPages}
+              />
+            </div>
+          </>
         )}
       </div>
     </div>
