@@ -12,7 +12,7 @@ function useAllPools(
   const chainId = useChainId();
   const uri = CHAIN_GQL_URI[chainId];
   const { data, isLoading, isError } = useQuery({
-    queryKey: ['__gql__all__pools'],
+    queryKey: ['__gql__all__pools', skip, limit],
     queryFn: () => ql(uri, QUERY_ALL_POOLS, { skip, limit }),
     refetchInterval,
   });

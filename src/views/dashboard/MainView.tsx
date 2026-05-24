@@ -10,7 +10,9 @@ export const MainView: React.FC = () => {
         <FancyCard>
           <div className="flex flex-col gap-5 lg:gap-7 justify-start items-start pb-4 md:pb-10">
             <div className="flex justify-between items-center gap-4 w-full">
-              <h5 className="text-[#94a3b8] font-semibold text-lg md:text-xl">Portfolio Value</h5>
+              <h5 className="text-[#94a3b8] font-semibold text-lg md:text-xl">
+                Liquidity Portfolio
+              </h5>
               <span
                 className={`${
                   positionStats?.portfolioChangeType === 'increase'
@@ -42,7 +44,9 @@ export const MainView: React.FC = () => {
         <FancyCard>
           <div className="flex flex-col gap-5 lg:gap-7 justify-start items-start">
             <div className="flex justify-between items-center gap-4 w-full">
-              <h5 className="text-[#94a3b8] font-semibold text-lg md:text-xl">Voting Power</h5>
+              <h5 className="text-[#94a3b8] font-semibold text-lg md:text-xl">
+                Total Voting Power
+              </h5>
               <span className="text-[#94a3b8] font-semibold text-xs md:text-sm">
                 0.042% of total
               </span>

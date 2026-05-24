@@ -5,6 +5,7 @@ import { ArrowLeftIcon, ExternalLinkIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Table } from '@/components/Table';
 import { Pagination } from '@/components/Pagination';
+import { Skeleton } from '@/components/Skeleton';
 import {
   TimeSeriesChart,
   type Timeframe,
@@ -22,10 +23,6 @@ import { useChainId } from 'wagmi';
 import { type TxType } from '@/utils/mock-data';
 import moment from 'moment';
 import { splitString } from '@/utils';
-
-const Skeleton: React.FC<{ className?: string }> = ({ className = '' }) => (
-  <div className={`animate-pulse bg-white/5 rounded ${className}`} />
-);
 
 function parseQLDate(n: number) {
   return new Date(n * 1000);
