@@ -5,9 +5,10 @@ export const QUERY_ACCOUNT_INFO = graphql(`
     user(id: $id) {
       id
       address
-      lpPositions {
+      lpPositions(first: 1000) {
         id
         position
+        clPositionTokenId
         pool {
           id
           name

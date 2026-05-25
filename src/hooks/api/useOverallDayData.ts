@@ -17,7 +17,7 @@ function useOverallDayData(
   const chainId = useChainId();
   const uri = CHAIN_GQL_URI[chainId];
   const { data, isLoading, isError } = useQuery({
-    queryKey: ['__gql__overall__day__data', dateMin, dateMax],
+    queryKey: ['__gql__overall__day__data', dateMin, dateMax, skip, limit],
     queryFn: () => ql(uri, QUERY_OVERALLDAY_DATA, { skip, limit, dateMin, dateMax }),
     refetchInterval,
   });

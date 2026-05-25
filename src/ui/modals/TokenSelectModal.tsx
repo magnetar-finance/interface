@@ -6,6 +6,10 @@ import { SearchIcon, XIcon } from 'lucide-react';
 import Image from 'next/image';
 import { Modal } from '@/components/Modal';
 import React, { useMemo, useState } from 'react';
+import useGetBalance from '@/hooks/wallet/useGetBalance';
+import { REFETCH_INTERVALS } from '@/constants';
+import { formatNumber } from '@/utils';
+import { formatUnits } from 'viem';
 
 interface TokenSelectModalProps {
   open: boolean;
@@ -14,6 +18,63 @@ interface TokenSelectModalProps {
   disabledToken?: AssetResponseType[number] | null;
   onTokenSelect: (token: AssetResponseType[number]) => void;
 }
+
+interface TokenViewProps {
+  token: AssetResponseType[number];
+  isSelected?: boolean;
+  isDisabled?: boolean;
+  onSingleTokenClick: (token: AssetResponseType[number]) => void;
+}
+
+const TokenView: React.FC<TokenViewProps> = ({
+  token,
+  isDisabled,
+  isSelected,
+  onSingleTokenClick,
+}) => {
+  const balance = useGetBalance(token.address, REFETCH_INTERVALS);
+
+  return (
+    <button
+      key={token.address}
+      disabled={isDisabled}
+      onClick={() => onSingleTokenClick(token)}
+      className={`w-full flex justify-between items-center px-5 py-3 transition-colors
+                      ${
+                        isSelected
+                          ? 'bg-[#2962ff]/20 text-[#2962ff]'
+                          : 'text-white hover:bg-white/5'
+                      }
+                      ${isDisabled ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer'}`}
+    >
+      <div className="flex items-center gap-3">
+        {token.logoURI ? (
+          <Image
+            src={token.logoURI}
+            alt={token.symbol}
+            width={32}
+            height={32}
+            className="rounded-full w-8 h-8 bg-white/10"
+          />
+        ) : (
+          <div className="w-8 h-8 rounded-full bg-[#2962ff]/20 flex items-center justify-center">
+            <span className="text-[#2962ff] text-xs font-bold">{token.symbol.slice(0, 2)}</span>
+          </div>
+        )}
+        <div className="flex flex-col items-start">
+          <span className="font-semibold text-sm">{token.symbol}</span>
+          <span className="text-[#64748b] text-xs">{token.name}</span>
+        </div>
+      </div>
+      <div className="flex flex-col items-end">
+        <span className="text-[#94a3b8] text-xs">
+          {formatNumber(formatUnits(balance, token.decimals), 'en-US', 2)}
+        </span>
+        {isSelected && <span className="text-[#2962ff] text-xs mt-0.5">Selected</span>}
+      </div>
+    </button>
+  );
+};
 
 export const TokenSelectModal: React.FC<TokenSelectModalProps> = ({
   open,
@@ -43,7 +104,7 @@ export const TokenSelectModal: React.FC<TokenSelectModalProps> = ({
   };
 
   return (
-    <Modal open={open} onOpenChange={onOpenChange} title="Select Token" className="h-[400px]">
+    <Modal open={open} onOpenChange={onOpenChange} title="Select Token" className="h-100">
       {/* Search */}
       <div className="px-5 py-3 border-b border-white/10 shrink-0">
         <div className="flex items-center gap-2 bg-black border border-white/10 px-3 py-2">
@@ -78,44 +139,13 @@ export const TokenSelectModal: React.FC<TokenSelectModalProps> = ({
             const isSelected = selectedToken?.address === token.address;
             const isDisabled = disabledToken?.address === token.address;
             return (
-              <button
+              <TokenView
                 key={token.address}
-                disabled={isDisabled}
-                onClick={() => handleSelect(token)}
-                className={`w-full flex justify-between items-center px-5 py-3 transition-colors
-                      ${
-                        isSelected
-                          ? 'bg-[#2962ff]/20 text-[#2962ff]'
-                          : 'text-white hover:bg-white/5'
-                      }
-                      ${isDisabled ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer'}`}
-              >
-                <div className="flex items-center gap-3">
-                  {token.logoURI ? (
-                    <Image
-                      src={token.logoURI}
-                      alt={token.symbol}
-                      width={32}
-                      height={32}
-                      className="rounded-full w-8 h-8 bg-white/10"
-                    />
-                  ) : (
-                    <div className="w-8 h-8 rounded-full bg-[#2962ff]/20 flex items-center justify-center">
-                      <span className="text-[#2962ff] text-xs font-bold">
-                        {token.symbol.slice(0, 2)}
-                      </span>
-                    </div>
-                  )}
-                  <div className="flex flex-col items-start">
-                    <span className="font-semibold text-sm">{token.symbol}</span>
-                    <span className="text-[#64748b] text-xs">{token.name}</span>
-                  </div>
-                </div>
-                <div className="flex flex-col items-end">
-                  <span className="text-[#94a3b8] text-xs">0.00</span>
-                  {isSelected && <span className="text-[#2962ff] text-xs mt-0.5">Selected</span>}
-                </div>
-              </button>
+                token={token}
+                isDisabled={isDisabled}
+                isSelected={isSelected}
+                onSingleTokenClick={handleSelect}
+              />
             );
           })
         )}

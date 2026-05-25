@@ -12,7 +12,7 @@ function useAllTokens(
   const chainId = useChainId();
   const uri = CHAIN_GQL_URI[chainId];
   const { data, isLoading, isError } = useQuery({
-    queryKey: ['__gql__all__tokens'],
+    queryKey: ['__gql__all__tokens', skip, limit],
     queryFn: () => ql(uri, QUERY_ALL_TOKENS, { skip, limit }),
     refetchInterval,
   });

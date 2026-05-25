@@ -50,7 +50,7 @@ const NavLink: React.FC<{ item: NavItem }> = ({ item }) => {
     >
       {/* Active left bar */}
       <span
-        className={`absolute left-0 top-0 h-full w-[2px] transition-all duration-200 ${
+        className={`absolute left-0 top-0 h-full w-0.5 transition-all duration-200 ${
           isActive ? 'bg-[#2962ff] shadow-[0_0_8px_rgba(41,98,255,0.8)]' : 'bg-transparent'
         }`}
       />
@@ -58,8 +58,8 @@ const NavLink: React.FC<{ item: NavItem }> = ({ item }) => {
       <span
         className={`absolute inset-0 transition-all duration-200 ${
           isActive
-            ? 'bg-gradient-to-r from-[#2962ff]/15 to-transparent'
-            : 'bg-transparent group-hover:bg-white/[0.04]'
+            ? 'bg-linear-to-r from-[#2962ff]/15 to-transparent'
+            : 'bg-transparent group-hover:bg-white/4'
         }`}
       />
       {/* Icon */}
@@ -87,17 +87,17 @@ export const Sidebar: React.FC = () => {
   const { data: blockNumber = BigInt(0) } = useBlockNumber({ query: { refetchInterval: 60000 } });
 
   return (
-    <aside className="bg-[#050508] min-h-screen border-r border-white/[0.06] py-6 fixed left-0 top-0 bottom-0 w-[20%] flex flex-col">
+    <aside className="bg-[#050508] min-h-screen border-r border-white/6 py-6 fixed left-0 top-0 bottom-0 w-[20%] flex flex-col">
       {/* Logo */}
       <div className="flex items-center gap-3 px-5 mb-8">
         <div className="relative">
           <div className="absolute inset-0 bg-[#2962ff]/20 blur-sm rounded-sm" />
           <Image
-            src="/assets/images/magnetar.svg"
+            src="/assets/images/magnetar.png"
             alt="logo"
             width={36}
             height={36}
-            className="relative border border-[#2962ff]/60 p-0.5"
+            className="relative border border-[#2962ff]/60 p-0.5 rounded-full"
           />
         </div>
         <div>
@@ -121,7 +121,7 @@ export const Sidebar: React.FC = () => {
       </nav>
 
       {/* Stats panel */}
-      <div className="mx-4 mt-4 border border-white/[0.06] bg-black/40 px-4 py-3 space-y-2 relative">
+      <div className="mx-4 mt-4 border border-white/6 bg-black/40 px-4 py-3 space-y-2 relative">
         {/* Corner accents */}
         <span className="absolute top-0 left-0 w-2 h-2 border-t border-l border-[#2962ff]/50" />
         <span className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-[#2962ff]/50" />

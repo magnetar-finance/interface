@@ -12,7 +12,7 @@ function useAllTransactions(
   const chainId = useChainId();
   const uri = CHAIN_GQL_URI[chainId];
   const { data, isLoading, isError } = useQuery({
-    queryKey: ['__gql__all__transactions'],
+    queryKey: ['__gql__all__transactions', skip, limit],
     queryFn: () => ql(uri, QUERY_ALL_TRANSACTIONS, { skip, limit }),
     refetchInterval,
   });

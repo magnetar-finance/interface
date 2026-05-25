@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Table } from '@/components/Table';
 import { Pagination } from '@/components/Pagination';
+import { Skeleton } from '@/components/Skeleton';
 import {
   TimeSeriesChart,
   type Timeframe,
@@ -22,10 +23,6 @@ import useAllTransactions from '@/hooks/api/useAllTransactions';
 import { useChainId } from 'wagmi';
 import moment from 'moment';
 import { splitString } from '@/utils';
-
-const Skeleton: React.FC<{ className?: string }> = ({ className = '' }) => (
-  <div className={`animate-pulse bg-white/5 rounded ${className}`} />
-);
 
 function parseQLDate(n: number) {
   return new Date(n * 1000);
@@ -285,8 +282,13 @@ export const PoolAnalyticsView: React.FC<{ poolId: string }> = ({ poolId }) => {
             </span>
           </div>
           <p className="text-[#64748b] font-mono text-xs mt-1 flex items-center gap-1">
-            {pool.address as string}
-            <ExternalLinkIcon size={10} />
+            <a
+              href={CHAINS_INFORMATION[chainId].explorerUrl + '/address/' + pool.address}
+              target="_blank"
+            >
+              {pool.address as string}
+              <ExternalLinkIcon size={10} />
+            </a>
           </p>
         </div>
         <Link
