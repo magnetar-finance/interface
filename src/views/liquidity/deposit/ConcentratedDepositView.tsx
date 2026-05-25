@@ -103,14 +103,6 @@ export const ConcentratedDepositView: React.FC<{
     [modalType, tokenA, tokenB],
   );
 
-  const isSupplyDisabled = useMemo(() => {
-    if (!tokenA || !tokenB) return true;
-    if (!amountA || !amountB) return true;
-    if (parseFloat(amountA || '0') <= 0 && parseFloat(amountB || '0') <= 0) return true;
-    if (!minPrice || !maxPrice || parseFloat(minPrice) >= parseFloat(maxPrice)) return true;
-    return false;
-  }, [tokenA, tokenB, amountA, amountB, minPrice, maxPrice]);
-
   // Derive active bounds for the chart highlighting (MOCK calculation)
   const chartMinIndex = useMemo(
     () => priceToTick(parseFloat(minPrice || String(PRICE_MIN))),
@@ -160,6 +152,30 @@ export const ConcentratedDepositView: React.FC<{
     token1?.address || zeroAddress,
     tickSpacing,
   );
+
+  // Balances
+  const balanceA = useGetBalance(tokenA?.address || zeroAddress);
+  const balanceB = useGetBalance(tokenB?.address || zeroAddress);
+
+  const isSupplyDisabled = useMemo(() => {
+    if (!tokenA || !tokenB) return true;
+    if (!amountA || !amountB) return true;
+    if (parseFloat(amountA || '0') <= 0 && parseFloat(amountB || '0') <= 0) return true;
+    if (!minPrice || !maxPrice || parseFloat(minPrice) >= parseFloat(maxPrice)) return true;
+    if (balanceA < amount0Parsed || balanceB < amount1Parsed) return true;
+    return false;
+  }, [
+    tokenA,
+    tokenB,
+    amountA,
+    amountB,
+    minPrice,
+    maxPrice,
+    balanceA,
+    amount0Parsed,
+    balanceB,
+    amount1Parsed,
+  ]);
 
   const initialPrice = useMemo(() => {
     if (
@@ -246,10 +262,6 @@ export const ConcentratedDepositView: React.FC<{
     amount1Parsed,
     OP_SETTINGS.default_refetch_interval,
   );
-
-  // Balances
-  const balanceA = useGetBalance(tokenA?.address || zeroAddress);
-  const balanceB = useGetBalance(tokenB?.address || zeroAddress);
 
   // Allowances
   const allowanceA = useGetAllowance(tokenA?.address, positionCreator, REFETCH_INTERVALS);
@@ -530,7 +542,13 @@ export const ConcentratedDepositView: React.FC<{
       <div className="w-full">
         {isConnected ? (
           <PrimaryButton
-            disabled={isSupplyDisabled && isConnected}
+            disabled={
+              (isSupplyDisabled ||
+                addLiquidity.isLoading ||
+                approvalA.isLoading ||
+                approvalB.isLoading) &&
+              isConnected
+            }
             className="w-full py-4 text-base tracking-widest font-bold"
             onClick={initiateTransaction}
           >

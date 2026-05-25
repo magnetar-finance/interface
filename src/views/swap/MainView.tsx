@@ -620,18 +620,6 @@ export const MainView: React.FC = () => {
     clSwap,
   ]);
 
-  // Button state
-  const { label: actionLabel, disabled: actionDisabled } = useMemo(() => {
-    if (!tokenIn || !tokenOut) return { label: 'Select Tokens', disabled: true };
-    if (!amountIn || parseFloat(amountIn) <= 0) return { label: 'Enter an Amount', disabled: true };
-    if (isETHER_WETH) {
-      if (isWrap) return { label: 'Wrap ' + tokenIn.symbol, disabled: false };
-      else return { label: 'Unwrap ' + tokenIn.symbol, disabled: false };
-    }
-    if (requiresApproval) return { label: `Approve ${tokenIn.symbol}`, disabled: false };
-    return { label: 'Swap', disabled: false };
-  }, [tokenIn, tokenOut, amountIn, isETHER_WETH, requiresApproval, isWrap]);
-
   // Balances
   const balanceA = useGetBalance(tokenIn?.address || zeroAddress);
   const balanceB = useGetBalance(tokenOut?.address || zeroAddress);
@@ -643,6 +631,28 @@ export const MainView: React.FC = () => {
     () => formatUnits(balanceB, tokenOut?.decimals || 18),
     [balanceB, tokenOut?.decimals],
   );
+
+  // Button state
+  const { label: actionLabel, disabled: actionDisabled } = useMemo(() => {
+    if (!tokenIn || !tokenOut) return { label: 'Select Tokens', disabled: true };
+    if (!amountIn || parseFloat(amountIn) <= 0) return { label: 'Enter an Amount', disabled: true };
+    if (balanceA < amountInParsed) return { label: 'Insufficient Balance', disabled: true };
+    if (isETHER_WETH) {
+      if (isWrap) return { label: 'Wrap ' + tokenIn.symbol, disabled: false };
+      else return { label: 'Unwrap ' + tokenIn.symbol, disabled: false };
+    }
+    if (requiresApproval) return { label: `Approve ${tokenIn.symbol}`, disabled: false };
+    return { label: 'Swap', disabled: false };
+  }, [
+    tokenIn,
+    tokenOut,
+    amountIn,
+    balanceA,
+    amountInParsed,
+    isETHER_WETH,
+    requiresApproval,
+    isWrap,
+  ]);
 
   return (
     <>
@@ -698,7 +708,7 @@ export const MainView: React.FC = () => {
                 usdValue={usdValueIn}
                 balance={balanceAParsed}
                 onAmountChange={setAmountIn}
-                onMaxClick={() => setAmountIn('0')} // stub: replace with real balance
+                onMaxClick={() => setAmountIn(balanceAParsed)}
                 onTokenClick={() => setSelectingFor('in')}
               />
 
@@ -743,7 +753,17 @@ export const MainView: React.FC = () => {
                 {isConnected ? (
                   <PrimaryButton
                     className="w-full py-4 text-sm"
-                    disabled={actionDisabled}
+                    disabled={
+                      actionDisabled ||
+                      autoSwap.isLoading ||
+                      v2Swap.isLoading ||
+                      clSwap.isLoading ||
+                      autoSwapperApproval.isLoading ||
+                      v2SwapperApproval.isLoading ||
+                      clSwapperApproval.isLoading ||
+                      depositETH.isLoading ||
+                      unwrapETH.isLoading
+                    }
                     onClick={initiateProcess}
                   >
                     {actionLabel}{' '}

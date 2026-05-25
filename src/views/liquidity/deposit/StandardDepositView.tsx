@@ -58,13 +58,6 @@ export const StandardDepositView: React.FC<{
     [modalType, tokenA, tokenB],
   );
 
-  const isSupplyDisabled = useMemo(() => {
-    if (!tokenA || !tokenB) return true;
-    if (!amountA && !amountB) return true;
-    if (parseFloat(amountA || '0') <= 0 && parseFloat(amountB || '0') <= 0) return true;
-    return false;
-  }, [tokenA, tokenB, amountA, amountB]);
-
   const [showSuccess, setShowSuccess] = useState<boolean>(false);
   const [showError, setShowError] = useState<boolean>(false);
   const [explorerLink, setExplorerLink] = useState<string>('');
@@ -136,6 +129,14 @@ export const StandardDepositView: React.FC<{
     OP_SETTINGS.default_refetch_interval,
   );
 
+  const isSupplyDisabled = useMemo(() => {
+    if (!tokenA || !tokenB) return true;
+    if (!amountA && !amountB) return true;
+    if (balanceA < amount0Parsed || balanceB < amount1Parsed) return true;
+    if (parseFloat(amountA || '0') <= 0 && parseFloat(amountB || '0') <= 0) return true;
+    return false;
+  }, [tokenA, tokenB, amountA, amountB, balanceA, amount0Parsed, balanceB, amount1Parsed]);
+
   const buttonText = useMemo(() => {
     if (!tokenA || !tokenB) return 'Select tokens';
     if (!amountA && !amountB) return 'Enter an amount';
@@ -205,7 +206,13 @@ export const StandardDepositView: React.FC<{
       <div className="w-full">
         {isConnected ? (
           <PrimaryButton
-            disabled={isSupplyDisabled && isConnected}
+            disabled={
+              (isSupplyDisabled ||
+                addLiquidity.isLoading ||
+                approvalA.isLoading ||
+                approvalB.isLoading) &&
+              isConnected
+            }
             className="w-full py-4 text-base tracking-widest font-bold"
             onClick={initiateTransaction}
           >
