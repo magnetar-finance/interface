@@ -21,11 +21,11 @@ export const Header: React.FC = () => {
         <div className="md:hidden relative shrink-0">
           <div className="absolute inset-0 bg-[#2962ff]/20 blur-sm rounded-sm" />
           <Image
-            src="/assets/images/magnetar.svg"
+            src="/assets/images/magnetar.png"
             alt="logo"
             width={24}
             height={24}
-            className="relative border border-[#2962ff]/60 p-0.5"
+            className="relative border border-[#2962ff]/60 p-0.5 rounded-full"
           />
         </div>
       </div>

@@ -15,7 +15,7 @@ const envServerSchema = z.object({
     .string()
     .optional()
     .default(
-      'https://api.goldsky.com/api/public/project_clws3jv71bgap01u93r59ccbm/subgraphs/magnetar-arc/1.0.7/gn',
+      'https://api.goldsky.com/api/public/project_clws3jv71bgap01u93r59ccbm/subgraphs/magnetar-arc/1.0.8/gn',
     ),
 });
 
@@ -31,7 +31,7 @@ export const serverEnv = createEnv({
       .string()
       .optional()
       .default(
-        'https://api.goldsky.com/api/public/project_clws3jv71bgap01u93r59ccbm/subgraphs/magnetar-arc/1.0.7/gn',
+        'https://api.goldsky.com/api/public/project_clws3jv71bgap01u93r59ccbm/subgraphs/magnetar-arc/1.0.8/gn',
       ),
   },
   experimental__runtimeEnv: {

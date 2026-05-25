@@ -258,8 +258,13 @@ export const TokenAnalyticsView: React.FC<{ tokenId: string }> = ({ tokenId }) =
           </div>
 
           <p className="text-[#64748b] font-mono text-xs mt-2 flex items-center gap-1">
-            {token.id}
-            <ExternalLinkIcon size={10} />
+            <a
+              href={`${CHAINS_INFORMATION[chainId].explorerUrl}/address/${token.id}`}
+              target="_blank"
+            >
+              {token.id as string}
+              <ExternalLinkIcon size={10} />
+            </a>
           </p>
         </div>
       </div>

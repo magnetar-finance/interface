@@ -300,7 +300,7 @@ export const ConcentratedDepositView: React.FC<{
     if (!amountA && !amountB) return 'Enter an amount';
     if (!minPrice || !maxPrice || parseFloat(minPrice) >= parseFloat(maxPrice))
       return 'Invalid Price Range';
-    if (balanceA == BI_ZERO || balanceB == BI_ZERO) return 'Insufficient balance';
+    if (balanceA < amount0Parsed || balanceB < amount1Parsed) return 'Insufficient balance';
     if (allowanceA < amount0Parsed) return `Approve ${tokenA.symbol}`;
     if (allowanceB < amount1Parsed) return `Approve ${tokenB.symbol}`;
     return 'Supply Concentrated Liquidity';

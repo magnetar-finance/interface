@@ -9,8 +9,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { useAccount, useChainId } from 'wagmi';
 import { TokenInputRow } from './components/TokenInputRow';
 import { formatUnits, parseUnits, zeroAddress } from 'viem';
-import useV2QuoteAddLiquidity from '@/hooks/exchange/useV2QuoteAddLiquidity';
-import { BI_ZERO, CHAINS_INFORMATION, OP_SETTINGS, V2_ROUTERS } from '@/constants';
+import { CHAINS_INFORMATION, OP_SETTINGS, V2_ROUTERS } from '@/constants';
 import useGetAllowance from '@/hooks/wallet/useGetAllowance';
 import useApproveSpend from '@/hooks/wallet/useApproveSpend';
 import useAddLiquidityV2 from '@/hooks/exchange/useAddLiquidityV2';
@@ -80,24 +79,6 @@ export const StandardDepositView: React.FC<{
     [amountA, amountB, tokenA?.decimals, tokenB?.decimals],
   );
 
-  // Quote add liquidity
-  const { data: quoteLiquidityData } = useV2QuoteAddLiquidity(
-    tokenA?.address || zeroAddress,
-    tokenB?.address || zeroAddress,
-    activePoolTypeIndex === 0, // stable if index is 0
-    amount0Parsed,
-    amount1Parsed,
-  );
-
-  const currentQuote = useMemo(() => {
-    if (activePoolTypeIndex === 0) return 1;
-    const [amountA, amountB] = quoteLiquidityData;
-    if (amountA === BI_ZERO || amountB === BI_ZERO) return 0;
-    const _amountA = parseFloat(formatUnits(amountA, tokenA?.decimals ?? 18));
-    const _amountB = parseFloat(formatUnits(amountB, tokenB?.decimals ?? 18));
-    return _amountB / _amountA;
-  }, [tokenA?.decimals, tokenB?.decimals, activePoolTypeIndex, quoteLiquidityData]);
-
   const chainId = useChainId();
   const router = useMemo(() => V2_ROUTERS[chainId], [chainId]);
 
@@ -158,7 +139,7 @@ export const StandardDepositView: React.FC<{
   const buttonText = useMemo(() => {
     if (!tokenA || !tokenB) return 'Select tokens';
     if (!amountA && !amountB) return 'Enter an amount';
-    if (balanceA == BI_ZERO || balanceB == BI_ZERO) return 'Insufficient balance';
+    if (balanceA < amount0Parsed || balanceB < amount1Parsed) return 'Insufficient balance';
     if (allowanceA < amount0Parsed) return `Approve ${tokenA.symbol}`;
     if (allowanceB < amount1Parsed) return `Approve ${tokenB.symbol}`;
     return 'Supply Standard Liquidity';

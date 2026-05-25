@@ -3,6 +3,7 @@
 import { ConnectWalletPromptView } from '@/views/dashboard/ConnectWalletPromptView';
 import { MainView } from '@/views/dashboard/MainView';
 import { PositionsView } from '@/views/dashboard/PositionsView';
+import { RewardsView } from '@/views/dashboard/RewardsView';
 import { PageHeader } from '@/components/PageHeader';
 import { useAccount } from 'wagmi';
 
@@ -19,6 +20,7 @@ export default function Home() {
           />
           <MainView />
           <PositionsView />
+          <RewardsView />
         </div>
       ) : (
         <ConnectWalletPromptView />

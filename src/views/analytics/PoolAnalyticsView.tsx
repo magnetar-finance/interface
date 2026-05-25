@@ -282,8 +282,13 @@ export const PoolAnalyticsView: React.FC<{ poolId: string }> = ({ poolId }) => {
             </span>
           </div>
           <p className="text-[#64748b] font-mono text-xs mt-1 flex items-center gap-1">
-            {pool.address as string}
-            <ExternalLinkIcon size={10} />
+            <a
+              href={CHAINS_INFORMATION[chainId].explorerUrl + '/address/' + pool.address}
+              target="_blank"
+            >
+              {pool.address as string}
+              <ExternalLinkIcon size={10} />
+            </a>
           </p>
         </div>
         <Link

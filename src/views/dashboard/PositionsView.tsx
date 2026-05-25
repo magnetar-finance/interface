@@ -134,7 +134,7 @@ export const PositionsView: React.FC = () => {
                       </div>
                     </td>
                     <td className="py-3 pr-4 text-white font-bold text-right w-1/4">
-                      ${formatNumber(positionToUSD(item), 'en-US', 2, true)}
+                      {formatNumber(positionToUSD(item), 'en-US', 2, true)}
                     </td>
                     {!isMobile && (
                       <>
@@ -142,7 +142,7 @@ export const PositionsView: React.FC = () => {
                           {(item.pool.gauge?.rewardRate as string) || 0}%
                         </td>
                         <td className="py-3 pr-4 text-[#ffaf52] text-right font-bold w-1/6">
-                          ${formatNumber(item.pool.totalFeesUSD as string, 'en-US', 2, true)}
+                          {formatNumber(item.pool.totalFeesUSD as string, 'en-US', 2, true)}
                         </td>
                       </>
                     )}
