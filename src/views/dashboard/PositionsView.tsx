@@ -224,26 +224,18 @@ export const PositionsView: React.FC = () => {
           </div>
         </div>
       </FancyCard>
-      <RemoveLiquidityModal
-        open={removeModalOpen}
-        onOpenChange={(v) => {
-          setRemoveModalOpen(v);
-          if (!v) {
-            setTimeout(() => setSelectedPosition(null), 300);
-          }
-        }}
-        poolName={selectedPosition?.pool.name}
-        token0={
-          selectedPosition
-            ? getAssetInfo(selectedPosition.pool.token0.address as string)
-            : undefined
-        }
-        token1={
-          selectedPosition
-            ? getAssetInfo(selectedPosition.pool.token1.address as string)
-            : undefined
-        }
-      />
+      {selectedPosition && (
+        <RemoveLiquidityModal
+          open={removeModalOpen}
+          onOpenChange={(v) => {
+            setRemoveModalOpen(v);
+            if (!v) {
+              setTimeout(() => setSelectedPosition(null), 300);
+            }
+          }}
+          liquidityPosition={selectedPosition}
+        />
+      )}
       <IncreaseLiquidityModal
         open={increaseModalOpen}
         onOpenChange={(v) => {
