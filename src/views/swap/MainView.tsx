@@ -419,9 +419,13 @@ export const MainView: React.FC = () => {
   );
   const tokenRoute = useMemo(() => {
     if (swapMovement.length === 1) return [swapMovement[0].tokenIn, swapMovement[0].tokenOut];
-    return swapMovement.map((movement, index) =>
-      index < swapMovement.length - 1 ? movement.tokenIn : movement.tokenOut,
-    );
+    return swapMovement
+      .map((movement, index) =>
+        index < swapMovement.length - 1
+          ? [movement.tokenIn]
+          : [movement.tokenIn, movement.tokenOut],
+      )
+      .flat();
   }, [swapMovement]);
 
   const amountOut = useMemo(() => {
