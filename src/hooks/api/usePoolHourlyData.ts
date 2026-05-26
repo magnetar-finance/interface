@@ -8,9 +8,9 @@ function usePoolHourlyData(
   poolId: string,
   skip: number = 0,
   limit: number = 1000,
+  hourlyMin: number,
+  hourlyMax: number,
   refetchInterval: number | false = false,
-  hourlyMin?: number,
-  hourlyMax?: number,
 ) {
   const chainId = useChainId();
   const uri = CHAIN_GQL_URI[chainId];
@@ -21,9 +21,8 @@ function usePoolHourlyData(
         poolId,
         skip,
         limit,
-        // Only pass max limit to subgraph hourlyMin if given
-        ...(hourlyMin ? { hourlyMin } : {}),
-        ...(hourlyMax ? { hourlyMax } : {}),
+        hourMin: hourlyMin,
+        hourMax: hourlyMax,
       }),
     refetchInterval,
   });

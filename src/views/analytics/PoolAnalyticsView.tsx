@@ -70,25 +70,33 @@ export const PoolAnalyticsView: React.FC<{ poolId: string }> = ({ poolId }) => {
     decodedId,
     0,
     OP_SETTINGS.default_gql_items_limit,
-    REFETCH_INTERVALS,
     todayInSeconds - 86400,
     todayInSeconds,
+    REFETCH_INTERVALS,
   );
   const { data: poolDayData7Days, isLoading: isLoading7D } = usePoolDayData(
     decodedId,
     0,
     OP_SETTINGS.default_gql_items_limit,
-    REFETCH_INTERVALS,
     todayInSeconds - 604800,
     todayInSeconds,
+    REFETCH_INTERVALS,
   );
   const { data: poolDayData30Days, isLoading: isLoading30D } = usePoolDayData(
     decodedId,
     0,
     OP_SETTINGS.default_gql_items_limit,
-    REFETCH_INTERVALS,
     todayInSeconds - 2592000,
     todayInSeconds,
+    REFETCH_INTERVALS,
+  );
+  const { data: poolDayData1Year, isLoading: isLoading1Y } = usePoolDayData(
+    decodedId,
+    0,
+    OP_SETTINGS.default_gql_items_limit,
+    todayInSeconds - 31536000,
+    todayInSeconds,
+    REFETCH_INTERVALS,
   );
 
   // Transactions
@@ -176,10 +184,7 @@ export const PoolAnalyticsView: React.FC<{ poolId: string }> = ({ poolId }) => {
       '1D': poolDayData1Day.map((o) => {
         const date = parseQLDate(o.hourStartUnix);
         return {
-          date: `${date.toLocaleDateString('en-us', {
-            month: 'short',
-            day: 'numeric',
-          })} ${date.getHours()}:00`,
+          date: `${date.getHours()}:00`,
           value: parseFloat(o.reserveUSD as string),
         };
       }),
@@ -203,8 +208,18 @@ export const PoolAnalyticsView: React.FC<{ poolId: string }> = ({ poolId }) => {
           value: parseFloat(o.reserveUSD as string),
         };
       }),
+      '1Y': poolDayData1Year.map((o) => {
+        const date = parseQLDate(o.date);
+        return {
+          date: `${date.toLocaleDateString('en-us', {
+            month: 'short',
+            day: 'numeric',
+          })}`,
+          value: parseFloat(o.reserveUSD as string),
+        };
+      }),
     };
-  }, [poolDayData1Day, poolDayData30Days, poolDayData7Days]);
+  }, [poolDayData1Day, poolDayData1Year, poolDayData30Days, poolDayData7Days]);
 
   const volSeries: Record<Timeframe, TimeSeriesDataPoint[]> = useMemo(() => {
     return {
@@ -238,8 +253,18 @@ export const PoolAnalyticsView: React.FC<{ poolId: string }> = ({ poolId }) => {
           value: parseFloat(o.dailyVolumeUSD as string),
         };
       }),
+      '1Y': poolDayData1Year.map((o) => {
+        const date = parseQLDate(o.date);
+        return {
+          date: `${date.toLocaleDateString('en-us', {
+            month: 'short',
+            day: 'numeric',
+          })}`,
+          value: parseFloat(o.dailyVolumeUSD as string),
+        };
+      }),
     };
-  }, [poolDayData1Day, poolDayData30Days, poolDayData7Days]);
+  }, [poolDayData1Day, poolDayData1Year, poolDayData30Days, poolDayData7Days]);
 
   if (isPoolLoading || !pool) {
     return (
@@ -316,7 +341,7 @@ export const PoolAnalyticsView: React.FC<{ poolId: string }> = ({ poolId }) => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <div className="bg-black border border-white/5 p-4">
           <p className="text-[#64748b] text-[10px] font-bold uppercase tracking-widest mb-3">TVL</p>
-          {isLoading1D || isLoading7D || isLoading30D ? (
+          {isLoading1D || isLoading7D || isLoading30D || isLoading1Y ? (
             <Skeleton className="h-45 w-full" />
           ) : (
             <TimeSeriesChart data={tvlSeries} color="#2962ff" height={180} />
@@ -326,7 +351,7 @@ export const PoolAnalyticsView: React.FC<{ poolId: string }> = ({ poolId }) => {
           <p className="text-[#64748b] text-[10px] font-bold uppercase tracking-widest mb-3">
             Volume
           </p>
-          {isLoading1D || isLoading7D || isLoading30D ? (
+          {isLoading1D || isLoading7D || isLoading30D || isLoading1Y ? (
             <Skeleton className="h-45 w-full" />
           ) : (
             <VolumeBarChart data={volSeries} height={180} />
