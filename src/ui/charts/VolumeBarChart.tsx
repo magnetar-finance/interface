@@ -27,8 +27,6 @@ export interface VolumeBarChartProps {
   height?: number;
 }
 
-const TIMEFRAMES: Timeframe[] = ['1D', '7D', '30D', '1Y'];
-
 const CustomTooltip = ({
   active,
   payload,
@@ -64,10 +62,10 @@ export const VolumeBarChart: React.FC<VolumeBarChartProps> = ({
     <div className="w-full flex flex-col gap-3">
       {/* Timeframe selector */}
       <div className="flex gap-1 justify-end">
-        {TIMEFRAMES.map((tf) => (
+        {Object.keys(data).map((tf) => (
           <button
             key={tf}
-            onClick={() => setTimeframe(tf)}
+            onClick={() => setTimeframe(tf as Timeframe)}
             className={`px-2 py-0.5 text-[10px] font-mono font-bold uppercase tracking-widest transition-colors border ${
               timeframe === tf
                 ? 'border-[#00ff9d] text-[#00ff9d] bg-[#00ff9d]/10'
