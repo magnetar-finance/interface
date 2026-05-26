@@ -27,7 +27,7 @@ export interface VolumeBarChartProps {
   height?: number;
 }
 
-const TIMEFRAMES: Timeframe[] = ['1D', '7D', '30D'];
+const TIMEFRAMES: Timeframe[] = ['1D', '7D', '30D', '1Y'];
 
 const CustomTooltip = ({
   active,

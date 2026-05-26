@@ -28,7 +28,7 @@ export interface TimeSeriesChartProps {
   height?: number;
 }
 
-const TIMEFRAMES: Timeframe[] = ['1D', '7D', '30D'];
+const TIMEFRAMES: Timeframe[] = ['1D', '7D', '30D', '1Y'];
 
 const CustomTooltip = ({
   active,
