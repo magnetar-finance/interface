@@ -146,3 +146,30 @@ export const QUERY_POOL_DAY_DATA = graphql(`
     }
   }
 `);
+
+export const QUERY_POOL_HOUR_DATA = graphql(`
+  query PoolHourData(
+    $skip: Int = 0
+    $limit: Int = 1000
+    $poolId: String!
+    $hourMin: Int
+    $hourMax: Int
+  ) {
+    poolHourDatas(
+      skip: $skip
+      first: $limit
+      where: { pool: $poolId, hourStartUnix_gte: $hourMin, hourStartUnix_lte: $hourMax }
+    ) {
+      id
+      hourStartUnix
+      reserve0
+      reserve1
+      reserveUSD
+      reserveETH
+      hourlyVolumeUSD
+      hourlyVolumeETH
+      hourlyVolumeToken0
+      hourlyVolumeToken1
+    }
+  }
+`);

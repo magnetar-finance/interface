@@ -23,6 +23,7 @@ import useAllTransactions from '@/hooks/api/useAllTransactions';
 import { useChainId } from 'wagmi';
 import moment from 'moment';
 import { splitString } from '@/utils';
+import usePoolHourlyData from '@/hooks/api/usePoolHourlyData';
 
 function parseQLDate(n: number) {
   return new Date(n * 1000);
@@ -65,7 +66,7 @@ export const PoolAnalyticsView: React.FC<{ poolId: string }> = ({ poolId }) => {
   const { data: pool, isLoading: isPoolLoading } = useSinglePool(decodedId, REFETCH_INTERVALS);
 
   // Pool Day Datas
-  const { data: poolDayData1Day, isLoading: isLoading1D } = usePoolDayData(
+  const { data: poolDayData1Day, isLoading: isLoading1D } = usePoolHourlyData(
     decodedId,
     0,
     OP_SETTINGS.default_gql_items_limit,
@@ -173,7 +174,7 @@ export const PoolAnalyticsView: React.FC<{ poolId: string }> = ({ poolId }) => {
   const tvlSeries: Record<Timeframe, TimeSeriesDataPoint[]> = useMemo(() => {
     return {
       '1D': poolDayData1Day.map((o) => {
-        const date = parseQLDate(o.date);
+        const date = parseQLDate(o.hourStartUnix);
         return {
           date: `${date.toLocaleDateString('en-us', {
             month: 'short',
@@ -208,13 +209,13 @@ export const PoolAnalyticsView: React.FC<{ poolId: string }> = ({ poolId }) => {
   const volSeries: Record<Timeframe, TimeSeriesDataPoint[]> = useMemo(() => {
     return {
       '1D': poolDayData1Day.map((o) => {
-        const date = parseQLDate(o.date);
+        const date = parseQLDate(o.hourStartUnix);
         return {
           date: `${date.toLocaleDateString('en-us', {
             month: 'short',
             day: 'numeric',
           })} ${date.getHours()}:00`,
-          value: parseFloat(o.dailyVolumeUSD as string),
+          value: parseFloat(o.hourlyVolumeUSD as string),
         };
       }),
       '7D': poolDayData7Days.map((o) => {
