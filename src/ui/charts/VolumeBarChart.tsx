@@ -13,7 +13,7 @@ import {
 } from 'recharts';
 import { formatNumber } from '@/utils/numbers';
 
-export type Timeframe = '1D' | '7D' | '30D';
+export type Timeframe = '1D' | '7D' | '30D' | '1Y';
 
 export interface VolumeDataPoint {
   date: string;
@@ -21,7 +21,7 @@ export interface VolumeDataPoint {
 }
 
 export interface VolumeBarChartProps {
-  data: Record<Timeframe, VolumeDataPoint[]>;
+  data: Partial<Record<Timeframe, VolumeDataPoint[]>>;
   color?: string;
   formatValue?: (v: number) => string;
   height?: number;
@@ -101,9 +101,10 @@ export const VolumeBarChart: React.FC<VolumeBarChartProps> = ({
             cursor={{ fill: 'rgba(255,255,255,0.03)' }}
           />
           <Bar dataKey="value" isAnimationActive={false} radius={[2, 2, 0, 0]}>
-            {chartData.map((_, i) => (
-              <Cell key={i} fill={color} fillOpacity={i === chartData.length - 1 ? 1 : 0.6} />
-            ))}
+            {chartData &&
+              chartData.map((_, i) => (
+                <Cell key={i} fill={color} fillOpacity={i === chartData.length - 1 ? 1 : 0.6} />
+              ))}
           </Bar>
         </BarChart>
       </ResponsiveContainer>

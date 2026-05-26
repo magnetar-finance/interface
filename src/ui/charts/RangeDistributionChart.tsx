@@ -89,7 +89,6 @@ export const RangeDistributionChart: React.FC<RangeDistributionChartProps> = ({
 
   const minTick = data[0]?.tick ?? 0;
   const maxTick = data[data.length - 1]?.tick ?? 1;
-  const range = maxTick - minTick || 1;
 
   const getIndexForTick = (tick: number) => {
     if (data.length === 0) return 0;

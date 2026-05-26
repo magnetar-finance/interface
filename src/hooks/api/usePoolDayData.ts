@@ -8,9 +8,9 @@ function usePoolDayData(
   poolId: string,
   skip: number = 0,
   limit: number = 1000,
+  dateMin: number,
+  dateMax: number,
   refetchInterval: number | false = false,
-  dateMin?: number,
-  dateMax?: number,
 ) {
   const chainId = useChainId();
   const uri = CHAIN_GQL_URI[chainId];
@@ -21,9 +21,8 @@ function usePoolDayData(
         poolId,
         skip,
         limit,
-        // Only pass max limit to subgraph dateMin if given
-        ...(dateMin ? { dateMin } : {}),
-        ...(dateMax ? { dateMax } : {}),
+        dateMin,
+        dateMax,
       }),
     refetchInterval,
   });

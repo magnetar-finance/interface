@@ -94,13 +94,6 @@ export const AnalyticsMainView: React.FC = () => {
   const { data: statistics, isLoading: isStatisticsLoading } = useStatistics(REFETCH_INTERVALS);
 
   // Overall day data
-  const { data: overallDayData1Day, isLoading: isLoading1D } = useOverallDayData(
-    0,
-    OP_SETTINGS.default_gql_items_limit,
-    REFETCH_INTERVALS,
-    todayInSeconds - 86400,
-    todayInSeconds,
-  );
   const { data: overallDayData7Days, isLoading: isLoading7D } = useOverallDayData(
     0,
     OP_SETTINGS.default_gql_items_limit,
@@ -113,6 +106,13 @@ export const AnalyticsMainView: React.FC = () => {
     OP_SETTINGS.default_gql_items_limit,
     REFETCH_INTERVALS,
     todayInSeconds - 2592000,
+    todayInSeconds,
+  );
+  const { data: overallDayData1Year, isLoading: isLoading1Y } = useOverallDayData(
+    0,
+    OP_SETTINGS.default_gql_items_limit,
+    REFETCH_INTERVALS,
+    todayInSeconds - 31536000,
     todayInSeconds,
   );
 
@@ -221,18 +221,8 @@ export const AnalyticsMainView: React.FC = () => {
     [mergedTransactions.length],
   );
 
-  const tvlSeries: Record<Timeframe, TimeSeriesDataPoint[]> = useMemo(() => {
+  const tvlSeries: Partial<Record<Timeframe, TimeSeriesDataPoint[]>> = useMemo(() => {
     return {
-      '1D': overallDayData1Day.map((o) => {
-        const date = parseQLDate(o.date);
-        return {
-          date: `${date.toLocaleDateString('en-us', {
-            month: 'short',
-            day: 'numeric',
-          })} ${date.getHours()}:00`,
-          value: parseFloat(o.liquidityUSD as string),
-        };
-      }),
       '7D': overallDayData7Days.map((o) => {
         const date = parseQLDate(o.date);
         return {
@@ -253,21 +243,21 @@ export const AnalyticsMainView: React.FC = () => {
           value: parseFloat(o.liquidityUSD as string),
         };
       }),
+      '1Y': overallDayData1Year.map((o) => {
+        const date = parseQLDate(o.date);
+        return {
+          date: `${date.toLocaleDateString('en-us', {
+            month: 'short',
+            day: 'numeric',
+          })}`,
+          value: parseFloat(o.liquidityUSD as string),
+        };
+      }),
     };
-  }, [overallDayData1Day, overallDayData30Days, overallDayData7Days]);
+  }, [overallDayData1Year, overallDayData30Days, overallDayData7Days]);
 
-  const volumeSeries: Record<Timeframe, TimeSeriesDataPoint[]> = useMemo(() => {
+  const volumeSeries: Partial<Record<Timeframe, TimeSeriesDataPoint[]>> = useMemo(() => {
     return {
-      '1D': overallDayData1Day.map((o) => {
-        const date = parseQLDate(o.date);
-        return {
-          date: `${date.toLocaleDateString('en-us', {
-            month: 'short',
-            day: 'numeric',
-          })} ${date.getHours()}:00`,
-          value: parseFloat(o.totalTradeVolumeUSD as string),
-        };
-      }),
       '7D': overallDayData7Days.map((o) => {
         const date = parseQLDate(o.date);
         return {
@@ -288,8 +278,18 @@ export const AnalyticsMainView: React.FC = () => {
           value: parseFloat(o.totalTradeVolumeUSD as string),
         };
       }),
+      '1Y': overallDayData1Year.map((o) => {
+        const date = parseQLDate(o.date);
+        return {
+          date: `${date.toLocaleDateString('en-us', {
+            month: 'short',
+            day: 'numeric',
+          })}`,
+          value: parseFloat(o.totalTradeVolumeUSD as string),
+        };
+      }),
     };
-  }, [overallDayData1Day, overallDayData30Days, overallDayData7Days]);
+  }, [overallDayData1Year, overallDayData30Days, overallDayData7Days]);
 
   const chainId = useChainId();
 
@@ -341,7 +341,7 @@ export const AnalyticsMainView: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <div className="bg-black border border-white/5 p-4">
           <SectionHeader title="TVL" />
-          {isLoading1D || isLoading7D || isLoading30D ? (
+          {isLoading1Y || isLoading7D || isLoading30D ? (
             <Skeleton className="h-45 w-full" />
           ) : (
             <TimeSeriesChart data={tvlSeries} color="#2962ff" height={180} />
@@ -349,7 +349,7 @@ export const AnalyticsMainView: React.FC = () => {
         </div>
         <div className="bg-black border border-white/5 p-4">
           <SectionHeader title="Volume" />
-          {isLoading1D || isLoading7D || isLoading30D ? (
+          {isLoading1Y || isLoading7D || isLoading30D ? (
             <Skeleton className="h-45 w-full" />
           ) : (
             <VolumeBarChart data={volumeSeries} height={180} />

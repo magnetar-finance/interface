@@ -157,7 +157,7 @@ export const TokenAnalyticsView: React.FC<{ tokenId: string }> = ({ tokenId }) =
   );
   const chainId = useChainId();
 
-  const priceSeries: Record<Timeframe, TimeSeriesDataPoint[]> = useMemo(() => {
+  const priceSeries: Partial<Record<Timeframe, TimeSeriesDataPoint[]>> = useMemo(() => {
     // Basic day data mapper
     const points = tokenDayData
       .map((o) => {
@@ -176,13 +176,13 @@ export const TokenAnalyticsView: React.FC<{ tokenId: string }> = ({ tokenId }) =
     // As a simplification, we use the same points over all ranges,
     // ideally subgraph filtering is applied like poolDayData.
     return {
-      '1D': points.slice(-1),
       '7D': points.slice(-7),
       '30D': points.slice(-30),
+      '1Y': points.slice(-365),
     };
   }, [tokenDayData]);
 
-  const volSeries: Record<Timeframe, TimeSeriesDataPoint[]> = useMemo(() => {
+  const volSeries: Partial<Record<Timeframe, TimeSeriesDataPoint[]>> = useMemo(() => {
     const points = tokenDayData
       .map((o) => {
         const date = parseQLDate(o.date);
@@ -198,9 +198,9 @@ export const TokenAnalyticsView: React.FC<{ tokenId: string }> = ({ tokenId }) =
       .sort((a, b) => a.ts - b.ts);
 
     return {
-      '1D': points.slice(-1),
       '7D': points.slice(-7),
       '30D': points.slice(-30),
+      '1Y': points.slice(-365),
     };
   }, [tokenDayData]);
 

@@ -12,7 +12,7 @@ import {
 } from 'recharts';
 import { formatNumber } from '@/utils/numbers';
 
-export type Timeframe = '1D' | '7D' | '30D';
+export type Timeframe = '1D' | '7D' | '30D' | '1Y';
 
 export interface TimeSeriesDataPoint {
   date: string;
@@ -20,7 +20,7 @@ export interface TimeSeriesDataPoint {
 }
 
 export interface TimeSeriesChartProps {
-  data: Record<Timeframe, TimeSeriesDataPoint[]>;
+  data: Partial<Record<Timeframe, TimeSeriesDataPoint[]>>;
   dataKey?: string;
   color?: string;
   label?: string;

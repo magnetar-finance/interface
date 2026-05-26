@@ -125,8 +125,8 @@ export const QUERY_POOL_DAY_DATA = graphql(`
     $skip: Int = 0
     $limit: Int = 1000
     $poolId: String!
-    $dateMin: Int
-    $dateMax: Int
+    $dateMin: Int!
+    $dateMax: Int!
   ) {
     poolDayDatas(
       skip: $skip
@@ -152,8 +152,8 @@ export const QUERY_POOL_HOUR_DATA = graphql(`
     $skip: Int = 0
     $limit: Int = 1000
     $poolId: String!
-    $hourMin: Int
-    $hourMax: Int
+    $hourMin: Int!
+    $hourMax: Int!
   ) {
     poolHourDatas(
       skip: $skip
