@@ -3,6 +3,8 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { RemoveLiquidityModal } from '@/ui/modals/RemoveLiquidityModal';
 import { IncreaseLiquidityModal } from '@/ui/modals/IncreaseLiquidityModal';
+import { StakeLPModal } from '@/ui/modals/StakeLPModal';
+import { UnstakeLPModal } from '@/ui/modals/UnstakeLPModal';
 import { useDimensions } from '@/hooks/app';
 import { REFETCH_INTERVALS, SCREEN_WIDTHS } from '@/constants';
 import { PrimaryButton } from '@/components/Button';
@@ -41,6 +43,8 @@ function positionToUSD(position: LiquidityPosition) {
 export const PositionsView: React.FC = () => {
   const [removeModalOpen, setRemoveModalOpen] = useState(false);
   const [increaseModalOpen, setIncreaseModalOpen] = useState(false);
+  const [stakeModalOpen, setStakeModalOpen] = useState(false);
+  const [unstakeModalOpen, setUnstakeModalOpen] = useState(false);
   const [selectedPosition, setSelectedPosition] = useState<LiquidityPosition | null>(null);
   const { data: accountInfo, isLoading } = useAccountInfo(REFETCH_INTERVALS);
   const dimesions = useDimensions();
@@ -158,10 +162,22 @@ export const PositionsView: React.FC = () => {
                             className="border border-[rgb(34,34,34)] bg-black w-3xs px-3 py-2 space-y-2 z-50 font-mono text-xs"
                             sideOffset={4}
                           >
-                            <DropdownMenu.Item className="flex justify-start items-center gap-2 text-[#94a3b8] cursor-pointer hover:bg-white/10 hover:text-white py-2 px-3 transition-colors">
+                            <DropdownMenu.Item
+                              className="flex justify-start items-center gap-2 text-[#94a3b8] cursor-pointer hover:bg-white/10 hover:text-white py-2 px-3 transition-colors"
+                              onClick={() => {
+                                setSelectedPosition(item);
+                                setStakeModalOpen(true);
+                              }}
+                            >
                               <ShieldPlusIcon size={14} /> <span>Stake</span>
                             </DropdownMenu.Item>
-                            <DropdownMenu.Item className="flex justify-start items-center gap-2 text-[#94a3b8] cursor-pointer hover:bg-white/10 hover:text-white py-2 px-3 transition-colors">
+                            <DropdownMenu.Item
+                              className="flex justify-start items-center gap-2 text-[#94a3b8] cursor-pointer hover:bg-white/10 hover:text-white py-2 px-3 transition-colors"
+                              onClick={() => {
+                                setSelectedPosition(item);
+                                setUnstakeModalOpen(true);
+                              }}
+                            >
                               <ShieldXIcon size={14} /> <span>Unstake</span>
                             </DropdownMenu.Item>
                             {item.pool.poolType === 'CONCENTRATED' && (
@@ -236,6 +252,22 @@ export const PositionsView: React.FC = () => {
           liquidityPosition={selectedPosition}
         />
       )}
+      <StakeLPModal
+        open={stakeModalOpen}
+        onOpenChange={(v) => {
+          setStakeModalOpen(v);
+          if (!v) setTimeout(() => setSelectedPosition(null), 300);
+        }}
+        poolName={selectedPosition?.pool.name}
+      />
+      <UnstakeLPModal
+        open={unstakeModalOpen}
+        onOpenChange={(v) => {
+          setUnstakeModalOpen(v);
+          if (!v) setTimeout(() => setSelectedPosition(null), 300);
+        }}
+        poolName={selectedPosition?.pool.name}
+      />
       <IncreaseLiquidityModal
         open={increaseModalOpen}
         onOpenChange={(v) => {

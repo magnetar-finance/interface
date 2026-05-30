@@ -49,7 +49,7 @@ export const CHAIN_GQL_URI = {
   [CHAINS.ARC_TESTNET]:
     validateClientEnv().data?.NEXT_PUBLIC_GQL_URI || clientEnv.NEXT_PUBLIC_GQL_URI, // Arc network GQL is the same as the default GQL URI, but this allows for chain-specific overrides in the future if needed
   [CHAINS.LITVM_TESTNET]:
-    'https://api.goldsky.com/api/public/project_clws3jv71bgap01u93r59ccbm/subgraphs/magnetar-liteforge/1.0.0/gn',
+    'https://api.goldsky.com/api/public/project_clws3jv71bgap01u93r59ccbm/subgraphs/magnetar-liteforge/1.0.1/gn',
 };
 export const RouterType = {
   AUTO: 'auto',
@@ -91,7 +91,19 @@ export const V3_FACTORY: { [key: number]: `0x${string}` } = {
   [CHAINS.ARC_TESTNET]: '0xf6a6a429a0b9676293Df0E3616A6a33cA673b5C3',
   [CHAINS.LITVM_TESTNET]: '0xC05b371680057B55e23C27d23453592cdf972Ec1',
 };
+export const VE: { [key: number]: `0x${string}` } = {
+  [CHAINS.ARC_TESTNET]: '0xF1B1c2f4E8FcD4aFCA0E608B1c7dB8b4e700154F',
+  [CHAINS.LITVM_TESTNET]: '0xF1B1c2f4E8FcD4aFCA0E608B1c7dB8b4e700154F',
+};
+export const VOTER: { [key: number]: `0x${string}` } = {
+  [CHAINS.ARC_TESTNET]: '0x2914f5e8A40047C7421aaDad35CDB06870ecA0c5',
+  [CHAINS.LITVM_TESTNET]: '0x2914f5e8A40047C7421aaDad35CDB06870ecA0c5',
+};
 export const ORACLE: { [key: number]: `0x${string}` } = {
   [CHAINS.ARC_TESTNET]: '0xF6a7F229447FB986195c4dC8305553C8A8518d06',
   [CHAINS.LITVM_TESTNET]: '0x46e65AfC0BBF7cc037D82AC2eA9aaf560dD962Cc',
+};
+export const MGN: { [key: number]: `0x${string}` } = {
+  [CHAINS.ARC_TESTNET]: '0x64FAF984Bf60dE19e24238521814cA98574E3b00',
+  [CHAINS.LITVM_TESTNET]: '0x64FAF984Bf60dE19e24238521814cA98574E3b00',
 };
