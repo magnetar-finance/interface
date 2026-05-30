@@ -1,0 +1,78 @@
+'use client';
+
+import React, { useEffect, useState } from 'react';
+import { Modal } from '@/components/Modal';
+import { PrimaryButton } from '@/components/Button';
+import { ArrowRightLeftIcon } from 'lucide-react';
+
+export interface TransferLockModalProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  tokenId?: string;
+}
+
+export const TransferLockModal: React.FC<TransferLockModalProps> = ({
+  open,
+  onOpenChange,
+  tokenId,
+}) => {
+  const [recipient, setRecipient] = useState('');
+
+  const isValid = recipient.startsWith('0x') && recipient.length === 42;
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (!open) setRecipient('');
+  }, [open]);
+
+  return (
+    <Modal open={open} onOpenChange={onOpenChange} title="Transfer Lock">
+      <div className="flex flex-col gap-6 p-5">
+        {/* Lock info */}
+        <div className="flex justify-between items-center border border-white/5 bg-white/3 px-3 py-2.5">
+          <span className="text-[#64748b] font-mono text-xs uppercase tracking-widest">Lock</span>
+          <span className="text-white font-bold font-mono text-xs">{tokenId ?? '—'}</span>
+        </div>
+
+        {/* Recipient address */}
+        <div className="flex flex-col gap-2">
+          <label className="text-[#64748b] font-mono text-[10px] uppercase tracking-widest">
+            Recipient Address
+          </label>
+          <input
+            type="text"
+            value={recipient}
+            onChange={(e) => setRecipient(e.target.value)}
+            placeholder="0x…"
+            className="bg-transparent border border-white/10 px-3 py-3 font-mono text-sm text-white placeholder:text-[#64748b] outline-none focus:border-[#2962ff]/60 transition-colors"
+          />
+          {recipient && !isValid && (
+            <p className="text-[#ff4757] font-mono text-[10px]">
+              Enter a valid 42-character address.
+            </p>
+          )}
+        </div>
+
+        {/* Warning */}
+        <div className="border border-[#ffaf52]/20 bg-[#ffaf52]/5 px-3 py-2.5">
+          <p className="text-[#ffaf52] font-mono text-[10px] leading-relaxed">
+            ⚠ Transferring this lock will permanently move the veMGN NFT to the recipient. This
+            action cannot be undone.
+          </p>
+        </div>
+
+        <PrimaryButton
+          disabled={!isValid}
+          className="w-full py-3 gap-2 font-mono text-xs uppercase tracking-widest disabled:opacity-40 disabled:cursor-not-allowed"
+          onClick={() => {
+            // TODO: call transfer contract method
+            onOpenChange(false);
+          }}
+        >
+          <ArrowRightLeftIcon size={14} />
+          Transfer Lock
+        </PrimaryButton>
+      </div>
+    </Modal>
+  );
+};

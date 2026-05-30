@@ -65,6 +65,15 @@ export const QUERY_ACCOUNT_INFO = graphql(`
           }
         }
       }
+      lockPositions(first: 1000) {
+        id
+        position
+        lockId
+        lockType
+        permanent
+        unlockTime
+        totalVoteWeightGiven
+      }
     }
   }
 `);
