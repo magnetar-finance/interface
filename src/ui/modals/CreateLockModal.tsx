@@ -5,7 +5,7 @@ import { Modal } from '@/components/Modal';
 import { PrimaryButton } from '@/components/Button';
 import { LockIcon } from 'lucide-react';
 import { useChainId } from 'wagmi';
-import { BI_ZERO, CHAINS_INFORMATION, MGN, REFETCH_INTERVALS, VE } from '@/constants';
+import { CHAINS_INFORMATION, MGN, REFETCH_INTERVALS, VE } from '@/constants';
 import useGetBalance from '@/hooks/wallet/useGetBalance';
 import useGetAllowance from '@/hooks/wallet/useGetAllowance';
 import useApproveSpend from '@/hooks/wallet/useApproveSpend';
@@ -91,8 +91,8 @@ export const CreateLockModal: React.FC<CreateLockModalProps> = ({ open, onOpenCh
 
   const buttonText = useMemo(() => {
     if (!amount || parsedAmount === 0) return 'Enter Amount';
+    if (balance < amountBI) return 'Insufficient MGN Balance';
     if (escrowAllowance < amountBI) return 'Approve MGN Spend';
-    if (balance === BI_ZERO) return 'Insufficient MGN Balance';
     return 'Create Lock';
   }, [amount, amountBI, balance, escrowAllowance, parsedAmount]);
 
@@ -137,7 +137,7 @@ export const CreateLockModal: React.FC<CreateLockModalProps> = ({ open, onOpenCh
               {[25, 50, 75, 100].map((pct) => (
                 <button
                   key={pct}
-                  onClick={() => setAmount(String(pct))} // Placeholder — replace with real balance math
+                  onClick={() => setAmount(String((pct * parseFloat(formatEther(balance))) / 100))}
                   className="flex-1 border border-white/10 py-1 font-mono text-[10px] text-[#94a3b8] hover:border-[#2962ff]/50 hover:text-[#2962ff] transition-colors"
                 >
                   {pct === 100 ? 'MAX' : `${pct}%`}

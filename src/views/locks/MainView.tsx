@@ -331,13 +331,13 @@ const MyLocksTab: React.FC = () => {
       <TransferLockModal
         open={activeModal === 'transfer'}
         onOpenChange={closeModal}
-        tokenId={selectedLock?.id}
+        tokenId={selectedLock ? BigInt(selectedLock.id) : undefined}
       />
 
       <AdjustUnlockTimeModal
         open={activeModal === 'extend'}
         onOpenChange={closeModal}
-        tokenId={selectedLock?.id}
+        tokenId={selectedLock ? BigInt(selectedLock.id) : undefined}
         currentExpiry={
           selectedLock
             ? new Date(parseInt(selectedLock.unlockTime as string) * 1000).toLocaleString('en-US', {
@@ -354,7 +354,7 @@ const MyLocksTab: React.FC = () => {
       <IncreaseLockAmountModal
         open={activeModal === 'increase'}
         onOpenChange={closeModal}
-        tokenId={selectedLock?.id}
+        tokenId={selectedLock ? BigInt(selectedLock.id) : undefined}
         currentAmount={selectedLock?.position as string}
         currentVotingPower={selectedLock?.totalVoteWeightGiven as string}
       />
@@ -369,9 +369,8 @@ const MyLocksTab: React.FC = () => {
       <SplitLockModal
         open={activeModal === 'split'}
         onOpenChange={closeModal}
-        tokenId={selectedLock?.id}
+        tokenId={selectedLock ? BigInt(selectedLock.id) : undefined}
         currentAmount={selectedLock?.position as string}
-        currentVotingPower={selectedLock?.totalVoteWeightGiven as string}
       />
     </div>
   );

@@ -7,12 +7,18 @@ import { Table } from '@/components/Table';
 import { Skeleton } from '@/components/Skeleton';
 import { SwitchGroup } from '@/components/SwitchGroup';
 import { useGHAssetsContext } from '@/contexts/github-assets';
-import { OP_SETTINGS, SCREEN_WIDTHS } from '@/constants';
+import {
+  BI_ZERO,
+  CHAINS_INFORMATION,
+  OP_SETTINGS,
+  REFETCH_INTERVALS,
+  SCREEN_WIDTHS,
+} from '@/constants';
 import { useDimensions } from '@/hooks/app';
 import useAllPools from '@/hooks/api/useAllPools';
 import useAccountInfo from '@/hooks/api/useAccountInfo';
 import { formatNumber } from '@/utils/numbers';
-import { PoolType } from '@/gql/codegen/graphql';
+import { GetAccountInfoQuery, PoolType } from '@/gql/codegen/graphql';
 import Image from 'next/image';
 import {
   ChevronDown,
@@ -24,40 +30,20 @@ import {
   AlertCircleIcon,
 } from 'lucide-react';
 import { DropdownMenu } from 'radix-ui';
+import useGetLockVP from '@/hooks/governance/useGetLockVP';
+import { formatEther, getAddress, parseEther } from 'viem';
+import useVote from '@/hooks/governance/useVote';
+import { useChainId } from 'wagmi';
+import { TransactionSuccessModal } from '@/ui/modals/TransactionSuccessModal';
+import { TransactionErrorModal } from '@/ui/modals/TransactionErrorModal';
+import { Spinner } from '@/components/Spinner';
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-
-interface VoteAllocation {
-  poolId: string;
-  percentage: number;
-}
-
-// ─── Mock Locks ──────────────────────────────────────────────────────────────
-// Placeholder lock data — will be replaced with real on-chain data
-const MOCK_LOCKS = [
-  {
-    id: '1',
-    tokenId: '#1',
-    votingPower: '12,500.00 veMGN',
-    amount: '25,000 MGN',
-    expires: 'Dec 2026',
-  },
-  {
-    id: '2',
-    tokenId: '#2',
-    votingPower: '4,200.00 veMGN',
-    amount: '6,000 MGN',
-    expires: 'Jun 2026',
-  },
-  { id: '3', tokenId: '#3', votingPower: '980.00 veMGN', amount: '2,000 MGN', expires: 'Mar 2026' },
-];
-
-// ─── Sub-components ───────────────────────────────────────────────────────────
+type Lock = NonNullable<GetAccountInfoQuery['user']>['lockPositions'][number];
 
 const LockDropdown: React.FC<{
   label: string;
   selectedId: string | null;
-  locks: typeof MOCK_LOCKS;
+  locks: Lock[];
   onSelect: (id: string) => void;
   disabled?: boolean;
   comingSoon?: boolean;
@@ -83,8 +69,10 @@ const LockDropdown: React.FC<{
                 <span className="text-[#64748b]">{label}</span>
               ) : selected ? (
                 <span>
-                  Lock {selected.tokenId}{' '}
-                  <span className="text-[#2962ff]">— {selected.votingPower}</span>
+                  Lock {selected.id}{' '}
+                  <span className="text-[#2962ff]">
+                    — {formatNumber(selected.position as string)} MGN
+                  </span>
                 </span>
               ) : (
                 <span className="text-[#64748b]">{label}</span>
@@ -109,7 +97,7 @@ const LockDropdown: React.FC<{
       {!disabled && !comingSoon && (
         <DropdownMenu.Portal>
           <DropdownMenu.Content
-            className="border border-[#2962ff]/30 bg-black px-2 py-2 space-y-1 z-50 font-mono text-xs shadow-xl w-[var(--radix-popper-anchor-width)]"
+            className="border border-[#2962ff]/30 bg-black px-2 py-2 space-y-1 z-50 font-mono text-xs shadow-xl w-(--radix-popper-anchor-width)"
             sideOffset={4}
           >
             {locks.length === 0 ? (
@@ -126,13 +114,23 @@ const LockDropdown: React.FC<{
                   }`}
                 >
                   <div className="flex flex-col gap-0.5">
-                    <span className="font-bold">Lock {lock.tokenId}</span>
+                    <span className="font-bold">Lock {lock.id}</span>
                     <span className="text-[#64748b] text-[10px]">
-                      {lock.amount} · Expires {lock.expires}
+                      {formatNumber(lock.position as string)} · Expires{' '}
+                      {new Date(parseInt(lock.unlockTime as string) * 1000).toLocaleString(
+                        'en-US',
+                        {
+                          minute: '2-digit',
+                          hour: '2-digit',
+                          day: 'numeric',
+                          month: 'short',
+                          year: 'numeric',
+                        },
+                      )}
                     </span>
                   </div>
                   <span className="text-[#00ff9d] font-bold whitespace-nowrap">
-                    {lock.votingPower}
+                    {formatNumber(lock.position as string)} MGN
                   </span>
                 </DropdownMenu.Item>
               ))
@@ -157,7 +155,12 @@ export const MainView: React.FC = () => {
     OP_SETTINGS.default_gql_items_limit,
     OP_SETTINGS.default_refetch_interval,
   );
-  useAccountInfo(); // warm up account info cache
+
+  const { data: accountInfo } = useAccountInfo(REFETCH_INTERVALS);
+  const allLocks = useMemo(() => {
+    if (!accountInfo) return [];
+    return accountInfo.lockPositions;
+  }, [accountInfo]);
 
   // Selections
   const [selectedLockId, setSelectedLockId] = useState<string | null>(null);
@@ -180,7 +183,9 @@ export const MainView: React.FC = () => {
   }, [activeSwitchIndex]);
 
   const filteredPools = useMemo(() => {
-    let data = [...ALL_POOLS];
+    let data = [
+      ...ALL_POOLS.filter((pool) => pool.gauge !== null && typeof pool.gauge !== 'undefined'),
+    ];
     if (poolTypeFilter) data = data.filter((p) => p.poolType === poolTypeFilter);
     if (searchValue) {
       const v = searchValue.toLowerCase();
@@ -234,7 +239,40 @@ export const MainView: React.FC = () => {
   const isOverAllocated = totalAllocated > 100;
   const isReadyToVote = selectedLockId !== null && totalAllocated > 0 && !isOverAllocated;
 
-  const selectedLock = MOCK_LOCKS.find((l) => l.id === selectedLockId);
+  const selectedLock = allLocks.find((l) => l.id === selectedLockId);
+  const lockVP = useGetLockVP(
+    selectedLock ? BigInt(selectedLock.lockId as string) : BI_ZERO,
+    REFETCH_INTERVALS,
+  );
+
+  const [selectedPools, appliedWeights] = useMemo(() => {
+    const _selectedPools = Object.keys(allocations).map(getAddress);
+    const _appliedWeights = Object.values(allocations).map((value) => {
+      const allocatedPower = (value * parseFloat(formatEther(lockVP))) / 100;
+      return parseEther(allocatedPower.toString());
+    });
+
+    return [_selectedPools, _appliedWeights];
+  }, [allocations, lockVP]);
+
+  const [showSuccess, setShowSuccess] = useState<boolean>(false);
+  const [showError, setShowError] = useState<boolean>(false);
+  const [explorerLink, setExplorerLink] = useState<string>('');
+  const [txHash, setTxHash] = useState<string | undefined>();
+
+  const chainId = useChainId();
+
+  const initiateVote = useVote(
+    selectedLock ? BigInt(selectedLock.lockId as string) : BI_ZERO,
+    selectedPools,
+    appliedWeights,
+    (hash) => {
+      setExplorerLink(CHAINS_INFORMATION[chainId].explorerUrl);
+      setTxHash(hash);
+      setShowSuccess(true);
+    },
+    () => setShowError(true),
+  );
 
   return (
     <div className="flex flex-col gap-6 w-full">
@@ -248,12 +286,13 @@ export const MainView: React.FC = () => {
           <LockDropdown
             label="Select a lock…"
             selectedId={selectedLockId}
-            locks={MOCK_LOCKS}
+            locks={allLocks}
             onSelect={setSelectedLockId}
           />
           {selectedLock && (
             <p className="text-[10px] font-mono text-[#64748b]">
-              Voting power: <span className="text-[#00ff9d]">{selectedLock.votingPower}</span>
+              Voting power:{' '}
+              <span className="text-[#00ff9d]">{formatNumber(formatEther(lockVP))}</span>
             </p>
           )}
         </div>
@@ -489,8 +528,8 @@ export const MainView: React.FC = () => {
             <span className="text-white font-bold text-sm">
               {selectedLock ? (
                 <>
-                  Lock {selectedLock.tokenId}{' '}
-                  <span className="text-[#2962ff]">({selectedLock.votingPower})</span>
+                  Lock {selectedLock.lockId}{' '}
+                  <span className="text-[#2962ff]">({formatNumber(formatEther(lockVP))})</span>
                 </>
               ) : (
                 <span className="text-[#64748b]">—</span>
@@ -515,12 +554,42 @@ export const MainView: React.FC = () => {
               Clear All
             </SecondaryButton>
           )}
-          <PrimaryButton className="gap-2 text-xs font-mono" disabled={!isReadyToVote}>
+          <PrimaryButton
+            className="gap-2 text-xs font-mono"
+            disabled={!isReadyToVote || initiateVote.isLoading}
+            onClick={initiateVote.execute}
+          >
             <Vote size={14} />
             <span>Cast Vote</span>
+            {initiateVote.isLoading && <Spinner size="sm" className="ml-2" />}
           </PrimaryButton>
         </div>
       </div>
+
+      <TransactionSuccessModal
+        open={showSuccess}
+        onOpenChange={(o) => {
+          setShowSuccess(o);
+          initiateVote.reset();
+          if (!o) {
+            setTxHash(undefined);
+            setExplorerLink('');
+          }
+        }}
+        txHash={txHash}
+        explorerUrl={explorerLink}
+        message={'Successfully applied votes!'}
+      />
+
+      <TransactionErrorModal
+        open={showError}
+        onOpenChange={(o) => {
+          setShowError(o);
+          initiateVote.reset();
+        }}
+        message={'An error occurred while voting. Please try again.'}
+        title="Transaction Failed"
+      />
     </div>
   );
 };

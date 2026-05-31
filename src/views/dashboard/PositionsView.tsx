@@ -261,7 +261,7 @@ export const PositionsView: React.FC = () => {
         poolName={selectedPosition?.pool.name}
         poolAddress={selectedPosition?.pool.address as `0x${string}`}
         isCL={selectedPosition?.pool.poolType === 'CONCENTRATED'}
-        tokenId={BigInt(selectedPosition?.clPositionTokenId as string || '0')}
+        tokenId={BigInt((selectedPosition?.clPositionTokenId as string) || '0')}
         gauge={selectedPosition?.pool.gauge?.address as `0x${string}`}
       />
       <UnstakeLPModal
@@ -271,6 +271,8 @@ export const PositionsView: React.FC = () => {
           if (!v) setTimeout(() => setSelectedPosition(null), 300);
         }}
         poolName={selectedPosition?.pool.name}
+        tokenId={BigInt((selectedPosition?.clPositionTokenId as string) || '0')}
+        gauge={selectedPosition?.pool.gauge?.address as `0x${string}`}
       />
       <IncreaseLiquidityModal
         open={increaseModalOpen}
