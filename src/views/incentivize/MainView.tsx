@@ -15,7 +15,7 @@ import { PoolType } from '@/gql/codegen/graphql';
 import useGetAllowance from '@/hooks/wallet/useGetAllowance';
 import { Address, formatUnits, parseUnits, zeroAddress } from 'viem';
 import useApproveSpend from '@/hooks/wallet/useApproveSpend';
-import useNotifyRewardAmount from '@/hooks/bribes/useNotifyReward';
+import useNotifyRewardAmount from '@/hooks/rewards/bribes/useNotifyReward';
 import { useChainId } from 'wagmi';
 import useGetBalance from '@/hooks/wallet/useGetBalance';
 import { Spinner } from '@/components/Spinner';

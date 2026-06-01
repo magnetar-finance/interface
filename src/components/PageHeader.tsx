@@ -36,7 +36,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
           aria-hidden
           className="absolute -top-1 -left-2 w-3 h-3 border-t-2 border-l-2 border-[#2962ff]/60 pointer-events-none"
         />
-        <h1 className="text-white text-2xl md:text-3xl font-extrabold tracking-wide uppercase font-mono">
+        <h1 className="text-transparent bg-clip-text bg-gradient-to-r from-white to-white/60 text-2xl md:text-3xl font-extrabold tracking-wide uppercase font-mono">
           {title}
         </h1>
         <span

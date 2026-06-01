@@ -210,7 +210,11 @@ export const PositionsView: React.FC = () => {
               renderEmpty={() => (
                 <div className="w-full flex justify-center items-center my-20 flex-col py-5 gap-10">
                   <div className="border-2 border-dashed border-[rgba(255,255,255,0.1)] flex justify-center items-center p-4">
-                    <DropletIcon size={90} color="#64748b" className="animate-[float_6s_ease-in-out_infinite]" />
+                    <DropletIcon
+                      size={90}
+                      color="#64748b"
+                      className="animate-[float_6s_ease-in-out_infinite]"
+                    />
                   </div>
                   <div className="w-full flex justify-center items-center flex-col py-2 gap-5">
                     <h4 className="text-3xl md:text-4xl text-white font-extrabold">

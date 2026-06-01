@@ -1,52 +1,33 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FancyCard } from '@/components/Card';
 import { Table } from '@/components/Table';
 import { Skeleton } from '@/components/Skeleton';
 import { Pagination } from '@/components/Pagination';
 import { GiftIcon, LockIcon, DropletIcon, CoinsIcon } from 'lucide-react';
 import useAccountInfo from '@/hooks/api/useAccountInfo';
-import { REFETCH_INTERVALS } from '@/constants';
-import { GetAccountInfoQuery } from '@/gql/codegen/graphql';
-import { formatNumber } from '@/utils/numbers';
-import { useAtomicDate } from '@/hooks/app';
+import { CHAINS_INFORMATION, REFETCH_INTERVALS } from '@/constants';
+import { AllPoolsQuery, GetAccountInfoQuery } from '@/gql/codegen/graphql';
+import { Address, formatUnits, zeroAddress } from 'viem';
+import useRewardTokens from '@/hooks/rewards/useRewardTokens';
+import { useGHAssetsContext } from '@/contexts/github-assets';
+import { AssetResponseType } from '@/config/github-assets.config';
+import useGetRewardEarnings from '@/hooks/rewards/useGetRewardEarnings';
+import { formatNumber } from '@/utils';
+import usePoolVote from '@/hooks/governance/usePoolVote';
+import useCheckEarnings from '@/hooks/gauges/useCheckEarnings';
+import useClaimBribes from '@/hooks/rewards/bribes/useClaimBribes';
+import useClaimFees from '@/hooks/rewards/fees/useClaimFees';
+import { useChainId } from 'wagmi';
+import { TransactionSuccessModal } from '@/ui/modals/TransactionSuccessModal';
+import { TransactionErrorModal } from '@/ui/modals/TransactionErrorModal';
+import { Spinner } from '@/components/Spinner';
+import useClaimGaugeRewards from '@/hooks/rewards/useClaimGaugeRewards';
 
 type Lock = NonNullable<GetAccountInfoQuery['user']>['lockPositions'][number];
 type LiquidityPosition = NonNullable<GetAccountInfoQuery['user']>['lpPositions'][number];
-
-// ─── Status Badge (shared) ─────────────────────────────────────────────────────
-
-const WEEK_IN_SECS = 60 * 60 * 24 * 7;
-
-const StatusBadge: React.FC<{ unlockTime: Lock['unlockTime'] }> = ({ unlockTime }) => {
-  const expiry = parseInt(unlockTime as string);
-  const date = useAtomicDate(5000);
-  const now = useMemo(() => Math.floor(date.getTime() / 1000), [date]);
-
-  const style = useMemo(() => {
-    if (expiry > now && expiry - now <= WEEK_IN_SECS)
-      return 'bg-[#ffaf52]/10 text-[#ffaf52] border-[#ffaf52]/30';
-    if (now < expiry) return 'bg-[#00ff9d]/10 text-[#00ff9d] border-[#00ff9d]/30';
-    return 'bg-white/5 text-[#64748b] border-white/10';
-  }, [expiry, now]);
-
-  const status = useMemo(() => {
-    if (expiry > now && expiry - now <= WEEK_IN_SECS) return 'EXPIRING';
-    if (now < expiry) return 'ACTIVE';
-    return 'EXPIRED';
-  }, [expiry, now]);
-
-  return (
-    <span
-      className={`text-[10px] font-mono font-bold uppercase tracking-widest px-1.5 py-0.5 border ${style}`}
-    >
-      {status}
-    </span>
-  );
-};
-
-// ─── Section Header ───────────────────────────────────────────────────────────
+type Pool = NonNullable<AllPoolsQuery['pools']>[number];
 
 const SectionHeader: React.FC<{
   icon: React.ReactNode;
@@ -67,11 +48,183 @@ const SectionHeader: React.FC<{
   </div>
 );
 
+const AssetRewardInfo: React.FC<{
+  reward: Address;
+  asset: AssetResponseType[number];
+  tokenId: bigint;
+}> = ({ asset, tokenId, reward }) => {
+  const earned = useGetRewardEarnings(reward, asset.address, tokenId);
+  return (
+    <>
+      <span className="font-bold text-[#00ff9d]">
+        {formatNumber(formatUnits(earned, asset.decimals))}
+      </span>
+      <span className="text-[#64748b]">{asset.symbol}</span>
+    </>
+  );
+};
+
+const RewardsColumn: React.FC<{
+  reward: Address;
+  tokenId: bigint;
+  onRenderFinished?: (tokens: Address[]) => void;
+}> = ({ reward, tokenId, onRenderFinished }) => {
+  const { assetsDictionary } = useGHAssetsContext();
+  const rewardTokens = useRewardTokens(reward, REFETCH_INTERVALS);
+
+  useEffect(() => {
+    if (onRenderFinished) onRenderFinished(rewardTokens);
+  }, [onRenderFinished, rewardTokens]);
+
+  return (
+    <div className="flex flex-col items-end gap-1 font-mono text-xs">
+      {rewardTokens.map((token, index) => {
+        const asset = assetsDictionary[token.toLowerCase()];
+        return (
+          <div key={index} className="flex items-center gap-1.5">
+            {asset ? (
+              <AssetRewardInfo key={index} reward={reward} asset={asset} tokenId={tokenId} />
+            ) : (
+              <span className="text-[#64748b]">Unknown Asset</span>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
 // ─── 1. Bribes Rewards Table ───────────────────────────────────────────────────
 
-const BribesRewardsTable: React.FC<{ locks: Lock[]; isLoading: boolean }> = ({
+const RenderedRewardsRow: React.FC<{ lock: Lock; pools: Pool[]; isFees?: boolean }> = ({
+  lock,
+  pools,
+  isFees = false,
+}) => {
+  const poolsVotedFor = usePoolVote(BigInt(lock.id as string), REFETCH_INTERVALS);
+  const poolNames = useMemo(() => {
+    return poolsVotedFor.map(
+      (pool) =>
+        pools.find((p) => (p.address as string).toLowerCase() === pool.toLowerCase())?.name ||
+        'Unknown Pool',
+    );
+  }, [pools, poolsVotedFor]);
+  const poolRewards = useMemo(() => {
+    return poolsVotedFor.map((pool) => {
+      const gauge = pools.find((p) => (p.address as string).toLowerCase() === pool.toLowerCase())
+        ?.gauge;
+      if (!gauge) return zeroAddress;
+      return isFees ? (gauge.feeVotingReward as Address) : (gauge.bribeVotingReward as Address);
+    });
+  }, [isFees, pools, poolsVotedFor]);
+
+  const [rewardTokens, setRewardTokens] = useState<Address[]>([]);
+
+  const [showSuccess, setShowSuccess] = useState<boolean>(false);
+  const [showError, setShowError] = useState<boolean>(false);
+  const [explorerLink, setExplorerLink] = useState<string>('');
+  const [txHash, setTxHash] = useState<string | undefined>();
+
+  const chainId = useChainId();
+
+  const claimBribes = useClaimBribes(
+    poolRewards,
+    [rewardTokens],
+    BigInt(lock.id as string),
+    (hash) => {
+      setExplorerLink(CHAINS_INFORMATION[chainId].explorerUrl);
+      setTxHash(hash);
+      setShowSuccess(true);
+    },
+    () => setShowError(true),
+  );
+  const claimFees = useClaimFees(
+    poolRewards,
+    [rewardTokens],
+    BigInt(lock.id as string),
+    (hash) => {
+      setExplorerLink(CHAINS_INFORMATION[chainId].explorerUrl);
+      setTxHash(hash);
+      setShowSuccess(true);
+    },
+    () => setShowError(true),
+  );
+
+  const initiateTransaction = useCallback(() => {
+    if (isFees) {
+      claimFees.execute();
+    } else {
+      claimBribes.execute();
+    }
+  }, [claimBribes, claimFees, isFees]);
+
+  return (
+    <>
+      <td className="py-3 pr-4">
+        <div className="flex items-center gap-2">
+          <div className="border border-[#2962ff]/30 bg-[#2962ff]/5 p-1.5">
+            <LockIcon size={12} className="text-[#2962ff]" />
+          </div>
+          <span className="font-bold font-mono text-white text-xs">Lock {lock.id}</span>
+        </div>
+      </td>
+      <td className="py-3 pr-4 font-mono text-xs text-white">{poolNames.join(', ')}</td>
+      <td className="py-3 pr-4">
+        <div className="flex flex-col items-end gap-1 font-mono text-xs">
+          {poolRewards.map((reward, index) => (
+            <RewardsColumn
+              key={index}
+              reward={reward}
+              tokenId={BigInt(lock.lockId as string)}
+              onRenderFinished={setRewardTokens}
+            />
+          ))}
+        </div>
+      </td>
+      <td className="py-3 text-right">
+        <button
+          onClick={initiateTransaction}
+          className="text-xs font-mono uppercase tracking-widest border border-[#ffaf52]/50 text-[#ffaf52] px-3 py-1.5 hover:bg-[#ffaf52]/10 transition-colors cursor-pointer"
+        >
+          Claim Bribes{' '}
+          {(claimBribes.isLoading || claimFees.isLoading) && <Spinner size="sm" className="ml-2" />}
+        </button>
+      </td>
+
+      <TransactionSuccessModal
+        open={showSuccess}
+        onOpenChange={(o) => {
+          setShowSuccess(o);
+          claimBribes.reset();
+          claimFees.reset();
+          if (!o) {
+            setTxHash(undefined);
+            setExplorerLink('');
+          }
+        }}
+        txHash={txHash}
+        explorerUrl={explorerLink}
+        message={'Successfully claimed rewards!'}
+      />
+
+      <TransactionErrorModal
+        open={showError}
+        onOpenChange={(o) => {
+          setShowError(o);
+          claimBribes.reset();
+          claimFees.reset();
+        }}
+        message={'An error occurred while claiming rewards. Please try again.'}
+        title="Transaction Failed"
+      />
+    </>
+  );
+};
+
+const BribesRewardsTable: React.FC<{ locks: Lock[]; isLoading: boolean; pools: Pool[] }> = ({
   locks,
   isLoading,
+  pools,
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const totalPages = useMemo(() => Math.ceil(locks.length / 10), [locks.length]);
@@ -100,39 +253,13 @@ const BribesRewardsTable: React.FC<{ locks: Lock[]; isLoading: boolean }> = ({
         ) : (
           <Table<Lock>
             headers={[
-              { label: 'Lock', align: 'left' },
-              { label: 'Locked Amount', align: 'right' },
-              { label: 'Voting Power', align: 'right' },
-              { label: 'Status', align: 'center' },
+              { label: 'Lock ID', align: 'left' },
+              { label: 'Pools Voted For', align: 'left' },
+              { label: 'Yields', align: 'right' },
               { label: 'Actions', align: 'right' },
             ]}
             data={paginated}
-            renderRow={(lock) => (
-              <>
-                <td className="py-3 pr-4">
-                  <div className="flex items-center gap-2">
-                    <div className="border border-[#2962ff]/30 bg-[#2962ff]/5 p-1.5">
-                      <LockIcon size={12} className="text-[#2962ff]" />
-                    </div>
-                    <span className="font-bold font-mono text-white text-xs">Lock {lock.id}</span>
-                  </div>
-                </td>
-                <td className="py-3 pr-4 text-right font-mono text-xs text-white font-bold">
-                  {formatNumber(lock.position as string, 'en-US', 3)} MGN
-                </td>
-                <td className="py-3 pr-4 text-right font-mono text-xs font-bold text-[#2962ff]">
-                  {formatNumber(lock.totalVoteWeightGiven as string, 'en-US', 3)} veMGN
-                </td>
-                <td className="py-3 pr-4 text-center">
-                  <StatusBadge unlockTime={lock.unlockTime} />
-                </td>
-                <td className="py-3 text-right">
-                  <button className="text-xs font-mono uppercase tracking-widest border border-[#ffaf52]/50 text-[#ffaf52] px-3 py-1.5 hover:bg-[#ffaf52]/10 transition-colors cursor-pointer">
-                    Claim Bribes
-                  </button>
-                </td>
-              </>
-            )}
+            renderRow={(lock) => <RenderedRewardsRow key={lock.id} lock={lock} pools={pools} />}
             renderEmpty={() => (
               <div className="w-full flex flex-col items-center justify-center gap-4 py-12">
                 <GiftIcon size={40} color="#64748b" />
@@ -160,9 +287,10 @@ const BribesRewardsTable: React.FC<{ locks: Lock[]; isLoading: boolean }> = ({
 
 // ─── 2. Fees Rewards Table ─────────────────────────────────────────────────────
 
-const FeesRewardsTable: React.FC<{ locks: Lock[]; isLoading: boolean }> = ({
+const FeesRewardsTable: React.FC<{ locks: Lock[]; isLoading: boolean; pools: Pool[] }> = ({
   locks,
   isLoading,
+  pools,
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const totalPages = useMemo(() => Math.ceil(locks.length / 10), [locks.length]);
@@ -191,38 +319,14 @@ const FeesRewardsTable: React.FC<{ locks: Lock[]; isLoading: boolean }> = ({
         ) : (
           <Table<Lock>
             headers={[
-              { label: 'Lock', align: 'left' },
-              { label: 'Locked Amount', align: 'right' },
-              { label: 'Voting Power', align: 'right' },
-              { label: 'Status', align: 'center' },
+              { label: 'Lock ID', align: 'left' },
+              { label: 'Pools Voted For', align: 'left' },
+              { label: 'Yields', align: 'right' },
               { label: 'Actions', align: 'right' },
             ]}
             data={paginated}
             renderRow={(lock) => (
-              <>
-                <td className="py-3 pr-4">
-                  <div className="flex items-center gap-2">
-                    <div className="border border-[#00ff9d]/20 bg-[#00ff9d]/5 p-1.5">
-                      <LockIcon size={12} className="text-[#00ff9d]" />
-                    </div>
-                    <span className="font-bold font-mono text-white text-xs">Lock {lock.id}</span>
-                  </div>
-                </td>
-                <td className="py-3 pr-4 text-right font-mono text-xs text-white font-bold">
-                  {formatNumber(lock.position as string, 'en-US', 3)} MGN
-                </td>
-                <td className="py-3 pr-4 text-right font-mono text-xs font-bold text-[#2962ff]">
-                  {formatNumber(lock.totalVoteWeightGiven as string, 'en-US', 3)} veMGN
-                </td>
-                <td className="py-3 pr-4 text-center">
-                  <StatusBadge unlockTime={lock.unlockTime} />
-                </td>
-                <td className="py-3 text-right">
-                  <button className="text-xs font-mono uppercase tracking-widest border border-[#00ff9d]/50 text-[#00ff9d] px-3 py-1.5 hover:bg-[#00ff9d]/10 transition-colors cursor-pointer">
-                    Claim Fees
-                  </button>
-                </td>
-              </>
+              <RenderedRewardsRow key={lock.id} lock={lock} pools={pools} isFees />
             )}
             renderEmpty={() => (
               <div className="w-full flex flex-col items-center justify-center gap-4 py-12">
@@ -257,6 +361,17 @@ const POOL_TYPE_COLORS: Record<string, string> = {
   CONCENTRATED: 'text-[#2962ff] bg-[#2962ff]/10',
 };
 
+const RenderGaugeEarningsColumn: React.FC<{ position: LiquidityPosition }> = ({ position }) => {
+  const gauge = (position.pool.gauge?.address as Address) || zeroAddress;
+  const earnings = useCheckEarnings(gauge, REFETCH_INTERVALS);
+  return (
+    <div className="flex items-center gap-1.5">
+      <span className="font-bold text-[#00ff9d]">{formatNumber(formatUnits(earnings, 18))}</span>
+      <span className="text-[#64748b]">MGN</span>
+    </div>
+  );
+};
+
 const GaugeRewardsTable: React.FC<{ positions: LiquidityPosition[]; isLoading: boolean }> = ({
   positions,
   isLoading,
@@ -266,6 +381,24 @@ const GaugeRewardsTable: React.FC<{ positions: LiquidityPosition[]; isLoading: b
   const paginated = useMemo(
     () => positions.slice((currentPage - 1) * 10, currentPage * 10),
     [positions, currentPage],
+  );
+
+  const [selectedGauge, setSelectedGauge] = useState<Address>(zeroAddress);
+  const [showSuccess, setShowSuccess] = useState<boolean>(false);
+  const [showError, setShowError] = useState<boolean>(false);
+  const [explorerLink, setExplorerLink] = useState<string>('');
+  const [txHash, setTxHash] = useState<string | undefined>();
+
+  const chainId = useChainId();
+
+  const claimGaugeRewards = useClaimGaugeRewards(
+    [selectedGauge as Address],
+    (hash) => {
+      setExplorerLink(CHAINS_INFORMATION[chainId].explorerUrl);
+      setTxHash(hash);
+      setShowSuccess(true);
+    },
+    () => setShowError(true),
   );
 
   return (
@@ -322,10 +455,23 @@ const GaugeRewardsTable: React.FC<{ positions: LiquidityPosition[]; isLoading: b
                   {(item.pool.gauge?.rewardRate as string) || '0'}%
                 </td>
 
+                <td className="py-3 pr-4">
+                  <RenderGaugeEarningsColumn position={item} />
+                </td>
+
                 {/* Actions */}
                 <td className="py-3 text-right">
-                  <button className="text-xs font-mono uppercase tracking-widest border border-[#2962ff]/50 text-[#2962ff] px-3 py-1.5 hover:bg-[#2962ff]/10 transition-colors cursor-pointer">
-                    Claim
+                  <button
+                    onClick={() => {
+                      setSelectedGauge(item.pool.gauge?.address as Address);
+                      claimGaugeRewards.execute();
+                    }}
+                    className="text-xs font-mono uppercase tracking-widest border border-[#2962ff]/50 text-[#2962ff] px-3 py-1.5 hover:bg-[#2962ff]/10 transition-colors cursor-pointer"
+                  >
+                    Claim{' '}
+                    {claimGaugeRewards.isLoading && selectedGauge === item.pool.gauge?.address && (
+                      <Spinner size="sm" className="ml-2" />
+                    )}
                   </button>
                 </td>
               </>
@@ -351,6 +497,32 @@ const GaugeRewardsTable: React.FC<{ positions: LiquidityPosition[]; isLoading: b
           </div>
         )}
       </div>
+      <TransactionSuccessModal
+        open={showSuccess}
+        onOpenChange={(o) => {
+          setShowSuccess(o);
+          claimGaugeRewards.reset();
+          setSelectedGauge(zeroAddress);
+          if (!o) {
+            setTxHash(undefined);
+            setExplorerLink('');
+          }
+        }}
+        txHash={txHash}
+        explorerUrl={explorerLink}
+        message={'Successfully claimed rewards!'}
+      />
+
+      <TransactionErrorModal
+        open={showError}
+        onOpenChange={(o) => {
+          setShowError(o);
+          claimGaugeRewards.reset();
+          setSelectedGauge(zeroAddress);
+        }}
+        message={'An error occurred while claiming rewards. Please try again.'}
+        title="Transaction Failed"
+      />
     </FancyCard>
   );
 };
@@ -361,12 +533,24 @@ export const RewardsView: React.FC = () => {
   const { data: accountInfo, isLoading } = useAccountInfo(REFETCH_INTERVALS);
   const locks = useMemo(() => accountInfo?.lockPositions ?? [], [accountInfo]);
   const positions = useMemo(() => accountInfo?.lpPositions ?? [], [accountInfo]);
+  const pools = useMemo(() => positions.map((pos) => pos.pool), [positions]);
 
   return (
     <div className="w-full flex flex-col gap-6">
-      <BribesRewardsTable locks={locks} isLoading={isLoading} />
-      <FeesRewardsTable locks={locks} isLoading={isLoading} />
-      <GaugeRewardsTable positions={positions} isLoading={isLoading} />
+      <BribesRewardsTable
+        locks={locks}
+        isLoading={isLoading}
+        pools={pools.filter((pool) => pool.gauge !== null) as Pool[]}
+      />
+      <FeesRewardsTable
+        locks={locks}
+        isLoading={isLoading}
+        pools={pools.filter((pool) => pool.gauge !== null) as Pool[]}
+      />
+      <GaugeRewardsTable
+        positions={positions.filter((position) => position.pool.gauge !== null)}
+        isLoading={isLoading}
+      />
     </div>
   );
 };

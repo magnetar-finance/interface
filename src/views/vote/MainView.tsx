@@ -464,7 +464,10 @@ export const MainView: React.FC = () => {
               renderEmpty={() => (
                 <div className="w-full flex flex-col items-center justify-center gap-6 py-16">
                   <div className="border-2 border-dashed border-white/10 p-6">
-                    <VoteIcon size={56} className="text-[#64748b] animate-[float_6s_ease-in-out_infinite]" />
+                    <VoteIcon
+                      size={56}
+                      className="text-[#64748b] animate-[float_6s_ease-in-out_infinite]"
+                    />
                   </div>
                   <div className="text-center space-y-1">
                     <h4 className="text-white font-bold text-lg uppercase tracking-widest font-mono">

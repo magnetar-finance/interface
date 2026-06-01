@@ -20,11 +20,17 @@
 }
 
 body {
-  background: var(--background);
+  background: radial-gradient(circle at 40% -10%, #1e293b55 0%, var(--background) 70%), var(--background);
+  background-attachment: fixed;
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
   margin: 0;
   padding: 0;
+}
+
+::selection {
+  background: #2962ff;
+  color: #ffffff;
 }
 
 button {
@@ -33,8 +39,8 @@ button {
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -120,8 +126,13 @@ button {
 }
 
 @keyframes float {
-  0% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
-  100% { transform: translateY(0); }
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+  100% {
+    transform: translateY(0);
+  }
 }
-
