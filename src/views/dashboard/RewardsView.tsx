@@ -38,7 +38,9 @@ const StatusBadge: React.FC<{ unlockTime: Lock['unlockTime'] }> = ({ unlockTime 
   }, [expiry, now]);
 
   return (
-    <span className={`text-[10px] font-mono font-bold uppercase tracking-widest px-1.5 py-0.5 border ${style}`}>
+    <span
+      className={`text-[10px] font-mono font-bold uppercase tracking-widest px-1.5 py-0.5 border ${style}`}
+    >
       {status}
     </span>
   );
@@ -61,15 +63,16 @@ const SectionHeader: React.FC<{
         <p className="text-[#64748b] text-[10px] font-mono uppercase tracking-widest">{subtitle}</p>
       </div>
     </div>
-    <span className="text-[#94a3b8] font-mono text-sm">
-      {isLoading ? '-' : count}
-    </span>
+    <span className="text-[#94a3b8] font-mono text-sm">{isLoading ? '-' : count}</span>
   </div>
 );
 
 // ─── 1. Bribes Rewards Table ───────────────────────────────────────────────────
 
-const BribesRewardsTable: React.FC<{ locks: Lock[]; isLoading: boolean }> = ({ locks, isLoading }) => {
+const BribesRewardsTable: React.FC<{ locks: Lock[]; isLoading: boolean }> = ({
+  locks,
+  isLoading,
+}) => {
   const [currentPage, setCurrentPage] = useState(1);
   const totalPages = useMemo(() => Math.ceil(locks.length / 10), [locks.length]);
   const paginated = useMemo(
@@ -143,7 +146,11 @@ const BribesRewardsTable: React.FC<{ locks: Lock[]; isLoading: boolean }> = ({ l
 
         {!isLoading && totalPages > 1 && (
           <div className="flex justify-end">
-            <Pagination currentPage={currentPage} onPageChange={setCurrentPage} totalPages={totalPages} />
+            <Pagination
+              currentPage={currentPage}
+              onPageChange={setCurrentPage}
+              totalPages={totalPages}
+            />
           </div>
         )}
       </div>
@@ -153,7 +160,10 @@ const BribesRewardsTable: React.FC<{ locks: Lock[]; isLoading: boolean }> = ({ l
 
 // ─── 2. Fees Rewards Table ─────────────────────────────────────────────────────
 
-const FeesRewardsTable: React.FC<{ locks: Lock[]; isLoading: boolean }> = ({ locks, isLoading }) => {
+const FeesRewardsTable: React.FC<{ locks: Lock[]; isLoading: boolean }> = ({
+  locks,
+  isLoading,
+}) => {
   const [currentPage, setCurrentPage] = useState(1);
   const totalPages = useMemo(() => Math.ceil(locks.length / 10), [locks.length]);
   const paginated = useMemo(
@@ -227,7 +237,11 @@ const FeesRewardsTable: React.FC<{ locks: Lock[]; isLoading: boolean }> = ({ loc
 
         {!isLoading && totalPages > 1 && (
           <div className="flex justify-end">
-            <Pagination currentPage={currentPage} onPageChange={setCurrentPage} totalPages={totalPages} />
+            <Pagination
+              currentPage={currentPage}
+              onPageChange={setCurrentPage}
+              totalPages={totalPages}
+            />
           </div>
         )}
       </div>
@@ -329,7 +343,11 @@ const GaugeRewardsTable: React.FC<{ positions: LiquidityPosition[]; isLoading: b
 
         {!isLoading && totalPages > 1 && (
           <div className="flex justify-end">
-            <Pagination currentPage={currentPage} onPageChange={setCurrentPage} totalPages={totalPages} />
+            <Pagination
+              currentPage={currentPage}
+              onPageChange={setCurrentPage}
+              totalPages={totalPages}
+            />
           </div>
         )}
       </div>

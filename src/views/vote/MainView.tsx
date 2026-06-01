@@ -97,7 +97,7 @@ const LockDropdown: React.FC<{
       {!disabled && !comingSoon && (
         <DropdownMenu.Portal>
           <DropdownMenu.Content
-            className="border border-[#2962ff]/30 bg-black px-2 py-2 space-y-1 z-50 font-mono text-xs shadow-xl w-(--radix-popper-anchor-width)"
+            className="border border-[#2962ff]/30 bg-black px-2 py-2 space-y-1 z-50 font-mono text-xs shadow-[0_10px_38px_-10px_rgba(41,98,255,0.15)] data-[state=open]:animate-dropdown-enter data-[state=closed]:animate-dropdown-exit w-(--radix-popper-anchor-width)"
             sideOffset={4}
           >
             {locks.length === 0 ? (
@@ -330,7 +330,7 @@ export const MainView: React.FC = () => {
               />
             </div>
 
-            <div className="border border-white/10 flex items-center gap-2 px-3 py-2 bg-transparent w-full xl:w-auto xl:min-w-56">
+            <div className="border border-white/10 flex items-center gap-2 px-3 py-2 bg-transparent w-full xl:w-auto xl:min-w-56 focus-within:border-[#2962ff] focus-within:shadow-[0_0_15px_rgba(41,98,255,0.2)] transition-all duration-300">
               <SearchIcon size={14} className="text-[#64748b] shrink-0" />
               <input
                 className="bg-transparent text-xs font-mono text-white placeholder:text-[#64748b] outline-none w-full"
@@ -422,7 +422,7 @@ export const MainView: React.FC = () => {
                         <td className="py-3 pr-4 text-white text-right font-bold w-1/5">
                           {formatNumber(item.reserveUSD as string, 'en-US', 2, true)}
                         </td>
-                        <td className="py-3 pr-4 text-[#00ff9d] text-right font-bold w-1/6">
+                        <td className="py-3 pr-4 text-[#00ff9d] text-right font-bold w-1/6 drop-shadow-[0_0_8px_rgba(0,255,157,0.5)]">
                           {(item.gauge?.rewardRate as string) || 0}%
                         </td>
                         <td className="py-3 pr-4 text-[#64748b] text-right font-bold w-1/6">
@@ -449,10 +449,10 @@ export const MainView: React.FC = () => {
                           value={currentAlloc === 0 ? '' : currentAlloc}
                           placeholder="0"
                           onChange={(e) => handleAllocationChange(item.id, e.target.value)}
-                          className={`w-16 bg-transparent border text-right font-mono text-xs px-2 py-1.5 outline-none transition-colors ${
+                          className={`w-16 bg-transparent border text-right font-mono text-xs px-2 py-1.5 outline-none transition-all duration-300 focus:shadow-[0_0_10px_rgba(41,98,255,0.2)] ${
                             currentAlloc > 0
-                              ? 'border-[#2962ff]/60 text-[#2962ff] focus:border-[#2962ff]'
-                              : 'border-white/10 text-[#64748b] focus:border-white/30 hover:border-white/20'
+                              ? 'border-[#2962ff] text-[#2962ff] shadow-[0_0_8px_rgba(41,98,255,0.15)]'
+                              : 'border-white/10 text-[#64748b] focus:border-[#2962ff] hover:border-white/20'
                           }`}
                         />
                         <span className="text-[#64748b] text-xs font-mono">%</span>
@@ -464,7 +464,7 @@ export const MainView: React.FC = () => {
               renderEmpty={() => (
                 <div className="w-full flex flex-col items-center justify-center gap-6 py-16">
                   <div className="border-2 border-dashed border-white/10 p-6">
-                    <VoteIcon size={56} className="text-[#64748b]" />
+                    <VoteIcon size={56} className="text-[#64748b] animate-[float_6s_ease-in-out_infinite]" />
                   </div>
                   <div className="text-center space-y-1">
                     <h4 className="text-white font-bold text-lg uppercase tracking-widest font-mono">

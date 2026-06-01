@@ -38,8 +38,8 @@ export const Table = <T,>({ headers, data, renderRow, renderEmpty, onRowClick }:
         {data.length > 0 ? (
           data.map((item, index) => (
             <tr
-              className={`border-b border-white/5 transition-colors ${
-                onRowClick ? 'hover:bg-white/5 cursor-pointer' : ''
+              className={`border-b border-white/5 transition-all duration-200 hover:bg-gradient-to-r hover:from-[#2962ff]/10 hover:to-transparent ${
+                onRowClick ? 'cursor-pointer' : ''
               }`}
               key={index}
               onClick={() => onRowClick?.(item)}

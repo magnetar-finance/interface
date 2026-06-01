@@ -198,7 +198,7 @@ export const MainView: React.FC = () => {
             </DropdownMenu.Trigger>
             <DropdownMenu.Portal>
               <DropdownMenu.Content
-                className="border border-[#2962ff]/50 bg-black w-3xs px-3 py-2 space-y-2 z-50 shadow-2xl font-mono text-xs"
+                className="border border-[#2962ff]/50 bg-black w-3xs px-3 py-2 space-y-2 z-50 font-mono text-xs shadow-[0_10px_38px_-10px_rgba(41,98,255,0.15)] data-[state=open]:animate-dropdown-enter data-[state=closed]:animate-dropdown-exit"
                 sideOffset={4}
               >
                 <DropdownMenu.Item
@@ -319,7 +319,7 @@ export const MainView: React.FC = () => {
                     {formatNumber(item.volumeUSD as string, 'en-US', 2, true)}
                   </td>
                   {!isMobile && (
-                    <td className="py-3 pr-4 text-[#00ff9d] text-right font-bold">
+                    <td className="py-3 pr-4 text-[#00ff9d] text-right font-bold drop-shadow-[0_0_8px_rgba(0,255,157,0.5)]">
                       {(item.gauge?.rewardRate as string) || 0}%
                     </td>
                   )}
@@ -332,7 +332,7 @@ export const MainView: React.FC = () => {
                       </DropdownMenu.Trigger>
                       <DropdownMenu.Portal>
                         <DropdownMenu.Content
-                          className="border border-[rgb(34,34,34)] bg-black w-3xs px-3 py-2 space-y-2 z-50 font-mono text-xs"
+                          className="border border-[rgb(34,34,34)] bg-black w-3xs px-3 py-2 space-y-2 z-50 font-mono text-xs shadow-[0_10px_38px_-10px_rgba(41,98,255,0.15)] data-[state=open]:animate-dropdown-enter data-[state=closed]:animate-dropdown-exit"
                           sideOffset={4}
                         >
                           <DropdownMenu.Item
@@ -381,7 +381,7 @@ export const MainView: React.FC = () => {
             renderEmpty={() => (
               <div className="w-full flex justify-center items-center my-20 flex-col py-5 gap-10">
                 <div className="border-2 border-dashed border-[rgba(255,255,255,0.1)] flex justify-center items-center p-4">
-                  <DropletIcon size={90} color="#64748b" />
+                  <DropletIcon size={90} color="#64748b" className="animate-[float_6s_ease-in-out_infinite]" />
                 </div>
                 <div className="w-full flex justify-center items-center flex-col py-2 gap-5">
                   <h4 className="text-xl md:text-2xl text-white font-extrabold">

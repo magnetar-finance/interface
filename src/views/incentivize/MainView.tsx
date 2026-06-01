@@ -255,7 +255,7 @@ export const MainView: React.FC = () => {
                 </span>
               </div>
 
-              <div className="flex items-center gap-2 bg-black border border-white/10 p-2 focus-within:border-[#2962ff]/60 transition-colors h-14">
+              <div className="flex items-center gap-2 bg-black border border-white/10 p-2 focus-within:border-[#2962ff] focus-within:shadow-[0_0_15px_rgba(41,98,255,0.2)] transition-all duration-300 h-14">
                 <button
                   onClick={() => setIsTokenModalOpen(true)}
                   className="flex items-center gap-2 px-3 py-1.5 hover:bg-white/5 transition-colors rounded-sm"

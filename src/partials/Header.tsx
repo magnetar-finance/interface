@@ -48,7 +48,7 @@ export const Header: React.FC = () => {
             </SecondaryButton>
           </DropdownMenu.Trigger>
           <DropdownMenu.Portal>
-            <DropdownMenu.Content className="bg-[#0a0a10] flex border border-white/10 w-full flex-col gap-1 z-40">
+            <DropdownMenu.Content className="bg-[#0a0a10] flex border border-white/10 w-full flex-col gap-1 z-40 data-[state=open]:animate-dropdown-enter data-[state=closed]:animate-dropdown-exit shadow-[0_10px_38px_-10px_rgba(41,98,255,0.15)]">
               {Object.entries(CHAINS_INFORMATION).map(([key, value]) => (
                 <DropdownMenu.Item
                   key={key}
