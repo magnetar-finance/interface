@@ -35,9 +35,11 @@ export const SplitLockModal: React.FC<SplitLockModalProps> = ({
   const rawAmount = parseFloat(currentAmount ?? '0') || 0;
   const amountA = ((splitPct / 100) * rawAmount).toLocaleString('en-US', {
     maximumFractionDigits: 2,
+    useGrouping: false,
   });
   const amountB = (((100 - splitPct) / 100) * rawAmount).toLocaleString('en-US', {
     maximumFractionDigits: 2,
+    useGrouping: false,
   });
 
   const [showSuccess, setShowSuccess] = useState<boolean>(false);
@@ -157,7 +159,7 @@ export const SplitLockModal: React.FC<SplitLockModalProps> = ({
         }}
         txHash={txHash}
         explorerUrl={explorerLink}
-        message={'Successfully merged locks!'}
+        message={'Successfully split lock!'}
       />
 
       <TransactionErrorModal
@@ -166,7 +168,7 @@ export const SplitLockModal: React.FC<SplitLockModalProps> = ({
           setShowError(o);
           splitLock.reset();
         }}
-        message={'An error occurred while merging lock. Please try again.'}
+        message={'An error occurred while splitting lock. Please try again.'}
         title="Transaction Failed"
       />
     </>

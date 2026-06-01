@@ -13,7 +13,7 @@ import { AssetResponseType } from '@/config/github-assets.config';
 import { ChevronDownIcon } from 'lucide-react';
 import { PoolType } from '@/gql/codegen/graphql';
 import useGetAllowance from '@/hooks/wallet/useGetAllowance';
-import { Address, parseUnits, zeroAddress } from 'viem';
+import { Address, formatUnits, parseUnits, zeroAddress } from 'viem';
 import useApproveSpend from '@/hooks/wallet/useApproveSpend';
 import useNotifyRewardAmount from '@/hooks/bribes/useNotifyReward';
 import { useChainId } from 'wagmi';
@@ -21,6 +21,7 @@ import useGetBalance from '@/hooks/wallet/useGetBalance';
 import { Spinner } from '@/components/Spinner';
 import { TransactionSuccessModal } from '@/ui/modals/TransactionSuccessModal';
 import { TransactionErrorModal } from '@/ui/modals/TransactionErrorModal';
+import { formatNumber } from '@/utils';
 
 // Helper component for Pool Badge
 const PoolBadge: React.FC<{ type: PoolType; className?: string }> = ({ type, className = '' }) => {
@@ -196,7 +197,7 @@ export const MainView: React.FC = () => {
                     sideOffset={4}
                     className="w-(--radix-popper-anchor-width) max-h-64 overflow-y-auto bg-black border border-[#2962ff]/30 py-1 shadow-xl z-50 font-mono text-xs"
                   >
-                    {pools.map((pool) => {
+                    {viablePools.map((pool) => {
                       const t0 = assetsDictionary[(pool.token0.address as string).toLowerCase()];
                       const t1 = assetsDictionary[(pool.token1.address as string).toLowerCase()];
                       return (
@@ -247,7 +248,10 @@ export const MainView: React.FC = () => {
                 </label>
                 {/* Balance mocked for now, would use GetBalance on selectedToken */}
                 <span className="text-[#64748b] font-mono text-[10px]">
-                  Balance: <span className="text-white">0.00</span>
+                  Balance:{' '}
+                  <span className="text-white">
+                    {formatNumber(formatUnits(balance, selectedToken?.decimals || 18))}
+                  </span>
                 </span>
               </div>
 
@@ -297,7 +301,14 @@ export const MainView: React.FC = () => {
                 {[25, 50, 75, 100].map((pct) => (
                   <button
                     key={pct}
-                    onClick={() => {}} // Hooked up to balance when integrated
+                    onClick={() =>
+                      setAmount(
+                        String(
+                          (pct * parseFloat(formatUnits(balance, selectedToken?.decimals || 18))) /
+                            100,
+                        ),
+                      )
+                    }
                     className="flex-1 py-1 border border-white/10 text-[#94a3b8] hover:text-[#2962ff] hover:border-[#2962ff]/50 transition-colors font-mono text-[10px]"
                   >
                     {pct === 100 ? 'MAX' : `${pct}%`}

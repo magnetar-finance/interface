@@ -134,7 +134,7 @@ export const IncreaseLockAmountModal: React.FC<IncreaseLockAmountModalProps> = (
               {[25, 50, 75, 100].map((pct) => (
                 <button
                   key={pct}
-                  onClick={() => setAmount(String(pct))} // placeholder — replace with real balance math
+                  onClick={() => setAmount(String((pct * parseFloat(formatEther(balance))) / 100))}
                   className="flex-1 border border-white/10 py-1 font-mono text-[10px] text-[#94a3b8] hover:border-[#2962ff]/50 hover:text-[#2962ff] transition-colors"
                 >
                   {pct}%
@@ -175,7 +175,7 @@ export const IncreaseLockAmountModal: React.FC<IncreaseLockAmountModalProps> = (
         }}
         txHash={txHash}
         explorerUrl={explorerLink}
-        message={'Lock created successfully!'}
+        message={'Lock amount increased successfully!'}
       />
 
       <TransactionErrorModal
@@ -185,7 +185,7 @@ export const IncreaseLockAmountModal: React.FC<IncreaseLockAmountModalProps> = (
           escrowApproval.reset();
           lockAmountIncrease.reset();
         }}
-        message={'An error occurred while creating lock. Please try again.'}
+        message={'An error occurred while increasing lock amount. Please try again.'}
         title="Transaction Failed"
       />
     </>
