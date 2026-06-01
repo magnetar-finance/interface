@@ -20,11 +20,18 @@
 }
 
 body {
-  background: var(--background);
+  background: radial-gradient(circle at 40% -10%, #1e293b55 0%, var(--background) 70%),
+    var(--background);
+  background-attachment: fixed;
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
   margin: 0;
   padding: 0;
+}
+
+::selection {
+  background: #2962ff;
+  color: #ffffff;
 }
 
 button {
@@ -38,14 +45,95 @@ button {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--background);
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #1e293b; /* slade 800ish */
-  border-radius: 3px;
+  background: #1e293b; /* slate 800 */
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: #2962ff; /* electric blue accent */
+}
+
+/* Modal Animations */
+@keyframes modal-enter {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -48%) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes modal-exit {
+  from {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, -48%) scale(0.95);
+  }
+}
+
+.animate-modal-enter {
+  animation: modal-enter 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-modal-exit {
+  animation: modal-exit 0.15s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes dropdown-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes dropdown-exit {
+  from {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95) translateY(-5px);
+  }
+}
+
+.animate-dropdown-enter {
+  animation: dropdown-enter 0.15s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transform-origin: top center;
+}
+
+.animate-dropdown-exit {
+  animation: dropdown-exit 0.15s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transform-origin: top center;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+  100% {
+    transform: translateY(0);
+  }
 }

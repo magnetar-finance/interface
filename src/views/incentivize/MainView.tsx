@@ -1,17 +1,27 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import Image from 'next/image';
 import { DropdownMenu } from 'radix-ui';
 import { FancyCard } from '@/components/Card';
 import { PrimaryButton } from '@/components/Button';
 import { TokenSelectModal } from '@/ui/modals/TokenSelectModal';
 import { useGHAssetsContext } from '@/contexts/github-assets';
-import { OP_SETTINGS } from '@/constants';
+import { BI_ZERO, CHAINS_INFORMATION, OP_SETTINGS, REFETCH_INTERVALS } from '@/constants';
 import useAllPools from '@/hooks/api/useAllPools';
 import { AssetResponseType } from '@/config/github-assets.config';
 import { ChevronDownIcon } from 'lucide-react';
 import { PoolType } from '@/gql/codegen/graphql';
+import useGetAllowance from '@/hooks/wallet/useGetAllowance';
+import { Address, formatUnits, parseUnits, zeroAddress } from 'viem';
+import useApproveSpend from '@/hooks/wallet/useApproveSpend';
+import useNotifyRewardAmount from '@/hooks/rewards/bribes/useNotifyReward';
+import { useChainId } from 'wagmi';
+import useGetBalance from '@/hooks/wallet/useGetBalance';
+import { Spinner } from '@/components/Spinner';
+import { TransactionSuccessModal } from '@/ui/modals/TransactionSuccessModal';
+import { TransactionErrorModal } from '@/ui/modals/TransactionErrorModal';
+import { formatNumber } from '@/utils';
 
 // Helper component for Pool Badge
 const PoolBadge: React.FC<{ type: PoolType; className?: string }> = ({ type, className = '' }) => {
@@ -37,6 +47,10 @@ export const MainView: React.FC = () => {
     OP_SETTINGS.default_gql_items_limit,
     OP_SETTINGS.default_refetch_interval,
   );
+  const viablePools = useMemo(
+    () => pools.filter((pool) => pool.gauge !== null && typeof pool.gauge !== 'undefined'),
+    [pools],
+  );
 
   const [selectedPoolId, setSelectedPoolId] = useState<string | null>(null);
   const [selectedToken, setSelectedToken] = useState<AssetResponseType[number] | null>(null);
@@ -45,8 +59,8 @@ export const MainView: React.FC = () => {
 
   // Derived selections
   const selectedPool = useMemo(
-    () => pools.find((p) => p.id === selectedPoolId),
-    [pools, selectedPoolId],
+    () => viablePools.find((p) => p.id === selectedPoolId),
+    [viablePools, selectedPoolId],
   );
 
   const token0Info = selectedPool
@@ -56,8 +70,60 @@ export const MainView: React.FC = () => {
     ? assetsDictionary[(selectedPool.token1.address as string).toLowerCase()]
     : null;
 
+  const [showSuccess, setShowSuccess] = useState<boolean>(false);
+  const [showError, setShowError] = useState<boolean>(false);
+  const [explorerLink, setExplorerLink] = useState<string>('');
+  const [txHash, setTxHash] = useState<string | undefined>();
+
+  const amountBI = useMemo(
+    () => parseUnits(amount || '0', selectedToken?.decimals || 18),
+    [amount, selectedToken?.decimals],
+  );
+  const balance = useGetBalance(selectedToken?.address || zeroAddress, REFETCH_INTERVALS);
+
+  const chainId = useChainId();
+
+  // Check bribe allowance
+  const bribeAllowance = useGetAllowance(
+    selectedToken?.address,
+    selectedPool?.gauge?.bribeVotingReward as Address,
+  );
+  const bribeApproval = useApproveSpend(
+    selectedToken?.address || zeroAddress,
+    (selectedPool?.gauge?.bribeVotingReward as Address) || zeroAddress,
+    amountBI,
+  );
+
+  const incentivize = useNotifyRewardAmount(
+    (selectedPool?.gauge?.bribeVotingReward as Address) || zeroAddress,
+    selectedToken?.address || zeroAddress,
+    amountBI,
+    (hash) => {
+      setExplorerLink(CHAINS_INFORMATION[chainId].explorerUrl);
+      setTxHash(hash);
+      setShowSuccess(true);
+    },
+    () => setShowError(true),
+  );
+
+  const initiateTransaction = useCallback(() => {
+    if (bribeAllowance < amountBI) {
+      bribeApproval.reset();
+      return bribeApproval.execute();
+    }
+
+    return incentivize.execute();
+  }, [amountBI, bribeAllowance, bribeApproval, incentivize]);
+
+  const buttonText = useMemo(() => {
+    if (!amount || amountBI === BI_ZERO) return 'Enter a valid amount';
+    if (amountBI > balance) return 'Insufficient balance';
+    if (bribeAllowance < amountBI) return `Approve to spend ${selectedToken?.symbol}`;
+    return 'Incentivize';
+  }, [amount, amountBI, balance, bribeAllowance, selectedToken?.symbol]);
+
   // Simple validation for form state
-  const isValid = selectedPool && selectedToken && parseFloat(amount) > 0;
+  const isValid = selectedPool && selectedToken && parseFloat(amount) > 0 && amountBI > balance;
 
   return (
     <div className="flex flex-col gap-6 w-full max-w-2xl mx-auto">
@@ -129,15 +195,15 @@ export const MainView: React.FC = () => {
                   <DropdownMenu.Content
                     align="start"
                     sideOffset={4}
-                    className="w-[var(--radix-popper-anchor-width)] max-h-64 overflow-y-auto bg-black border border-[#2962ff]/30 py-1 shadow-xl z-50 font-mono text-xs"
+                    className="w-(--radix-popper-anchor-width) max-h-64 overflow-y-auto bg-black border border-[#2962ff]/30 py-1 shadow-xl z-50 font-mono text-xs"
                   >
-                    {pools.map((pool) => {
+                    {viablePools.map((pool) => {
                       const t0 = assetsDictionary[(pool.token0.address as string).toLowerCase()];
                       const t1 = assetsDictionary[(pool.token1.address as string).toLowerCase()];
                       return (
                         <DropdownMenu.Item
                           key={pool.id}
-                          className="flex items-center gap-2.5 px-4 py-2.5 cursor-pointer outline-none hover:bg-white/5 data-[highlighted]:bg-white/5 transition-colors"
+                          className="flex items-center gap-2.5 px-4 py-2.5 cursor-pointer outline-none hover:bg-white/5 data-highlighted:bg-white/5 transition-colors"
                           onClick={() => setSelectedPoolId(pool.id)}
                         >
                           <div className="-space-x-2 flex">
@@ -182,11 +248,14 @@ export const MainView: React.FC = () => {
                 </label>
                 {/* Balance mocked for now, would use GetBalance on selectedToken */}
                 <span className="text-[#64748b] font-mono text-[10px]">
-                  Balance: <span className="text-white">0.00</span>
+                  Balance:{' '}
+                  <span className="text-white">
+                    {formatNumber(formatUnits(balance, selectedToken?.decimals || 18))}
+                  </span>
                 </span>
               </div>
 
-              <div className="flex items-center gap-2 bg-black border border-white/10 p-2 focus-within:border-[#2962ff]/60 transition-colors h-14">
+              <div className="flex items-center gap-2 bg-black border border-white/10 p-2 focus-within:border-[#2962ff] focus-within:shadow-[0_0_15px_rgba(41,98,255,0.2)] transition-all duration-300 h-14">
                 <button
                   onClick={() => setIsTokenModalOpen(true)}
                   className="flex items-center gap-2 px-3 py-1.5 hover:bg-white/5 transition-colors rounded-sm"
@@ -232,7 +301,14 @@ export const MainView: React.FC = () => {
                 {[25, 50, 75, 100].map((pct) => (
                   <button
                     key={pct}
-                    onClick={() => {}} // Hooked up to balance when integrated
+                    onClick={() =>
+                      setAmount(
+                        String(
+                          (pct * parseFloat(formatUnits(balance, selectedToken?.decimals || 18))) /
+                            100,
+                        ),
+                      )
+                    }
                     className="flex-1 py-1 border border-white/10 text-[#94a3b8] hover:text-[#2962ff] hover:border-[#2962ff]/50 transition-colors font-mono text-[10px]"
                   >
                     {pct === 100 ? 'MAX' : `${pct}%`}
@@ -245,8 +321,12 @@ export const MainView: React.FC = () => {
             <PrimaryButton
               className="w-full mt-2 py-3.5 gap-2 uppercase tracking-widest font-mono text-xs disabled:opacity-40"
               disabled={!isValid}
+              onClick={initiateTransaction}
             >
-              Add Incentive
+              {buttonText}{' '}
+              {(incentivize.isLoading || bribeApproval.isLoading) && (
+                <Spinner size="sm" className="ml-2" />
+              )}
             </PrimaryButton>
           </div>
         </div>
@@ -261,6 +341,33 @@ export const MainView: React.FC = () => {
           // Auto clear amount context if token changes
           setAmount('');
         }}
+      />
+
+      <TransactionSuccessModal
+        open={showSuccess}
+        onOpenChange={(o) => {
+          setShowSuccess(o);
+          incentivize.reset();
+          bribeApproval.reset();
+          if (!o) {
+            setTxHash(undefined);
+            setExplorerLink('');
+          }
+        }}
+        txHash={txHash}
+        explorerUrl={explorerLink}
+        message={'Successfully transfered lock!'}
+      />
+
+      <TransactionErrorModal
+        open={showError}
+        onOpenChange={(o) => {
+          setShowError(o);
+          incentivize.reset();
+          bribeApproval.reset();
+        }}
+        message={'An error occurred while transfering lock. Please try again.'}
+        title="Transaction Failed"
       />
     </div>
   );

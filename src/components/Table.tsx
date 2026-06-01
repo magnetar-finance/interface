@@ -20,7 +20,7 @@ export const Table = <T,>({ headers, data, renderRow, renderEmpty, onRowClick }:
         <tr className="text-[#64748b] border-b border-white/5">
           {headers.map((header, index) => (
             <th
-              className={`py-2 pr-4 uppercase tracking-widest ${
+              className={`py-3 pr-4 uppercase tracking-widest ${
                 header.align === 'right'
                   ? 'text-right'
                   : header.align === 'center'
@@ -38,8 +38,8 @@ export const Table = <T,>({ headers, data, renderRow, renderEmpty, onRowClick }:
         {data.length > 0 ? (
           data.map((item, index) => (
             <tr
-              className={`border-b border-white/5 transition-colors ${
-                onRowClick ? 'hover:bg-white/5 cursor-pointer' : ''
+              className={`border-b border-white/5 transition-all duration-300 hover:bg-white/[0.03] hover:shadow-[inset_0_0_20px_rgba(255,255,255,0.02)] ${
+                onRowClick ? 'cursor-pointer' : ''
               }`}
               key={index}
               onClick={() => onRowClick?.(item)}

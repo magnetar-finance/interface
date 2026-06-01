@@ -22,7 +22,7 @@ export const Modal: React.FC<ModalProps> = ({
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-40 bg-black/80 backdrop-blur-sm" />
         <Dialog.Content
-          className={`fixed z-50 top-[50%] left-[50%] max-h-[85vh] w-[90vw] max-w-[450px] translate-x-[-50%] translate-y-[-50%] bg-[#050508] border border-[rgb(82,82,91)]
+          className={`fixed z-50 top-[50%] left-[50%] max-h-[85vh] w-[90vw] max-w-[450px] translate-x-[-50%] translate-y-[-50%] bg-[#050508] border border-[rgb(82,82,91)] data-[state=open]:animate-modal-enter data-[state=closed]:animate-modal-exit
             before:content-[''] before:absolute before:top-0 before:left-0
             before:w-4 before:h-4 before:border-t-2 before:border-l-2 before:border-[#2962ff]
             after:content-[''] after:absolute after:bottom-0 after:right-0

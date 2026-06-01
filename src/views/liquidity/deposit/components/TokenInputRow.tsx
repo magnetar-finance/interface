@@ -25,7 +25,7 @@ export const TokenInputRow: React.FC<TokenInputRowProps> = ({
   usdValue = '0.00',
 }) => {
   return (
-    <div className="w-full flex flex-col bg-black border border-white/5 p-4 hover:border-[#2962ff]/30 transition-colors group focus-within:border-[#2962ff]/80">
+    <div className="w-full flex flex-col bg-black border border-white/5 p-4 transition-all duration-300 group hover:border-[#2962ff]/30 focus-within:border-[#2962ff] focus-within:shadow-[0_0_15px_rgba(41,98,255,0.2)]">
       <div className="flex justify-between items-center mb-3">
         <span className="text-[#64748b] text-xs font-bold tracking-widest uppercase">{label}</span>
         <div className="text-xs text-[#64748b] flex gap-2">

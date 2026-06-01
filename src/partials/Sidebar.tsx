@@ -71,7 +71,9 @@ const NavLink: React.FC<{ item: NavItem }> = ({ item }) => {
         {item.icon}
       </span>
       {/* Label */}
-      <span className="relative z-10">{item.label}</span>
+      <span className="relative z-10 transition-all duration-300 group-hover:text-white group-hover:translate-x-1">
+        {item.label}
+      </span>
       {/* Active dot */}
       {isActive && (
         <span className="relative z-10 ml-auto w-1.5 h-1.5 rounded-full bg-[#2962ff] shadow-[0_0_6px_rgba(41,98,255,1)]" />
@@ -121,10 +123,10 @@ export const Sidebar: React.FC = () => {
       </nav>
 
       {/* Stats panel */}
-      <div className="mx-4 mt-4 border border-white/6 bg-black/40 px-4 py-3 space-y-2 relative">
+      <div className="mx-4 mt-4 border border-white/6 bg-black/40 px-4 py-3 space-y-2 relative group hover:border-[#2962ff]/20 hover:bg-black/60 transition-all duration-300">
         {/* Corner accents */}
-        <span className="absolute top-0 left-0 w-2 h-2 border-t border-l border-[#2962ff]/50" />
-        <span className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-[#2962ff]/50" />
+        <span className="absolute top-0 left-0 w-2 h-2 border-t border-l border-[#2962ff]/50 transition-all duration-300 group-hover:border-[#2962ff] group-hover:w-3 group-hover:h-3" />
+        <span className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-[#2962ff]/50 transition-all duration-300 group-hover:border-[#2962ff] group-hover:w-3 group-hover:h-3" />
 
         <p className="text-[10px] font-mono uppercase tracking-widest text-[#374151] mb-2">
           Network Stats

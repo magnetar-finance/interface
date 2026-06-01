@@ -115,6 +115,8 @@ export const QUERY_ALL_POOLS = graphql(`
         fees0
         fees1
         isAlive
+        bribeVotingReward
+        feeVotingReward
       }
     }
   }

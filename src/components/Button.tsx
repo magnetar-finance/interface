@@ -18,7 +18,7 @@ export const PrimaryButton: React.FC<CustomButtonProperties> = ({
 }) => {
   return (
     <button
-      className={`bg-[#2962ff] hover:bg-white hover:text-black text-white flex justify-center items-center px-3 py-3 font-semibold ${className}`}
+      className={`bg-[#2962ff] text-white flex justify-center items-center px-3 py-3 font-semibold transition-all duration-300 ease-out hover:bg-[#2962ff]/80 hover:-translate-y-0.5 hover:shadow-[0_0_20px_rgba(41,98,255,0.4)] active:scale-95 disabled:opacity-50 disabled:pointer-events-none disabled:active:scale-100 disabled:hover:translate-y-0 disabled:hover:shadow-none ${className}`}
       {...props}
     >
       {children}
@@ -33,7 +33,7 @@ export const SecondaryButton: React.FC<CustomButtonProperties> = ({
 }) => {
   return (
     <button
-      className={`bg-white/10 text-white flex justify-center items-center px-3 py-3 font-semibold ${className}`}
+      className={`bg-white/10 text-white flex justify-center items-center px-3 py-3 font-semibold transition-all duration-300 ease-out hover:bg-white/15 hover:border-white/20 active:scale-95 disabled:opacity-50 disabled:pointer-events-none disabled:active:scale-100 ${className}`}
       {...props}
     >
       {children}

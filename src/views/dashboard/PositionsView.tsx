@@ -142,10 +142,10 @@ export const PositionsView: React.FC = () => {
                     </td>
                     {!isMobile && (
                       <>
-                        <td className="py-3 pr-4 text-[#00ff9d] text-right font-bold w-1/6">
+                        <td className="py-3 pr-4 text-[#00ff9d] text-right font-bold w-1/6 drop-shadow-[0_0_8px_rgba(0,255,157,0.5)]">
                           {(item.pool.gauge?.rewardRate as string) || 0}%
                         </td>
-                        <td className="py-3 pr-4 text-[#ffaf52] text-right font-bold w-1/6">
+                        <td className="py-3 pr-4 text-[#ffaf52] text-right font-bold w-1/6 drop-shadow-[0_0_8px_rgba(255,175,82,0.5)]">
                           {formatNumber(item.pool.totalFeesUSD as string, 'en-US', 2, true)}
                         </td>
                       </>
@@ -159,7 +159,7 @@ export const PositionsView: React.FC = () => {
                         </DropdownMenu.Trigger>
                         <DropdownMenu.Portal>
                           <DropdownMenu.Content
-                            className="border border-[rgb(34,34,34)] bg-black w-3xs px-3 py-2 space-y-2 z-50 font-mono text-xs"
+                            className="border border-[rgb(34,34,34)] bg-black w-3xs px-3 py-2 space-y-2 z-50 font-mono text-xs shadow-[0_10px_38px_-10px_rgba(41,98,255,0.15)] data-[state=open]:animate-dropdown-enter data-[state=closed]:animate-dropdown-exit"
                             sideOffset={4}
                           >
                             <DropdownMenu.Item
@@ -210,7 +210,11 @@ export const PositionsView: React.FC = () => {
               renderEmpty={() => (
                 <div className="w-full flex justify-center items-center my-20 flex-col py-5 gap-10">
                   <div className="border-2 border-dashed border-[rgba(255,255,255,0.1)] flex justify-center items-center p-4">
-                    <DropletIcon size={90} color="#64748b" />
+                    <DropletIcon
+                      size={90}
+                      color="#64748b"
+                      className="animate-[float_6s_ease-in-out_infinite]"
+                    />
                   </div>
                   <div className="w-full flex justify-center items-center flex-col py-2 gap-5">
                     <h4 className="text-3xl md:text-4xl text-white font-extrabold">
@@ -259,6 +263,10 @@ export const PositionsView: React.FC = () => {
           if (!v) setTimeout(() => setSelectedPosition(null), 300);
         }}
         poolName={selectedPosition?.pool.name}
+        poolAddress={selectedPosition?.pool.address as `0x${string}`}
+        isCL={selectedPosition?.pool.poolType === 'CONCENTRATED'}
+        tokenId={BigInt((selectedPosition?.clPositionTokenId as string) || '0')}
+        gauge={selectedPosition?.pool.gauge?.address as `0x${string}`}
       />
       <UnstakeLPModal
         open={unstakeModalOpen}
@@ -267,6 +275,8 @@ export const PositionsView: React.FC = () => {
           if (!v) setTimeout(() => setSelectedPosition(null), 300);
         }}
         poolName={selectedPosition?.pool.name}
+        tokenId={BigInt((selectedPosition?.clPositionTokenId as string) || '0')}
+        gauge={selectedPosition?.pool.gauge?.address as `0x${string}`}
       />
       <IncreaseLiquidityModal
         open={increaseModalOpen}
