@@ -356,7 +356,7 @@ export const MainView: React.FC = () => {
         }}
         txHash={txHash}
         explorerUrl={explorerLink}
-        message={'Successfully transfered lock!'}
+        message={'Successfully added bribe!'}
       />
 
       <TransactionErrorModal
@@ -366,7 +366,7 @@ export const MainView: React.FC = () => {
           incentivize.reset();
           bribeApproval.reset();
         }}
-        message={'An error occurred while transfering lock. Please try again.'}
+        message={'An error occurred while adding bribe. Please try again.'}
         title="Transaction Failed"
       />
     </div>
