@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import Image from 'next/image';
 import { FancyCard } from '@/components/Card';
 import { Table } from '@/components/Table';
 import { Skeleton } from '@/components/Skeleton';
@@ -355,12 +356,6 @@ const FeesRewardsTable: React.FC<{ locks: Lock[]; isLoading: boolean; pools: Poo
 
 // ─── 3. Gauge Rewards Table ────────────────────────────────────────────────────
 
-const POOL_TYPE_COLORS: Record<string, string> = {
-  STABLE: 'text-[#00ff9d] bg-[#00ff9d]/10',
-  VOLATILE: 'text-[#ffaf52] bg-[#ffaf52]/10',
-  CONCENTRATED: 'text-[#2962ff] bg-[#2962ff]/10',
-};
-
 const RenderGaugeEarningsColumn: React.FC<{ position: LiquidityPosition }> = ({ position }) => {
   const gauge = (position.pool.gauge?.address as Address) || zeroAddress;
   const earnings = useCheckEarnings(gauge, REFETCH_INTERVALS);
@@ -388,6 +383,13 @@ const GaugeRewardsTable: React.FC<{ positions: LiquidityPosition[]; isLoading: b
   const [showError, setShowError] = useState<boolean>(false);
   const [explorerLink, setExplorerLink] = useState<string>('');
   const [txHash, setTxHash] = useState<string | undefined>();
+
+  const { assetsDictionary } = useGHAssetsContext();
+
+  const getAssetInfo = useCallback(
+    (address: string) => assetsDictionary[address.toLowerCase()],
+    [assetsDictionary],
+  );
 
   const chainId = useChainId();
 
@@ -423,59 +425,81 @@ const GaugeRewardsTable: React.FC<{ positions: LiquidityPosition[]; isLoading: b
             headers={[
               { label: 'Pool', align: 'left' },
               { label: 'Reward Rate', align: 'right' },
+              { label: 'Earnings', align: 'right' },
               { label: 'Actions', align: 'right' },
             ]}
             data={paginated}
-            renderRow={(item) => (
-              <>
-                {/* Pool */}
-                <td className="py-3 pr-4">
-                  <div className="flex items-center gap-3">
-                    <div className="-space-x-3 flex">
-                      <div className="w-6 h-6 rounded-full border border-black bg-amber-100" />
-                      <div className="w-6 h-6 rounded-full border border-black bg-blue-100" />
+            renderRow={(item) => {
+              const token0Info = getAssetInfo(item.pool.token0.address as string);
+              const token1Info = getAssetInfo(item.pool.token1.address as string);
+              return (
+                <>
+                  {/* Pool */}
+                  <td className="py-3 pr-4">
+                    <div className="flex justify-start items-center gap-3 w-full">
+                      <div className="-space-x-3 flex justify-center items-center">
+                        {token0Info ? (
+                          <Image
+                            src={token0Info.logoURI}
+                            alt={item.pool.token0.symbol}
+                            width={24}
+                            height={24}
+                            className="w-6 h-6 rounded-full border border-black bg-amber-100"
+                          />
+                        ) : (
+                          <div className="w-6 h-6 rounded-full border border-black bg-amber-100" />
+                        )}
+                        {token1Info ? (
+                          <Image
+                            src={token1Info.logoURI}
+                            alt={item.pool.token1.symbol}
+                            width={24}
+                            height={24}
+                            className="w-6 h-6 rounded-full border border-black bg-blue-100"
+                          />
+                        ) : (
+                          <div className="w-6 h-6 rounded-full border border-black bg-blue-100" />
+                        )}
+                      </div>
+                      <div className="flex flex-col gap-0 justify-start items-start">
+                        <h3 className="font-bold text-white uppercase whitespace-nowrap">
+                          {item.pool.name}
+                        </h3>
+                        <p className="text-[#64748b] uppercase text-[10px] tracking-widest hidden sm:block">
+                          {item.pool.poolType}
+                        </p>
+                      </div>
                     </div>
-                    <div className="flex flex-col gap-0.5">
-                      <h3 className="font-bold text-white text-xs uppercase whitespace-nowrap">
-                        {item.pool.name}
-                      </h3>
-                      <span
-                        className={`text-[10px] uppercase tracking-widest px-1.5 py-0.5 hidden sm:inline-block ${
-                          POOL_TYPE_COLORS[item.pool.poolType]
-                        }`}
-                      >
-                        {item.pool.poolType.toLowerCase()}
-                      </span>
-                    </div>
-                  </div>
-                </td>
+                  </td>
 
-                {/* Reward Rate */}
-                <td className="py-3 pr-4 text-[#00ff9d] font-bold font-mono text-xs text-right">
-                  {(item.pool.gauge?.rewardRate as string) || '0'}%
-                </td>
+                  {/* Reward Rate */}
+                  <td className="py-3 pr-4 text-[#00ff9d] font-bold font-mono text-xs text-right">
+                    {(item.pool.gauge?.rewardRate as string) || '0'}%
+                  </td>
 
-                <td className="py-3 pr-4">
-                  <RenderGaugeEarningsColumn position={item} />
-                </td>
+                  <td className="py-3 pr-4">
+                    <RenderGaugeEarningsColumn position={item} />
+                  </td>
 
-                {/* Actions */}
-                <td className="py-3 text-right">
-                  <button
-                    onClick={() => {
-                      setSelectedGauge(item.pool.gauge?.address as Address);
-                      claimGaugeRewards.execute();
-                    }}
-                    className="text-xs font-mono uppercase tracking-widest border border-[#2962ff]/50 text-[#2962ff] px-3 py-1.5 hover:bg-[#2962ff]/10 transition-colors cursor-pointer"
-                  >
-                    Claim{' '}
-                    {claimGaugeRewards.isLoading && selectedGauge === item.pool.gauge?.address && (
-                      <Spinner size="sm" className="ml-2" />
-                    )}
-                  </button>
-                </td>
-              </>
-            )}
+                  {/* Actions */}
+                  <td className="py-3 text-right">
+                    <button
+                      onClick={() => {
+                        setSelectedGauge(item.pool.gauge?.address as Address);
+                        claimGaugeRewards.execute();
+                      }}
+                      className="text-xs font-mono uppercase tracking-widest border border-[#2962ff]/50 text-[#2962ff] px-3 py-1.5 hover:bg-[#2962ff]/10 transition-colors cursor-pointer"
+                    >
+                      Claim{' '}
+                      {claimGaugeRewards.isLoading &&
+                        selectedGauge === item.pool.gauge?.address && (
+                          <Spinner size="sm" className="ml-2" />
+                        )}
+                    </button>
+                  </td>
+                </>
+              );
+            }}
             renderEmpty={() => (
               <div className="w-full flex flex-col items-center justify-center gap-4 py-12">
                 <DropletIcon size={40} color="#64748b" />
