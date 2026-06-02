@@ -360,7 +360,7 @@ const RenderGaugeEarningsColumn: React.FC<{ position: LiquidityPosition }> = ({ 
   const gauge = (position.pool.gauge?.address as Address) || zeroAddress;
   const earnings = useCheckEarnings(gauge, REFETCH_INTERVALS);
   return (
-    <div className="flex items-center gap-1.5">
+    <div className="flex items-center justify-end gap-1.5">
       <span className="font-bold text-[#00ff9d]">{formatNumber(formatUnits(earnings, 18))}</span>
       <span className="text-[#64748b]">MGN</span>
     </div>
@@ -477,7 +477,7 @@ const GaugeRewardsTable: React.FC<{ positions: LiquidityPosition[]; isLoading: b
                     {(item.pool.gauge?.rewardRate as string) || '0'}%
                   </td>
 
-                  <td className="py-3 pr-4">
+                  <td className="py-3 pr-4 text-right">
                     <RenderGaugeEarningsColumn position={item} />
                   </td>
 
