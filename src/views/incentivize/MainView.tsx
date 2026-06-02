@@ -123,7 +123,7 @@ export const MainView: React.FC = () => {
   }, [amount, amountBI, balance, bribeAllowance, selectedToken?.symbol]);
 
   // Simple validation for form state
-  const isValid = selectedPool && selectedToken && parseFloat(amount) > 0 && amountBI > balance;
+  const isValid = selectedPool && selectedToken && parseFloat(amount) > 0 && amountBI <= balance;
 
   return (
     <div className="flex flex-col gap-6 w-full max-w-2xl mx-auto">
