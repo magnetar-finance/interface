@@ -9,14 +9,13 @@ import { Pagination } from '@/components/Pagination';
 import { GiftIcon, LockIcon, DropletIcon, CoinsIcon } from 'lucide-react';
 import useAccountInfo from '@/hooks/api/useAccountInfo';
 import { CHAINS_INFORMATION, REFETCH_INTERVALS } from '@/constants';
-import { AllPoolsQuery, GetAccountInfoQuery } from '@/gql/codegen/graphql';
+import { GetAccountInfoQuery } from '@/gql/codegen/graphql';
 import { Address, formatUnits, zeroAddress } from 'viem';
 import useRewardTokens from '@/hooks/rewards/useRewardTokens';
 import { useGHAssetsContext } from '@/contexts/github-assets';
 import { AssetResponseType } from '@/config/github-assets.config';
 import useGetRewardEarnings from '@/hooks/rewards/useGetRewardEarnings';
 import { formatNumber } from '@/utils';
-import usePoolVote from '@/hooks/governance/usePoolVote';
 import useCheckEarnings from '@/hooks/gauges/useCheckEarnings';
 import useClaimBribes from '@/hooks/rewards/bribes/useClaimBribes';
 import useClaimFees from '@/hooks/rewards/fees/useClaimFees';
@@ -28,7 +27,6 @@ import useClaimGaugeRewards from '@/hooks/rewards/useClaimGaugeRewards';
 
 type Lock = NonNullable<GetAccountInfoQuery['user']>['lockPositions'][number];
 type LiquidityPosition = NonNullable<GetAccountInfoQuery['user']>['lpPositions'][number];
-type Pool = NonNullable<AllPoolsQuery['pools']>[number];
 
 const SectionHeader: React.FC<{
   icon: React.ReactNode;
@@ -97,27 +95,21 @@ const RewardsColumn: React.FC<{
 
 // ─── 1. Bribes Rewards Table ───────────────────────────────────────────────────
 
-const RenderedRewardsRow: React.FC<{ lock: Lock; pools: Pool[]; isFees?: boolean }> = ({
+const RenderedRewardsRow: React.FC<{ lock: Lock; isFees?: boolean }> = ({
   lock,
-  pools,
   isFees = false,
 }) => {
-  const poolsVotedFor = usePoolVote(BigInt(lock.id as string), REFETCH_INTERVALS);
+  const poolsVotedFor = useMemo(() => lock.votes.map((vote) => vote.pool), [lock.votes]);
   const poolNames = useMemo(() => {
-    return poolsVotedFor.map(
-      (pool) =>
-        pools.find((p) => (p.address as string).toLowerCase() === pool.toLowerCase())?.name ||
-        'Unknown Pool',
-    );
-  }, [pools, poolsVotedFor]);
+    return poolsVotedFor.map((pool) => pool.name);
+  }, [poolsVotedFor]);
   const poolRewards = useMemo(() => {
     return poolsVotedFor.map((pool) => {
-      const gauge = pools.find((p) => (p.address as string).toLowerCase() === pool.toLowerCase())
-        ?.gauge;
+      const gauge = pool.gauge;
       if (!gauge) return zeroAddress;
       return isFees ? (gauge.feeVotingReward as Address) : (gauge.bribeVotingReward as Address);
     });
-  }, [isFees, pools, poolsVotedFor]);
+  }, [isFees, poolsVotedFor]);
 
   const [rewardTokens, setRewardTokens] = useState<Address[]>([]);
 
@@ -222,10 +214,9 @@ const RenderedRewardsRow: React.FC<{ lock: Lock; pools: Pool[]; isFees?: boolean
   );
 };
 
-const BribesRewardsTable: React.FC<{ locks: Lock[]; isLoading: boolean; pools: Pool[] }> = ({
+const BribesRewardsTable: React.FC<{ locks: Lock[]; isLoading: boolean }> = ({
   locks,
   isLoading,
-  pools,
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const totalPages = useMemo(() => Math.ceil(locks.length / 10), [locks.length]);
@@ -260,7 +251,7 @@ const BribesRewardsTable: React.FC<{ locks: Lock[]; isLoading: boolean; pools: P
               { label: 'Actions', align: 'right' },
             ]}
             data={paginated}
-            renderRow={(lock) => <RenderedRewardsRow key={lock.id} lock={lock} pools={pools} />}
+            renderRow={(lock) => <RenderedRewardsRow key={lock.id} lock={lock} />}
             renderEmpty={() => (
               <div className="w-full flex flex-col items-center justify-center gap-4 py-12">
                 <GiftIcon size={40} color="#64748b" />
@@ -288,10 +279,9 @@ const BribesRewardsTable: React.FC<{ locks: Lock[]; isLoading: boolean; pools: P
 
 // ─── 2. Fees Rewards Table ─────────────────────────────────────────────────────
 
-const FeesRewardsTable: React.FC<{ locks: Lock[]; isLoading: boolean; pools: Pool[] }> = ({
+const FeesRewardsTable: React.FC<{ locks: Lock[]; isLoading: boolean }> = ({
   locks,
   isLoading,
-  pools,
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const totalPages = useMemo(() => Math.ceil(locks.length / 10), [locks.length]);
@@ -326,9 +316,7 @@ const FeesRewardsTable: React.FC<{ locks: Lock[]; isLoading: boolean; pools: Poo
               { label: 'Actions', align: 'right' },
             ]}
             data={paginated}
-            renderRow={(lock) => (
-              <RenderedRewardsRow key={lock.id} lock={lock} pools={pools} isFees />
-            )}
+            renderRow={(lock) => <RenderedRewardsRow key={lock.id} lock={lock} isFees />}
             renderEmpty={() => (
               <div className="w-full flex flex-col items-center justify-center gap-4 py-12">
                 <GiftIcon size={40} color="#64748b" />
@@ -557,20 +545,11 @@ export const RewardsView: React.FC = () => {
   const { data: accountInfo, isLoading } = useAccountInfo(REFETCH_INTERVALS);
   const locks = useMemo(() => accountInfo?.lockPositions ?? [], [accountInfo]);
   const positions = useMemo(() => accountInfo?.lpPositions ?? [], [accountInfo]);
-  const pools = useMemo(() => positions.map((pos) => pos.pool), [positions]);
 
   return (
     <div className="w-full flex flex-col gap-6">
-      <BribesRewardsTable
-        locks={locks}
-        isLoading={isLoading}
-        pools={pools.filter((pool) => pool.gauge !== null) as Pool[]}
-      />
-      <FeesRewardsTable
-        locks={locks}
-        isLoading={isLoading}
-        pools={pools.filter((pool) => pool.gauge !== null) as Pool[]}
-      />
+      <BribesRewardsTable locks={locks} isLoading={isLoading} />
+      <FeesRewardsTable locks={locks} isLoading={isLoading} />
       <GaugeRewardsTable
         positions={positions.filter((position) => position.pool.gauge !== null)}
         isLoading={isLoading}

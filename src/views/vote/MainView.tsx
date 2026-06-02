@@ -246,7 +246,7 @@ export const MainView: React.FC = () => {
   );
 
   const [selectedPools, appliedWeights] = useMemo(() => {
-    const _selectedPools = Object.keys(allocations).map(getAddress);
+    const _selectedPools = Object.keys(allocations).map((addr) => getAddress(addr));
     const _appliedWeights = Object.values(allocations).map((value) => {
       const allocatedPower = (value * parseFloat(formatEther(lockVP))) / 100;
       return parseEther(allocatedPower.toString());
@@ -292,7 +292,7 @@ export const MainView: React.FC = () => {
           {selectedLock && (
             <p className="text-[10px] font-mono text-[#64748b]">
               Voting power:{' '}
-              <span className="text-[#00ff9d]">{formatNumber(formatEther(lockVP))}</span>
+              <span className="text-[#00ff9d]">{formatNumber(formatEther(lockVP))} veMGN</span>
             </p>
           )}
         </div>
@@ -448,7 +448,9 @@ export const MainView: React.FC = () => {
                           step="0.1"
                           value={currentAlloc === 0 ? '' : currentAlloc}
                           placeholder="0"
-                          onChange={(e) => handleAllocationChange(item.id, e.target.value)}
+                          onChange={(e) =>
+                            handleAllocationChange(item.address as string, e.target.value)
+                          }
                           className={`w-16 bg-transparent border text-right font-mono text-xs px-2 py-1.5 outline-none transition-all duration-300 focus:shadow-[0_0_10px_rgba(41,98,255,0.2)] ${
                             currentAlloc > 0
                               ? 'border-[#2962ff] text-[#2962ff] shadow-[0_0_8px_rgba(41,98,255,0.15)]'
@@ -532,7 +534,9 @@ export const MainView: React.FC = () => {
               {selectedLock ? (
                 <>
                   Lock {selectedLock.lockId}{' '}
-                  <span className="text-[#2962ff]">({formatNumber(formatEther(lockVP))})</span>
+                  <span className="text-[#2962ff]">
+                    ({formatNumber(formatEther(lockVP))} veMGN)
+                  </span>
                 </>
               ) : (
                 <span className="text-[#64748b]">—</span>
