@@ -372,9 +372,9 @@ export const PoolAnalyticsView: React.FC<{ poolId: string }> = ({ poolId }) => {
             </p>
             <p className="text-[#64748b] text-xs">
               1 {pool.token0.symbol} ={' '}
-              {parseFloat(pool.token0Price as string) < 0.001
-                ? parseFloat(pool.token0Price as string).toExponential(2)
-                : parseFloat(pool.token0Price as string).toFixed(4)}{' '}
+              {parseFloat(pool.token1Price as string) < 0.001
+                ? parseFloat(pool.token1Price as string).toExponential(2)
+                : parseFloat(pool.token1Price as string).toFixed(4)}{' '}
               {pool.token1.symbol}
             </p>
           </div>
@@ -386,9 +386,9 @@ export const PoolAnalyticsView: React.FC<{ poolId: string }> = ({ poolId }) => {
             </p>
             <p className="text-[#64748b] text-xs">
               1 {pool.token1.symbol} ={' '}
-              {parseFloat(pool.token1Price as string) < 0.001
-                ? parseFloat(pool.token1Price as string).toExponential(2)
-                : parseFloat(pool.token1Price as string).toFixed(4)}{' '}
+              {parseFloat(pool.token0Price as string) < 0.001
+                ? parseFloat(pool.token0Price as string).toExponential(2)
+                : parseFloat(pool.token0Price as string).toFixed(4)}{' '}
               {pool.token0.symbol}
             </p>
           </div>
