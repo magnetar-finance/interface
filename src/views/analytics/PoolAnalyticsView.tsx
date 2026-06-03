@@ -368,7 +368,7 @@ export const PoolAnalyticsView: React.FC<{ poolId: string }> = ({ poolId }) => {
           <div className="flex-1">
             <p className="text-[#64748b] text-xs mb-1">{pool.token0.symbol}</p>
             <p className="text-white font-bold text-xl">
-              {formatNumber(pool.reserve0 as string, 'en-US', 2, true)}
+              {formatNumber(pool.reserve0 as string, 'en-US', 2)}
             </p>
             <p className="text-[#64748b] text-xs">
               1 {pool.token0.symbol} ={' '}
@@ -382,7 +382,7 @@ export const PoolAnalyticsView: React.FC<{ poolId: string }> = ({ poolId }) => {
           <div className="flex-1">
             <p className="text-[#64748b] text-xs mb-1">{pool.token1.symbol}</p>
             <p className="text-white font-bold text-xl">
-              {formatNumber(pool.reserve1 as string, 'en-US', 2, true)}
+              {formatNumber(pool.reserve1 as string, 'en-US', 2)}
             </p>
             <p className="text-[#64748b] text-xs">
               1 {pool.token1.symbol} ={' '}
