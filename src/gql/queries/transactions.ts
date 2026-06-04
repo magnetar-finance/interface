@@ -2,7 +2,7 @@ import { graphql } from '../codegen';
 
 export const QUERY_ALL_TRANSACTIONS = graphql(`
   query AllTransactions($skip: Int = 0, $limit: Int = 1000) {
-    transactions {
+    transactions(first: $limit, skip: $skip, orderBy: timestamp, orderDirection: desc) {
       id
       hash
       block
