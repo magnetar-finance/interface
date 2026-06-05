@@ -1,74 +1,115 @@
 @import 'tailwindcss';
 
+/* ─── Terminal Design Tokens ────────────────────────────── */
 :root {
   --background: #000000;
-  --foreground: rgb(250, 250, 250);
+  --surface: #050505;
+  --surface-raised: #0a0a0a;
+  --foreground: #f8fafc; /* White text */
+
+  --accent-primary: #2962ff; /* Electric Blue */
+  --accent-secondary: #00ff9d; /* Green for success/highlights */
+  --accent-alert: #ff4757;
+
+  --border-dim: rgba(41, 98, 255, 0.2);
+  --border-glow: rgba(41, 98, 255, 0.5);
+
+  --radius: 0px; /* Sharp corners for terminal feel */
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-mono: var(--font-fira-code), monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #000000;
-    --foreground: #ededed;
-  }
-}
-
+/* ─── Base ──────────────────────────────────────────────── */
 body {
-  background: radial-gradient(circle at 40% -10%, #1e293b55 0%, var(--background) 70%),
-    var(--background);
-  background-attachment: fixed;
+  background-color: var(--background);
+  /* Subtle terminal grid */
+  background-image: linear-gradient(rgba(41, 98, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(41, 98, 255, 0.03) 1px, transparent 1px);
+  background-size: 30px 30px;
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-mono);
   margin: 0;
   padding: 0;
 }
 
 ::selection {
-  background: #2962ff;
-  color: #ffffff;
+  background: var(--accent-primary);
+  color: #fff;
 }
 
 button {
   cursor: pointer;
 }
 
-/* Custom Scrollbar */
+/* ─── Scrollbar ─────────────────────────────────────────── */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
-
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: var(--background);
+  border-left: 1px solid var(--border-dim);
 }
-
 ::-webkit-scrollbar-thumb {
-  background: #1e293b; /* slate 800 */
-  border-radius: 4px;
+  background: var(--border-dim);
 }
-
 ::-webkit-scrollbar-thumb:hover {
-  background: #2962ff; /* electric blue accent */
+  background: var(--accent-primary);
 }
 
-/* Modal Animations */
+/* ─── Terminal Animations ───────────────────────────────── */
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+.animate-blink {
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes glitch {
+  0% {
+    transform: translate(0);
+  }
+  20% {
+    transform: translate(-2px, 1px);
+  }
+  40% {
+    transform: translate(-1px, -1px);
+  }
+  60% {
+    transform: translate(2px, 1px);
+  }
+  80% {
+    transform: translate(1px, -1px);
+  }
+  100% {
+    transform: translate(0);
+  }
+}
+.hover\:animate-glitch:hover {
+  animation: glitch 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) both infinite;
+}
+
+/* ─── Modal ─────────────────────────────────────────────── */
 @keyframes modal-enter {
   from {
     opacity: 0;
-    transform: translate(-50%, -48%) scale(0.95);
+    transform: translate(-50%, -48%) scale(0.98);
   }
   to {
     opacity: 1;
     transform: translate(-50%, -50%) scale(1);
   }
 }
-
 @keyframes modal-exit {
   from {
     opacity: 1;
@@ -76,64 +117,52 @@ button {
   }
   to {
     opacity: 0;
-    transform: translate(-50%, -48%) scale(0.95);
+    transform: translate(-50%, -48%) scale(0.98);
   }
 }
-
 .animate-modal-enter {
-  animation: modal-enter 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: modal-enter 0.15s ease-out forwards;
 }
-
 .animate-modal-exit {
-  animation: modal-exit 0.15s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: modal-exit 0.1s ease-in forwards;
 }
 
-@keyframes shimmer {
-  100% {
-    transform: translateX(100%);
-  }
-}
-
+/* ─── Dropdown ──────────────────────────────────────────── */
 @keyframes dropdown-enter {
   from {
     opacity: 0;
-    transform: scale(0.95) translateY(-5px);
+    transform: translateY(-4px);
   }
   to {
     opacity: 1;
-    transform: scale(1) translateY(0);
+    transform: translateY(0);
   }
 }
-
 @keyframes dropdown-exit {
   from {
     opacity: 1;
-    transform: scale(1) translateY(0);
+    transform: translateY(0);
   }
   to {
     opacity: 0;
-    transform: scale(0.95) translateY(-5px);
+    transform: translateY(-4px);
   }
 }
-
 .animate-dropdown-enter {
-  animation: dropdown-enter 0.15s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  transform-origin: top center;
+  animation: dropdown-enter 0.1s ease-out forwards;
+  transform-origin: top;
 }
-
 .animate-dropdown-exit {
-  animation: dropdown-exit 0.15s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  transform-origin: top center;
+  animation: dropdown-exit 0.1s ease-in forwards;
+  transform-origin: top;
 }
 
-@keyframes float {
-  0% {
-    transform: translateY(0);
+/* ─── Spin ──────────────────────────────────────────────── */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
   }
-  50% {
-    transform: translateY(-8px);
-  }
-  100% {
-    transform: translateY(0);
+  to {
+    transform: rotate(360deg);
   }
 }

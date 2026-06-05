@@ -20,7 +20,7 @@ const litVMTestnet = defineChain({
   rpcUrls: {
     default: {
       http: ['https://liteforge.rpc.caldera.xyz/http'],
-      webSocket: ['https://liteforge.rpc.caldera.xyz/ws'],
+      webSocket: ['wss://liteforge.rpc.caldera.xyz/ws'],
     },
   },
   blockExplorers: {

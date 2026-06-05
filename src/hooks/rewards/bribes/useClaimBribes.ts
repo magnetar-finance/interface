@@ -49,6 +49,7 @@ function useClaimBribes(
   );
 
   useEffect(() => {
+    console.error(sendError || waitError);
     if (isSuccess && hash && onSuccess) onSuccess(hash);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     if ((sendError || waitError) && onError) onError((sendError ?? waitError) as any);

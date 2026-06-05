@@ -5,6 +5,7 @@ import { useGHAssetsContext } from '@/contexts/github-assets';
 import { SearchIcon, XIcon } from 'lucide-react';
 import Image from 'next/image';
 import { Modal } from '@/components/Modal';
+import { Spinner } from '@/components/Spinner';
 import React, { useMemo, useState } from 'react';
 import useGetBalance from '@/hooks/wallet/useGetBalance';
 import { REFETCH_INTERVALS } from '@/constants';
@@ -19,58 +20,48 @@ interface TokenSelectModalProps {
   onTokenSelect: (token: AssetResponseType[number]) => void;
 }
 
-interface TokenViewProps {
+const TokenView: React.FC<{
   token: AssetResponseType[number];
   isSelected?: boolean;
   isDisabled?: boolean;
   onSingleTokenClick: (token: AssetResponseType[number]) => void;
-}
-
-const TokenView: React.FC<TokenViewProps> = ({
-  token,
-  isDisabled,
-  isSelected,
-  onSingleTokenClick,
-}) => {
+}> = ({ token, isDisabled, isSelected, onSingleTokenClick }) => {
   const balance = useGetBalance(token.address, REFETCH_INTERVALS);
 
   return (
     <button
-      key={token.address}
       disabled={isDisabled}
       onClick={() => onSingleTokenClick(token)}
-      className={`w-full flex justify-between items-center px-5 py-3 transition-colors
-                      ${
-                        isSelected
-                          ? 'bg-[#2962ff]/20 text-[#2962ff]'
-                          : 'text-white hover:bg-white/5'
-                      }
-                      ${isDisabled ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer'}`}
+      className={`
+        w-full flex justify-between items-center px-5 py-3.5
+        transition-colors duration-150
+        ${isSelected ? 'opacity-50' : 'hover:bg-white/[0.04]'}
+        ${isDisabled ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer'}
+      `}
     >
       <div className="flex items-center gap-3">
         {token.logoURI ? (
           <Image
             src={token.logoURI}
             alt={token.symbol}
-            width={32}
-            height={32}
-            className="rounded-full w-8 h-8 bg-white/10"
+            width={36}
+            height={36}
+            className="rounded-full"
           />
         ) : (
-          <div className="w-8 h-8 rounded-full bg-[#2962ff]/20 flex items-center justify-center">
-            <span className="text-[#2962ff] text-xs font-bold">{token.symbol.slice(0, 2)}</span>
+          <div className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center">
+            <span className="text-white text-xs font-semibold">{token.symbol.slice(0, 2)}</span>
           </div>
         )}
-        <div className="flex flex-col items-start">
-          <span className="font-semibold text-sm">{token.symbol}</span>
-          <span className="text-[#64748b] text-xs">{token.name}</span>
+        <div className="flex flex-col items-start gap-0.5">
+          <span className="font-semibold text-base">{token.symbol}</span>
+          <span className="text-white/40 text-xs">{token.name}</span>
         </div>
       </div>
-      <div className="flex flex-col items-end">
-        <span className="text-[#94a3b8] text-xs">
-          {formatNumber(formatUnits(balance, token.decimals), 'en-US', 2)}
+      <div className="flex flex-col items-end gap-0.5">
+        <span className="text-white text-sm font-medium">
+          {formatNumber(formatUnits(balance, token.decimals), 'en-US', 4)}
         </span>
-        {isSelected && <span className="text-[#2962ff] text-xs mt-0.5">Selected</span>}
       </div>
     </button>
   );
@@ -97,57 +88,53 @@ export const TokenSelectModal: React.FC<TokenSelectModalProps> = ({
     );
   }, [assets, search]);
 
-  const handleSelect = (token: AssetResponseType[number]) => {
-    onTokenSelect(token);
-    onOpenChange(false);
-    setSearch('');
-  };
-
   return (
-    <Modal open={open} onOpenChange={onOpenChange} title="Select Token" className="h-100">
-      {/* Search */}
-      <div className="px-5 py-3 border-b border-white/10 shrink-0">
-        <div className="flex items-center gap-2 bg-black border border-white/10 px-3 py-2">
-          <SearchIcon size={14} color="#64748b" />
+    <Modal open={open} onOpenChange={onOpenChange} title="Select a token" className="h-[500px]">
+      <div className="px-4 py-3 shrink-0">
+        <div className="flex items-center gap-3 bg-white/[0.04] rounded-xl px-4 py-3 border border-transparent focus-within:border-white/10 focus-within:bg-white/[0.06] transition-colors">
+          <SearchIcon size={18} className="text-white/40 shrink-0" />
           <input
-            className="bg-transparent text-white text-sm flex-1 outline-none placeholder:text-[#64748b]"
-            placeholder="Search name, symbol, or address..."
+            className="bg-transparent text-white text-base flex-1 outline-none placeholder:text-white/40 font-medium"
+            placeholder="Search name or paste address"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             autoFocus
           />
           {search && (
-            <button onClick={() => setSearch('')} className="text-[#64748b] hover:text-white">
-              <XIcon size={12} />
+            <button onClick={() => setSearch('')} className="text-white/40 hover:text-white">
+              <XIcon size={16} />
             </button>
           )}
         </div>
       </div>
 
-      {/* Token List */}
-      <div className="overflow-y-auto max-h-80 py-2">
+      <div className="w-full h-px bg-white/[0.06] shrink-0" />
+
+      <div className="overflow-y-auto flex-1">
         {isLoading ? (
-          <div className="flex justify-center items-center py-12">
-            <span className="text-[#64748b] text-sm animate-pulse">Loading tokens...</span>
+          <div className="flex flex-col justify-center items-center py-20 gap-4">
+            <Spinner size="md" />
           </div>
         ) : filteredAssets.length === 0 ? (
-          <div className="flex justify-center items-center py-12">
-            <span className="text-[#64748b] text-sm">No tokens found</span>
+          <div className="flex flex-col justify-center items-center py-20 gap-2">
+            <span className="text-white/50 text-sm">No tokens found</span>
           </div>
         ) : (
-          filteredAssets.map((token) => {
-            const isSelected = selectedToken?.address === token.address;
-            const isDisabled = disabledToken?.address === token.address;
-            return (
+          <div className="py-2">
+            {filteredAssets.map((token) => (
               <TokenView
                 key={token.address}
                 token={token}
-                isDisabled={isDisabled}
-                isSelected={isSelected}
-                onSingleTokenClick={handleSelect}
+                isDisabled={disabledToken?.address === token.address}
+                isSelected={selectedToken?.address === token.address}
+                onSingleTokenClick={(t) => {
+                  onTokenSelect(t);
+                  onOpenChange(false);
+                  setSearch('');
+                }}
               />
-            );
-          })
+            ))}
+          </div>
         )}
       </div>
     </Modal>

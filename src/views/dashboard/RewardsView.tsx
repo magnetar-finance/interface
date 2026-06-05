@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import Image from 'next/image';
 import { FancyCard } from '@/components/Card';
 import { Table } from '@/components/Table';
@@ -8,10 +8,9 @@ import { Skeleton } from '@/components/Skeleton';
 import { Pagination } from '@/components/Pagination';
 import { GiftIcon, LockIcon, DropletIcon, CoinsIcon } from 'lucide-react';
 import useAccountInfo from '@/hooks/api/useAccountInfo';
-import { CHAINS_INFORMATION, REFETCH_INTERVALS } from '@/constants';
+import { CHAINS_INFORMATION, OP_SETTINGS, REFETCH_INTERVALS } from '@/constants';
 import { GetAccountInfoQuery } from '@/gql/codegen/graphql';
-import { Address, formatUnits, zeroAddress } from 'viem';
-import useRewardTokens from '@/hooks/rewards/useRewardTokens';
+import { Address, formatUnits, getAddress, zeroAddress } from 'viem';
 import { useGHAssetsContext } from '@/contexts/github-assets';
 import { AssetResponseType } from '@/config/github-assets.config';
 import useGetRewardEarnings from '@/hooks/rewards/useGetRewardEarnings';
@@ -24,6 +23,7 @@ import { TransactionSuccessModal } from '@/ui/modals/TransactionSuccessModal';
 import { TransactionErrorModal } from '@/ui/modals/TransactionErrorModal';
 import { Spinner } from '@/components/Spinner';
 import useClaimGaugeRewards from '@/hooks/rewards/useClaimGaugeRewards';
+import useVRNotifyRewards from '@/hooks/api/useVRNotifyRewards';
 
 type Lock = NonNullable<GetAccountInfoQuery['user']>['lockPositions'][number];
 type LiquidityPosition = NonNullable<GetAccountInfoQuery['user']>['lpPositions'][number];
@@ -65,15 +65,10 @@ const AssetRewardInfo: React.FC<{
 
 const RewardsColumn: React.FC<{
   reward: Address;
+  rewardTokens: string[];
   tokenId: bigint;
-  onRenderFinished?: (tokens: Address[]) => void;
-}> = ({ reward, tokenId, onRenderFinished }) => {
+}> = ({ rewardTokens, tokenId, reward }) => {
   const { assetsDictionary } = useGHAssetsContext();
-  const rewardTokens = useRewardTokens(reward, REFETCH_INTERVALS);
-
-  useEffect(() => {
-    if (onRenderFinished) onRenderFinished(rewardTokens);
-  }, [onRenderFinished, rewardTokens]);
 
   return (
     <div className="flex flex-col items-end gap-1 font-mono text-xs">
@@ -111,7 +106,16 @@ const RenderedRewardsRow: React.FC<{ lock: Lock; isFees?: boolean }> = ({
     });
   }, [isFees, poolsVotedFor]);
 
-  const [rewardTokens, setRewardTokens] = useState<Address[]>([]);
+  const { data: notifyRewards } = useVRNotifyRewards(
+    0,
+    OP_SETTINGS.default_gql_items_limit,
+    poolRewards,
+    REFETCH_INTERVALS,
+  );
+  const rewardTokens = useMemo(
+    () => notifyRewards.map((reward) => getAddress(reward.token.id)),
+    [notifyRewards],
+  );
 
   const [showSuccess, setShowSuccess] = useState<boolean>(false);
   const [showError, setShowError] = useState<boolean>(false);
@@ -163,13 +167,13 @@ const RenderedRewardsRow: React.FC<{ lock: Lock; isFees?: boolean }> = ({
       </td>
       <td className="py-3 pr-4 font-mono text-xs text-white">{poolNames.join(', ')}</td>
       <td className="py-3 pr-4">
-        <div className="flex flex-col items-end gap-1 font-mono text-xs">
+        <div className="flex flex-col items-end gap-4 font-mono text-xs">
           {poolRewards.map((reward, index) => (
             <RewardsColumn
               key={index}
               reward={reward}
               tokenId={BigInt(lock.lockId as string)}
-              onRenderFinished={setRewardTokens}
+              rewardTokens={rewardTokens}
             />
           ))}
         </div>
@@ -177,10 +181,10 @@ const RenderedRewardsRow: React.FC<{ lock: Lock; isFees?: boolean }> = ({
       <td className="py-3 text-right">
         <button
           onClick={initiateTransaction}
-          className="text-xs font-mono uppercase tracking-widest border border-[#ffaf52]/50 text-[#ffaf52] px-3 py-1.5 hover:bg-[#ffaf52]/10 transition-colors cursor-pointer"
+          className="text-xs font-mono uppercase flex justify-center items-center gap-1 tracking-widest border border-[#ffaf52]/50 text-[#ffaf52] px-3 py-1.5 hover:bg-[#ffaf52]/10 transition-colors cursor-pointer"
         >
-          Claim Bribes{' '}
-          {(claimBribes.isLoading || claimFees.isLoading) && <Spinner size="sm" className="ml-2" />}
+          {isFees ? 'Claim Fees' : 'Claim Bribes'}
+          {(claimBribes.isLoading || claimFees.isLoading) && <Spinner size="xs" className="ml-2" />}
         </button>
       </td>
 
