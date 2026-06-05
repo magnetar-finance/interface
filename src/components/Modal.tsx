@@ -16,33 +16,37 @@ export const Modal: React.FC<ModalProps> = ({
   title,
   children,
   className = '',
-}) => {
-  return (
-    <Dialog.Root open={open} onOpenChange={onOpenChange}>
-      <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 z-40 bg-black/80 backdrop-blur-sm" />
-        <Dialog.Content
-          className={`fixed z-50 top-[50%] left-[50%] max-h-[85vh] w-[90vw] max-w-[450px] translate-x-[-50%] translate-y-[-50%] bg-[#050508] border border-[rgb(82,82,91)] data-[state=open]:animate-modal-enter data-[state=closed]:animate-modal-exit
-            before:content-[''] before:absolute before:top-0 before:left-0
-            before:w-4 before:h-4 before:border-t-2 before:border-l-2 before:border-[#2962ff]
-            after:content-[''] after:absolute after:bottom-0 after:right-0
-            after:w-4 after:h-4 after:border-b-2 after:border-r-2 after:border-[#2962ff] focus:outline-none flex flex-col shadow-[hsl(206_22%_7%_/_35%)_0px_10px_38px_-10px,_hsl(206_22%_7%_/_20%)_0px_10px_20px_-15px] ${className}`}
-        >
-          {/* Header */}
-          <div className="flex justify-between items-center px-5 py-4 border-b border-white/10 shrink-0">
-            <Dialog.Title className="text-white font-semibold text-lg tracking-wide m-0">
-              {title}
-            </Dialog.Title>
-            <Dialog.Close asChild>
-              <button className="text-[#64748b] hover:text-white transition-colors">
-                <XIcon size={18} />
-              </button>
-            </Dialog.Close>
-          </div>
+}) => (
+  <Dialog.Root open={open} onOpenChange={onOpenChange}>
+    <Dialog.Portal>
+      <Dialog.Overlay className="fixed inset-0 z-40 bg-black/80 backdrop-blur-sm" />
+      <Dialog.Content
+        className={`
+          fixed z-50 top-[50%] left-[50%]
+          max-h-[88vh] w-[92vw] max-w-[460px]
+          translate-x-[-50%] translate-y-[-50%]
+          bg-[#000000] border border-[#2962ff]/50
+          shadow-[0_0_30px_rgba(41,98,255,0.15)]
+          data-[state=open]:animate-modal-enter
+          data-[state=closed]:animate-modal-exit
+          focus:outline-none flex flex-col overflow-hidden
+          ${className}
+        `}
+      >
+        {/* Terminal Header */}
+        <div className="flex justify-between items-center px-4 py-2 border-b border-[#2962ff]/30 bg-[#2962ff]/10 shrink-0">
+          <Dialog.Title className="text-[#2962ff] font-mono font-bold text-xs uppercase tracking-widest m-0">
+            {title}
+          </Dialog.Title>
+          <Dialog.Close asChild>
+            <button className="w-6 h-6 flex items-center justify-center text-[#2962ff] hover:bg-[#2962ff] hover:text-black transition-colors border border-transparent hover:border-[#2962ff]">
+              <XIcon size={14} />
+            </button>
+          </Dialog.Close>
+        </div>
 
-          <div className="flex flex-col overflow-y-auto">{children}</div>
-        </Dialog.Content>
-      </Dialog.Portal>
-    </Dialog.Root>
-  );
-};
+        <div className="flex flex-col overflow-y-auto">{children}</div>
+      </Dialog.Content>
+    </Dialog.Portal>
+  </Dialog.Root>
+);

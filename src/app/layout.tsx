@@ -25,14 +25,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${firaCode.className} antialiased overflow-x-hidden`}>
+      <body className={`${firaCode.variable} font-mono antialiased overflow-x-hidden`}>
         <Providers>
           <div className="flex flex-col md:flex-row min-h-screen min-w-screen justify-center items-start gap-0 overflow-y-auto overflow-x-hidden relative">
             <div className="hidden md:block w-[20%] min-h-screen">
               <Sidebar />
             </div>
             <div className="container mx-auto">
-              <div className="w-full flex justify-start items-center gap-12 flex-col pt-3 pb-28 md:py-6 px-4 md:px-7 overflow-x-hidden">
+              <div className="w-full flex justify-start items-center gap-10 flex-col pt-3 pb-28 md:py-6 px-4 md:px-8 overflow-x-hidden">
                 <Header />
                 {children}
               </div>

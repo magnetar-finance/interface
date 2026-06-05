@@ -1,25 +1,28 @@
 import { WalletConnectButton } from '@/components/Button';
-import { WalletMinimalIcon } from 'lucide-react';
+import { TerminalSquareIcon } from 'lucide-react';
 import React from 'react';
 
 export const ConnectWalletPromptView: React.FC = () => (
-  <div className="w-full md:w-1/3 flex justify-center items-center my-20 flex-col py-5 gap-10">
-    <div className="border-2 border-dashed border-[rgba(41,98,255,0.3)] flex justify-center items-center p-4">
-      <WalletMinimalIcon size={90} color="#2962ff" />
+  <div className="w-full md:w-1/2 lg:w-2/5 flex flex-col justify-center items-center my-16 py-8 gap-8 border border-white/10 bg-black/50 p-6 relative">
+    <div className="absolute top-0 left-0 w-full h-1 bg-white/10" />
+
+    <div className="w-20 h-20 bg-white/5 border border-white/20 flex justify-center items-center relative">
+      <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-white/50" />
+      <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-white/50" />
+      <TerminalSquareIcon size={32} className="text-white/60 animate-pulse" strokeWidth={1} />
     </div>
-    <div className="w-full flex justify-center items-center flex-col py-2 gap-5">
-      <h4 className="text-3xl md:text-4xl text-white font-extrabold text-center">
-        Connect Your Wallet
-      </h4>
-      <p className="text-[#94a3b8] font-normal text-sm md:text-xl text-center text-wrap w-full lg:w-132">
-        Connect your wallet to view your portfolio, voting power, and active liquidity positions.
+
+    <div className="w-full flex justify-center items-center flex-col gap-3 text-center">
+      <h2 className="text-[#2962ff] text-xl font-mono font-bold tracking-widest uppercase">
+        <span className="opacity-50 mr-2">&gt;</span>AUTH_REQUIRED
+      </h2>
+      <p className="text-[#64748b] text-xs font-mono uppercase tracking-widest max-w-sm mt-2">
+        A valid cryptographic key pair must be provided to access secure terminal sectors.
       </p>
     </div>
-    <div className="w-full flex flex-col gap-7 justify-center items-center">
-      <WalletConnectButton hasIcon className="w-[70%] space-x-4 py-4" />
-      <p className="text-[#64748b] font-normal text-sm text-center text-wrap w-full lg:w-132">
-        Supports MetaMask, WalletConnect, Coinbase Wallet & more
-      </p>
+
+    <div className="w-full flex flex-col gap-4 justify-center items-center mt-4">
+      <WalletConnectButton className="w-full sm:w-[70%]" />
     </div>
   </div>
 );

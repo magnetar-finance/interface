@@ -2,7 +2,6 @@ interface SwitchGroupProps {
   onSwitchClicked?: (switchIndex: number) => void;
   activeSwitchIndex?: number;
   switchLabels: string[];
-  /** When true, each switch gets flex-1 so they share the width equally */
   fullWidth?: boolean;
 }
 
@@ -12,21 +11,27 @@ export const SwitchGroup: React.FC<SwitchGroupProps> = ({
   switchLabels,
   fullWidth = false,
 }) => (
-  <div className="bg-white/10 border border-[rgb(255,255,255,0.06)] text-white flex justify-start items-center px-1 py-1 w-full">
-    {switchLabels.map((label, index) => (
-      <button
-        key={index}
-        onClick={() => onSwitchClicked?.(index)}
-        className={`px-2 sm:px-4 py-1 flex justify-center items-center font-semibold transition-all duration-300 ease-out active:scale-95 text-xs sm:text-sm${
-          fullWidth ? ' flex-1 min-w-0 truncate' : ''
-        } ${
-          index === activeSwitchIndex
-            ? 'border border-[#2962ff] text-[#2962ff] bg-[#2962ff]/10'
-            : 'bg-transparent text-[#94a3b8] border border-transparent hover:bg-white/5 hover:text-white hover:border-white/10'
-        }`}
-      >
-        {label}
-      </button>
-    ))}
+  <div className="flex items-center gap-2 w-full border-b border-white/20 pb-2">
+    {switchLabels.map((label, index) => {
+      const isActive = index === activeSwitchIndex;
+      return (
+        <button
+          key={index}
+          onClick={() => onSwitchClicked?.(index)}
+          className={`
+            px-4 py-1 text-xs font-mono uppercase tracking-widest
+            transition-all duration-100
+            ${fullWidth ? 'flex-1 min-w-0 truncate' : ''}
+            ${
+              isActive
+                ? 'text-[#2962ff] bg-[#2962ff]/10 border border-[#2962ff]/50'
+                : 'text-[#64748b] border border-transparent hover:text-[#94a3b8] hover:border-white/20'
+            }
+          `}
+        >
+          {isActive ? `[ ${label} ]` : label}
+        </button>
+      );
+    })}
   </div>
 );

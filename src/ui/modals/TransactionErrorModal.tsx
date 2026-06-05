@@ -1,7 +1,8 @@
 'use client';
 
-import { AlertTriangleIcon } from 'lucide-react';
+import { AlertCircleIcon } from 'lucide-react';
 import { Modal } from '@/components/Modal';
+import { SecondaryButton } from '@/components/Button';
 import React from 'react';
 
 interface TransactionErrorModalProps {
@@ -18,34 +19,25 @@ export const TransactionErrorModal: React.FC<TransactionErrorModalProps> = ({
   title = 'Transaction Failed',
   message = 'There was an error processing your transaction.',
   error,
-}) => {
-  return (
-    <Modal
-      open={open}
-      onOpenChange={onOpenChange}
-      title={title}
-      className="sm:max-w-md h-auto max-h-[85vh]"
-    >
-      <div className="p-6 flex flex-col items-center justify-center text-center">
-        <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mb-6">
-          <AlertTriangleIcon size={32} className="text-red-500" />
-        </div>
-
-        <p className="text-white text-lg font-medium mb-2">{message}</p>
-
-        {error && (
-          <div className="mt-4 p-3 bg-red-500/10 border border-red-500/20 w-full overflow-hidden text-left">
-            <p className="text-red-400 text-xs font-mono break-all line-clamp-4">{error}</p>
-          </div>
-        )}
-
-        <button
-          onClick={() => onOpenChange(false)}
-          className="mt-8 w-full bg-white/5 hover:bg-white/10 text-white border border-white/10 font-medium py-3 px-4 transition-colors"
-        >
-          Dismiss
-        </button>
+}) => (
+  <Modal open={open} onOpenChange={onOpenChange} title={title} className="sm:max-w-sm">
+    <div className="p-6 flex flex-col items-center justify-center text-center gap-6">
+      <div className="w-16 h-16 rounded-full bg-red-400/10 flex items-center justify-center">
+        <AlertCircleIcon size={32} className="text-red-400" strokeWidth={2} />
       </div>
-    </Modal>
-  );
-};
+
+      <div className="flex flex-col gap-2 w-full">
+        <p className="text-white text-lg font-semibold">{message}</p>
+        {error && (
+          <p className="text-white/50 text-xs mt-2 bg-white/[0.03] p-3 rounded-xl break-all">
+            {error}
+          </p>
+        )}
+      </div>
+
+      <SecondaryButton onClick={() => onOpenChange(false)} className="w-full mt-2 text-[15px]">
+        Dismiss
+      </SecondaryButton>
+    </div>
+  </Modal>
+);
