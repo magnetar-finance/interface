@@ -1,13 +1,13 @@
 'use client';
 
 import {
-  HomeIcon,
+  TerminalIcon,
   ArrowRightLeftIcon,
-  DropletsIcon,
-  LockIcon,
+  ActivityIcon,
+  DatabaseIcon,
+  LockKeyholeIcon,
   VoteIcon,
   HandCoinsIcon,
-  BarChart2Icon,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -20,13 +20,13 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { href: '/', label: 'Home', icon: <HomeIcon size={22} strokeWidth={1.5} /> },
-  { href: '/swap', label: 'Swap', icon: <ArrowRightLeftIcon size={22} strokeWidth={1.5} /> },
-  { href: '/analytics', label: 'Charts', icon: <BarChart2Icon size={22} strokeWidth={1.5} /> },
-  { href: '/liquidity', label: 'Pools', icon: <DropletsIcon size={22} strokeWidth={1.5} /> },
-  { href: '/locks', label: 'Locks', icon: <LockIcon size={22} strokeWidth={1.5} /> },
-  { href: '/vote', label: 'Vote', icon: <VoteIcon size={22} strokeWidth={1.5} /> },
-  { href: '/incentivize', label: 'Bribes', icon: <HandCoinsIcon size={22} strokeWidth={1.5} /> },
+  { href: '/', label: 'SYS', icon: <TerminalIcon size={16} /> },
+  { href: '/swap', label: 'SWP', icon: <ArrowRightLeftIcon size={16} /> },
+  { href: '/analytics', label: 'DAT', icon: <ActivityIcon size={16} /> },
+  { href: '/liquidity', label: 'POL', icon: <DatabaseIcon size={16} /> },
+  { href: '/locks', label: 'LCK', icon: <LockKeyholeIcon size={16} /> },
+  { href: '/vote', label: 'VOT', icon: <VoteIcon size={16} /> },
+  { href: '/incentivize', label: 'INC', icon: <HandCoinsIcon size={16} /> },
 ];
 
 const NavItem: React.FC<{ item: NavItem }> = ({ item }) => {
@@ -40,19 +40,24 @@ const NavItem: React.FC<{ item: NavItem }> = ({ item }) => {
     <Link
       href={item.href}
       className={`
-        flex flex-col items-center justify-center gap-1 flex-1 py-3 transition-colors
-        ${isActive ? 'text-[#fc72ff]' : 'text-white/40 hover:text-white/70'}
+        flex flex-col items-center justify-center gap-1.5 flex-1 py-3 transition-colors
+        font-mono uppercase
+        ${
+          isActive
+            ? 'text-[#2962ff] bg-[#2962ff]/10 border-t border-[#2962ff]'
+            : 'text-[#64748b] border-t border-transparent hover:text-white hover:bg-white/5'
+        }
       `}
     >
       <span>{item.icon}</span>
-      <span className="text-[10px] font-medium">{item.label}</span>
+      <span className="text-[9px] font-bold tracking-widest">{item.label}</span>
     </Link>
   );
 };
 
 export const StickyMobileNavbar: React.FC = () => (
-  <nav className="bg-[#161618]/90 backdrop-blur-xl rounded-2xl border border-white/[0.08] shadow-[0_4px_24px_rgba(0,0,0,0.5)]">
-    <div className="flex justify-around items-stretch w-full px-1">
+  <nav className="bg-black border border-[#2962ff]/30 w-full shadow-[0_0_15px_rgba(41,98,255,0.15)]">
+    <div className="flex justify-around items-stretch w-full">
       {NAV_ITEMS.map((item) => (
         <NavItem key={item.href} item={item} />
       ))}

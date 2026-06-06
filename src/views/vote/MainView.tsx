@@ -423,7 +423,7 @@ export const MainView: React.FC = () => {
                           {formatNumber(item.reserveUSD as string, 'en-US', 2, true)}
                         </td>
                         <td className="py-3 pr-4 text-[#00ff9d] text-right font-bold w-1/6 drop-shadow-[0_0_8px_rgba(0,255,157,0.5)]">
-                          {(item.gauge?.rewardRate as string) || 0}%
+                          {formatNumber((item.gauge?.rewardRate as string) || '0', 'en-US', 2)}%
                         </td>
                         <td className="py-3 pr-4 text-[#64748b] text-right font-bold w-1/6">
                           {formatNumber((item.totalVotes as unknown as string) || '0', 'en-US', 0)}

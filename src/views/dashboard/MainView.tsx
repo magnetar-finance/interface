@@ -41,7 +41,7 @@ export const MainView: React.FC = () => {
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
       <StatCard
         label="DATA:PORTFOLIO_VAL"
-        value={`$${formatNumber(totalLiquidityUSD, 'en-US', 2, true)}`}
+        value={`${formatNumber(totalLiquidityUSD, 'en-US', 2, true)}`}
       />
       <StatCard label="DATA:VOTING_POWER" value="0.00 veMGN" comingSoon />
       <StatCard label="DATA:REWARDS_SUM" value="$0.00" comingSoon />
