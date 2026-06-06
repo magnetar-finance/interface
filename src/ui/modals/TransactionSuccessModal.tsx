@@ -33,7 +33,7 @@ export const TransactionSuccessModal: React.FC<TransactionSuccessModalProps> = (
             href={explorerUrl ? `${explorerUrl}/tx/${txHash}` : '#'}
             target={explorerUrl ? '_blank' : undefined}
             rel={explorerUrl ? 'noopener noreferrer' : undefined}
-            className="text-[#fc72ff] hover:underline text-sm font-medium"
+            className="text-[#2962ff] hover:underline text-sm font-medium"
           >
             View on Explorer
           </a>

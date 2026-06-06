@@ -333,7 +333,7 @@ export const PoolAnalyticsView: React.FC<{ poolId: string }> = ({ poolId }) => {
           label="Fees"
           value={formatNumber(pool.totalFeesUSD as string, 'en-US', 2, true)}
         />
-        <StatCard label="APR" value={`${apr.toFixed(2)}%`} sub="Current epoch" />
+        <StatCard label="APR" value={`${formatNumber(apr, 'en-US', 2)}%`} sub="Current epoch" />
         <StatCard label="Txns" value={formatNumber(pool.txCount as string, 'en-US', 0)} />
       </div>
 

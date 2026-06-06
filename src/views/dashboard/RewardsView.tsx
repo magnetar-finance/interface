@@ -466,7 +466,7 @@ const GaugeRewardsTable: React.FC<{ positions: LiquidityPosition[]; isLoading: b
 
                   {/* Reward Rate */}
                   <td className="py-3 pr-4 text-[#00ff9d] font-bold font-mono text-xs text-right">
-                    {(item.pool.gauge?.rewardRate as string) || '0'}%
+                    {formatNumber((item.pool.gauge?.rewardRate as string) || '0', 'en-US', 2)}%
                   </td>
 
                   <td className="py-3 pr-4 text-right">
