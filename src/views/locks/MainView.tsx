@@ -207,7 +207,7 @@ const MyLocksTab: React.FC = () => {
           },
           {
             label: 'Active Locks',
-            value: allLocks.filter((l) => parseInt(l.unlockTime as string) < now).length.toString(),
+            value: allLocks.filter((l) => parseInt(l.unlockTime as string) > now).length.toString(),
             color: 'text-[#00ff9d]',
           },
         ].map((stat) => (

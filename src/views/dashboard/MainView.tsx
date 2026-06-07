@@ -36,6 +36,13 @@ export const MainView: React.FC = () => {
       return acc + percentage * parseFloat(pos.pool.reserveUSD as string);
     }, 0);
   }, [accountInfo]);
+  const totalVotingPowerUsed = useMemo(() => {
+    if (!accountInfo) return 0;
+    return accountInfo.lockPositions.reduce((acc, pos) => {
+      const given = parseFloat(pos.totalVoteWeightGiven as string);
+      return acc + given;
+    }, 0);
+  }, [accountInfo]);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
@@ -43,7 +50,10 @@ export const MainView: React.FC = () => {
         label="DATA:PORTFOLIO_VAL"
         value={`${formatNumber(totalLiquidityUSD, 'en-US', 2, true)}`}
       />
-      <StatCard label="DATA:VOTING_POWER" value="0.00 veMGN" comingSoon />
+      <StatCard
+        label="DATA:VOTING_POWER_DELEGATED"
+        value={`${formatNumber(totalVotingPowerUsed, 'en-US', 2)}`}
+      />
       <StatCard label="DATA:REWARDS_SUM" value="$0.00" comingSoon />
     </div>
   );
