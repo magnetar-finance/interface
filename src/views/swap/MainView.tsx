@@ -844,7 +844,7 @@ export const MainView: React.FC = () => {
           depositETH.reset();
           unwrapETH.reset();
         }}
-        message={'An error occurred while adding liquidity. Please try again.'}
+        message={'An error occurred while swapping tokens. Please try again.'}
         title="Transaction Failed"
       />
     </>
