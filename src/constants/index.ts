@@ -9,10 +9,15 @@ export const V3_SQRT_PRICE_BASIS = Math.pow(2, 96);
 export const V3_TICK_BASIS = 1.0001;
 export const BI_ZERO = BigInt(0);
 
+// Epoch constants
+export const EPOCH_START_TIMESTAMP = 1735689600; // Jan 1, 2025
+export const SECONDS_PER_EPOCH = 604800; // 7 days in seconds
+
 export const CHAINS = {
   ARC_TESTNET: 5042002,
   LITVM_TESTNET: 4441,
 };
+
 export const CHAINS_INFORMATION = {
   [CHAINS.ARC_TESTNET]: {
     chainId: CHAINS.ARC_TESTNET,
@@ -31,26 +36,31 @@ export const CHAINS_INFORMATION = {
     symbol: 'zkLTC',
   },
 };
+
 export const SCREEN_WIDTHS = {
   mobile: 640,
   tablet: 768,
   laptop: 1024,
   desktop: 1280,
 };
+
 export const OP_SETTINGS = {
   default_gql_items_limit: 1000,
   default_refetch_interval: 30000, // 30 seconds
   default_tick_interval: 10000, // 10 seconds
 };
+
 export const API_QUERY_SETTINGS = {
   default_pools_per_page: 10,
 };
+
 export const CHAIN_GQL_URI = {
   [CHAINS.ARC_TESTNET]:
     validateClientEnv().data?.NEXT_PUBLIC_GQL_URI || clientEnv.NEXT_PUBLIC_GQL_URI, // Arc network GQL is the same as the default GQL URI, but this allows for chain-specific overrides in the future if needed
   [CHAINS.LITVM_TESTNET]:
     'https://api.goldsky.com/api/public/project_clws3jv71bgap01u93r59ccbm/subgraphs/magnetar-liteforge/1.0.1/gn',
 };
+
 export const RouterType = {
   AUTO: 'auto',
   V2: 'v2',
@@ -102,6 +112,10 @@ export const VOTER: { [key: number]: `0x${string}` } = {
 export const ORACLE: { [key: number]: `0x${string}` } = {
   [CHAINS.ARC_TESTNET]: '0xF6a7F229447FB986195c4dC8305553C8A8518d06',
   [CHAINS.LITVM_TESTNET]: '0x46e65AfC0BBF7cc037D82AC2eA9aaf560dD962Cc',
+};
+export const VE_RENTAL_MARKETPLACE: { [key: number]: `0x${string}` } = {
+  [CHAINS.ARC_TESTNET]: '0x17e1d9be008582f861860b2421a22233253bc726',
+  [CHAINS.LITVM_TESTNET]: '0x17ec3da3c87497fc85e6f59d0a81151dd357aadd',
 };
 export const MGN: { [key: number]: `0x${string}` } = {
   [CHAINS.ARC_TESTNET]: '0x64FAF984Bf60dE19e24238521814cA98574E3b00',
