@@ -18,6 +18,7 @@ import useAccountInfo from '@/hooks/api/useAccountInfo';
 import {
   BI_ZERO,
   CHAINS_INFORMATION,
+  ETHER,
   REFETCH_INTERVALS,
   VE,
   VE_RENTAL_MARKETPLACE,
@@ -33,6 +34,7 @@ import useCreateRental from '@/hooks/governance/useCreateRental';
 import { Spinner } from '@/components/Spinner';
 import { TransactionSuccessModal } from './TransactionSuccessModal';
 import { TransactionErrorModal } from './TransactionErrorModal';
+import { useGHAssetsContext } from '@/contexts/github-assets';
 
 export interface LockRentOutModalProps {
   open: boolean;
@@ -59,7 +61,8 @@ export const LockRentOutModal: React.FC<LockRentOutModalProps> = ({ open, onOpen
   const [paymentToken, setPaymentToken] = useState<AssetResponseType[number] | null>(null);
   const [tokenModalOpen, setTokenModalOpen] = useState(false);
 
-  // ── data ────────────────────────────────────────────────────────────────────
+  const { assets } = useGHAssetsContext();
+
   const { data: accountInfo } = useAccountInfo(REFETCH_INTERVALS);
 
   const locks = useMemo(() => accountInfo?.lockPositions ?? [], [accountInfo]);
@@ -423,6 +426,7 @@ export const LockRentOutModal: React.FC<LockRentOutModalProps> = ({ open, onOpen
         open={tokenModalOpen}
         onOpenChange={setTokenModalOpen}
         selectedToken={paymentToken}
+        disabledToken={assets.find((asset) => asset.address.toLowerCase() === ETHER.toLowerCase())}
         onTokenSelect={(t) => {
           setPaymentToken(t);
           setTokenModalOpen(false);
