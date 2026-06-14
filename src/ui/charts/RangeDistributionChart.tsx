@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Bar, BarChart, Cell, ResponsiveContainer } from 'recharts';
 
 export interface RangeDistributionChartProps {
   data: { value: number; tick: number }[];
@@ -9,9 +8,11 @@ export interface RangeDistributionChartProps {
   chartMaxIndex: number;
   activeColor?: string;
   inactiveColor?: string;
-  /** Called with the new bar-index when the left (min) handle is dragged */
+  /** Optional tick for the current price — renders a dashed marker line */
+  currentPriceTick?: number;
+  /** Called with the new tick value when the left (min) handle is dragged */
   onMinIndexChange?: (index: number) => void;
-  /** Called with the new bar-index when the right (max) handle is dragged */
+  /** Called with the new tick value when the right (max) handle is dragged */
   onMaxIndexChange?: (index: number) => void;
 }
 
@@ -22,14 +23,17 @@ export const RangeDistributionChart: React.FC<RangeDistributionChartProps> = ({
   chartMinIndex,
   chartMaxIndex,
   activeColor = '#2962ff',
-  inactiveColor = 'rgba(255,255,255,0.05)',
+  inactiveColor = 'rgba(255,255,255,0.06)',
+  currentPriceTick,
   onMinIndexChange,
   onMaxIndexChange,
 }) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const dragTarget = useRef<DragTarget>(null);
   const [isDragging, setIsDragging] = useState<DragTarget>(null);
+  const [hovered, setHovered] = useState<'min' | 'max' | null>(null);
 
+  // ── Drag logic (unchanged) ────────────────────────────────────────────────
   const clientXToTick = useCallback(
     (clientX: number): number => {
       const el = wrapperRef.current;
@@ -54,15 +58,10 @@ export const RangeDistributionChart: React.FC<RangeDistributionChartProps> = ({
     (e: PointerEvent) => {
       if (!dragTarget.current) return;
       const newTick = clientXToTick(e.clientX);
-
       if (dragTarget.current === 'min') {
-        // min can't go past max-1
-        const clamped = Math.min(newTick, chartMaxIndex - 1);
-        onMinIndexChange?.(clamped);
+        onMinIndexChange?.(Math.min(newTick, chartMaxIndex - 1));
       } else {
-        // max can't go below min+1
-        const clamped = Math.max(newTick, chartMinIndex + 1);
-        onMaxIndexChange?.(clamped);
+        onMaxIndexChange?.(Math.max(newTick, chartMinIndex + 1));
       }
     },
     [clientXToTick, chartMinIndex, chartMaxIndex, onMinIndexChange, onMaxIndexChange],
@@ -73,7 +72,6 @@ export const RangeDistributionChart: React.FC<RangeDistributionChartProps> = ({
     setIsDragging(null);
   }, []);
 
-  // Attach global move/up listeners so dragging outside the element still works
   useEffect(() => {
     const el = wrapperRef.current;
     if (!el) return;
@@ -87,71 +85,113 @@ export const RangeDistributionChart: React.FC<RangeDistributionChartProps> = ({
     };
   }, [handlePointerMove, handlePointerUp]);
 
+  // ── Derived geometry ──────────────────────────────────────────────────────
   const minTick = data[0]?.tick ?? 0;
   const maxTick = data[data.length - 1]?.tick ?? 1;
+  const maxValue = Math.max(...data.map((d) => d.value), 1);
 
-  const getIndexForTick = (tick: number) => {
+  const getIndexForTick = (tick: number): number => {
     if (data.length === 0) return 0;
     if (tick <= data[0].tick) return 0;
     if (tick >= data[data.length - 1].tick) return data.length - 1;
-
     for (let i = 0; i < data.length - 1; i++) {
       if (tick >= data[i].tick && tick <= data[i + 1].tick) {
-        const segmentSpan = data[i + 1].tick - data[i].tick;
-        if (segmentSpan === 0) return i;
-        const t = (tick - data[i].tick) / segmentSpan;
-        return i + t;
+        const span = data[i + 1].tick - data[i].tick;
+        if (span === 0) return i;
+        return i + (tick - data[i].tick) / span;
       }
     }
     return data.length - 1;
   };
 
-  const visualMinIndex = getIndexForTick(Math.max(minTick, Math.min(chartMinIndex, maxTick)));
-  const visualMaxIndex = getIndexForTick(Math.max(minTick, Math.min(chartMaxIndex, maxTick)));
+  const toPct = (tick: number) =>
+    (getIndexForTick(Math.max(minTick, Math.min(tick, maxTick))) / Math.max(1, data.length - 1)) *
+    100;
 
-  const minPct = (visualMinIndex / Math.max(1, data.length - 1)) * 100;
-  const maxPct = (visualMaxIndex / Math.max(1, data.length - 1)) * 100;
+  const minPct = toPct(chartMinIndex);
+  const maxPct = toPct(chartMaxIndex);
+  const currentPricePct = currentPriceTick != null ? toPct(currentPriceTick) : null;
 
   const canInteract = !!(onMinIndexChange || onMaxIndexChange);
+
+  // Size of the draggable handle thumbs (used to offset the chart top)
+  const HANDLE_SIZE_PX = 16;
 
   return (
     <div
       ref={wrapperRef}
-      className="relative w-full h-full"
+      className="relative w-full h-full group/chart"
       style={{ userSelect: 'none', touchAction: 'none' }}
     >
-      {/* Recharts Bar Chart */}
-      <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={data} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
-          <Bar dataKey="value" isAnimationActive={false}>
-            {data.map((entry, index) => (
-              <Cell
-                key={`cell-${index}`}
-                fill={
-                  entry.tick >= chartMinIndex && entry.tick <= chartMaxIndex
-                    ? activeColor
-                    : inactiveColor
-                }
-              />
-            ))}
-          </Bar>
-        </BarChart>
-      </ResponsiveContainer>
-
-      {/* Active range shaded overlay */}
+      {/* ── Bar area (padded top to make room for handle thumbs) ──────────── */}
       <div
-        className="absolute inset-y-0 pointer-events-none"
+        className="absolute inset-x-0 bottom-0 flex items-end gap-px"
+        style={{ top: canInteract ? HANDLE_SIZE_PX / 2 : 0 }}
+      >
+        {data.map((entry, index) => {
+          const isActive = entry.tick >= chartMinIndex && entry.tick <= chartMaxIndex;
+          const heightPct = Math.max(2, (entry.value / maxValue) * 100);
+          return (
+            <div key={index} className="flex-1 relative" style={{ height: '100%' }}>
+              <div
+                className="absolute bottom-0 w-full rounded-t-sm"
+                style={{
+                  height: `${heightPct}%`,
+                  background: isActive
+                    ? `linear-gradient(to bottom, ${activeColor}, ${activeColor}44)`
+                    : inactiveColor,
+                  boxShadow: isActive ? `0 0 8px ${activeColor}33` : 'none',
+                  transition: 'background 0.2s ease, box-shadow 0.2s ease',
+                }}
+              />
+            </div>
+          );
+        })}
+      </div>
+
+      {/* ── Active range overlay ──────────────────────────────────────────── */}
+      <div
+        className="absolute bottom-0 pointer-events-none transition-all duration-300"
         style={{
+          top: canInteract ? HANDLE_SIZE_PX / 2 : 0,
           left: `${minPct}%`,
           width: `${maxPct - minPct}%`,
-          background: `${activeColor}14`,
+          background: `linear-gradient(to bottom, ${activeColor}1a, ${activeColor}05)`,
         }}
-      />
+      >
+        {/* Top cap line */}
+        <div
+          className="absolute top-0 left-0 right-0 h-[2px]"
+          style={{ background: activeColor, boxShadow: `0 0 10px ${activeColor}80` }}
+        />
+      </div>
 
-      {/* ── Min handle (left) ─────────────────────── */}
+      {/* ── Current price marker ─────────────────────────────────────────── */}
+      {currentPricePct != null && (
+        <div
+          className="absolute bottom-0 pointer-events-none"
+          style={{
+            top: canInteract ? HANDLE_SIZE_PX / 2 : 0,
+            left: `${currentPricePct}%`,
+            transform: 'translateX(-50%)',
+          }}
+        >
+          <div
+            className="w-px h-full"
+            style={{
+              background: '#00ff9d',
+              boxShadow: '0 0 8px #00ff9d',
+              backgroundImage:
+                'repeating-linear-gradient(to bottom, #00ff9d 0px, #00ff9d 4px, transparent 4px, transparent 8px)',
+            }}
+          />
+        </div>
+      )}
+
+      {/* ── MIN handle ───────────────────────────────────────────────────── */}
       {canInteract && (
         <div
-          className="absolute inset-y-0 flex flex-col items-center"
+          className="absolute inset-y-0 flex flex-col items-center transition-opacity"
           style={{
             left: `${minPct}%`,
             transform: 'translateX(-50%)',
@@ -159,24 +199,51 @@ export const RangeDistributionChart: React.FC<RangeDistributionChartProps> = ({
             zIndex: 10,
           }}
           onPointerDown={(e) => handlePointerDown(e, 'min')}
+          onPointerEnter={() => setHovered('min')}
+          onPointerLeave={() => setHovered(null)}
         >
-          {/* vertical line */}
+          {/* Handle Thumb */}
           <div
-            className="w-px flex-1"
-            style={{ background: '#2962ff', boxShadow: '0 0 6px #2962ff' }}
-          />
-          {/* grip bar */}
+            className="shrink-0 rounded-full transition-all duration-200 flex items-center justify-center relative"
+            style={{
+              width: HANDLE_SIZE_PX,
+              height: HANDLE_SIZE_PX,
+              backgroundColor: hovered === 'min' || isDragging === 'min' ? '#fff' : '#0f172a',
+              border: `2px solid ${activeColor}`,
+              boxShadow:
+                hovered === 'min' || isDragging === 'min'
+                  ? `0 0 12px ${activeColor}`
+                  : `0 0 4px ${activeColor}80`,
+              transform: hovered === 'min' || isDragging === 'min' ? 'scale(1.2)' : 'scale(1)',
+            }}
+          >
+            {/* Inner dot for extra detail */}
+            <div
+              className="w-1 h-1 rounded-full transition-all duration-200"
+              style={{
+                backgroundColor: hovered === 'min' || isDragging === 'min' ? activeColor : '#fff',
+              }}
+            />
+          </div>
+          {/* Line */}
           <div
-            className="w-1.5 h-5 rounded-sm mb-1 shrink-0"
-            style={{ background: '#F5F5F5', boxShadow: '0 0 6px rgba(245,245,245,0.4)' }}
+            className="flex-1 w-0.5 transition-all duration-200"
+            style={{
+              background: activeColor,
+              opacity: hovered === 'min' || isDragging === 'min' ? 1 : 0.5,
+              boxShadow:
+                hovered === 'min' || isDragging === 'min'
+                  ? `0 0 8px ${activeColor}`
+                  : `0 0 2px ${activeColor}40`,
+            }}
           />
         </div>
       )}
 
-      {/* ── Max handle (right) ───────────────────────── */}
+      {/* ── MAX handle ───────────────────────────────────────────────────── */}
       {canInteract && (
         <div
-          className="absolute inset-y-0 flex flex-col items-center"
+          className="absolute inset-y-0 flex flex-col items-center transition-opacity"
           style={{
             left: `${maxPct}%`,
             transform: 'translateX(-50%)',
@@ -184,16 +251,43 @@ export const RangeDistributionChart: React.FC<RangeDistributionChartProps> = ({
             zIndex: 10,
           }}
           onPointerDown={(e) => handlePointerDown(e, 'max')}
+          onPointerEnter={() => setHovered('max')}
+          onPointerLeave={() => setHovered(null)}
         >
-          {/* vertical line */}
+          {/* Handle Thumb */}
           <div
-            className="w-px flex-1"
-            style={{ background: '#2962ff', boxShadow: '0 0 6px #2962ff' }}
-          />
-          {/* grip bar */}
+            className="shrink-0 rounded-full transition-all duration-200 flex items-center justify-center relative"
+            style={{
+              width: HANDLE_SIZE_PX,
+              height: HANDLE_SIZE_PX,
+              backgroundColor: hovered === 'max' || isDragging === 'max' ? '#fff' : '#0f172a',
+              border: `2px solid ${activeColor}`,
+              boxShadow:
+                hovered === 'max' || isDragging === 'max'
+                  ? `0 0 12px ${activeColor}`
+                  : `0 0 4px ${activeColor}80`,
+              transform: hovered === 'max' || isDragging === 'max' ? 'scale(1.2)' : 'scale(1)',
+            }}
+          >
+            {/* Inner dot for extra detail */}
+            <div
+              className="w-1 h-1 rounded-full transition-all duration-200"
+              style={{
+                backgroundColor: hovered === 'max' || isDragging === 'max' ? activeColor : '#fff',
+              }}
+            />
+          </div>
+          {/* Line */}
           <div
-            className="w-1.5 h-5 rounded-sm mb-1 shrink-0"
-            style={{ background: '#F5F5F5', boxShadow: '0 0 6px rgba(245,245,245,0.4)' }}
+            className="flex-1 w-0.5 transition-all duration-200"
+            style={{
+              background: activeColor,
+              opacity: hovered === 'max' || isDragging === 'max' ? 1 : 0.5,
+              boxShadow:
+                hovered === 'max' || isDragging === 'max'
+                  ? `0 0 8px ${activeColor}`
+                  : `0 0 2px ${activeColor}40`,
+            }}
           />
         </div>
       )}

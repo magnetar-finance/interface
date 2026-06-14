@@ -4,10 +4,7 @@ import { useEffect, useState } from 'react';
 import { PageHeader } from '@/components/PageHeader';
 import { MainView } from '@/views/vote/MainView';
 import useNextVoteEpoch from '@/hooks/governance/useNextVoteEpoch';
-import { REFETCH_INTERVALS } from '@/constants';
-
-const START_TIMESTAMP = 1735689600; // Jan 1, 2025 - would be adjusted in future
-const SECONDS_PER_EPOCH = 604800; // 7 days in seconds
+import { REFETCH_INTERVALS, EPOCH_START_TIMESTAMP, SECONDS_PER_EPOCH } from '@/constants';
 
 export default function Page() {
   const [epochInfo, setEpochInfo] = useState({ current: 1, countdown: '' });
@@ -16,7 +13,7 @@ export default function Page() {
   useEffect(() => {
     const tick = () => {
       const now = Math.floor(Date.now() / 1000);
-      const elapsedSinceStart = now - START_TIMESTAMP;
+      const elapsedSinceStart = now - EPOCH_START_TIMESTAMP;
       const currentEpoch = Math.max(1, Math.floor(elapsedSinceStart / SECONDS_PER_EPOCH));
       const remainingSeconds = Math.max(0, parseInt(nextEpochStart.toString()) - now);
 

@@ -31,12 +31,13 @@ import {
 } from 'lucide-react';
 import { DropdownMenu } from 'radix-ui';
 import useGetLockVP from '@/hooks/governance/useGetLockVP';
-import { formatEther, getAddress, parseEther } from 'viem';
+import { Address, formatEther, getAddress, parseEther, zeroAddress } from 'viem';
 import useVote from '@/hooks/governance/useVote';
 import { useChainId } from 'wagmi';
 import { TransactionSuccessModal } from '@/ui/modals/TransactionSuccessModal';
 import { TransactionErrorModal } from '@/ui/modals/TransactionErrorModal';
 import { Spinner } from '@/components/Spinner';
+import useRentalVote from '@/hooks/governance/useRentalVote';
 
 type Lock = NonNullable<GetAccountInfoQuery['user']>['lockPositions'][number];
 
@@ -161,12 +162,17 @@ export const MainView: React.FC = () => {
     if (!accountInfo) return [];
     return accountInfo.lockPositions;
   }, [accountInfo]);
+  const allRentals = useMemo(() => {
+    if (!accountInfo) return [];
+    return accountInfo.buyerRentals;
+  }, [accountInfo]);
 
   // Selections
   const [selectedLockId, setSelectedLockId] = useState<string | null>(null);
   const [allocations, setAllocations] = useState<Record<string, number>>({});
   const [searchValue, setSearchValue] = useState('');
   const [activeSwitchIndex, setActiveSwitchIndex] = useState(0);
+  const [selectedRentalId, setSelectedRentalId] = useState<string | null>(null);
 
   // Pool type filter (mirrors liquidity page pattern)
   const poolTypeFilter: PoolType | undefined = useMemo(() => {
@@ -237,9 +243,19 @@ export const MainView: React.FC = () => {
   );
   const selectedPoolCount = useMemo(() => Object.keys(allocations).length, [allocations]);
   const isOverAllocated = totalAllocated > 100;
-  const isReadyToVote = selectedLockId !== null && totalAllocated > 0 && !isOverAllocated;
+  const isReadyToVote =
+    (selectedLockId !== null || selectedRentalId !== null) &&
+    totalAllocated > 0 &&
+    !isOverAllocated;
 
-  const selectedLock = allLocks.find((l) => l.id === selectedLockId);
+  const selectedLock = useMemo(() => {
+    if (selectedLockId) {
+      return allLocks.find((l) => l.id === selectedLockId);
+    } else if (selectedRentalId) {
+      return allRentals.find((r) => r.id === selectedRentalId)?.lock;
+    }
+    return null;
+  }, [selectedLockId, selectedRentalId, allLocks, allRentals]);
   const lockVP = useGetLockVP(
     selectedLock ? BigInt(selectedLock.lockId as string) : BI_ZERO,
     REFETCH_INTERVALS,
@@ -274,6 +290,18 @@ export const MainView: React.FC = () => {
     () => setShowError(true),
   );
 
+  const initiateRentalVote = useRentalVote(
+    selectedRentalId ? (selectedRentalId as Address) : zeroAddress,
+    selectedPools,
+    appliedWeights,
+    (hash) => {
+      setExplorerLink(CHAINS_INFORMATION[chainId].explorerUrl);
+      setTxHash(hash);
+      setShowSuccess(true);
+    },
+    () => setShowError(true),
+  );
+
   return (
     <div className="flex flex-col gap-6 w-full">
       {/* ── Lock Selectors ─────────────────────────────────────────────── */}
@@ -287,7 +315,10 @@ export const MainView: React.FC = () => {
             label="Select a lock…"
             selectedId={selectedLockId}
             locks={allLocks}
-            onSelect={setSelectedLockId}
+            onSelect={(lockId) => {
+              setSelectedLockId(lockId);
+              setSelectedRentalId(null);
+            }}
           />
           {selectedLock && (
             <p className="text-[10px] font-mono text-[#64748b]">
@@ -297,18 +328,23 @@ export const MainView: React.FC = () => {
           )}
         </div>
 
-        {/* Rented locks — coming soon */}
+        {/* Rented locks */}
         <div className="flex flex-col gap-1.5">
           <p className="text-[#64748b] text-[10px] font-bold uppercase tracking-widest font-mono">
             Rented Lock <span className="text-[#ffaf52]/70">(ve-Rentals)</span>
           </p>
           <LockDropdown
-            label="No rented locks"
-            selectedId={null}
-            locks={[]}
-            onSelect={() => {}}
-            disabled
-            comingSoon
+            label="Rented locks…"
+            selectedId={
+              allRentals.find((rental) => rental.id === selectedRentalId)?.lock.id || null
+            }
+            locks={allRentals.map((rental) => rental.lock)}
+            onSelect={(lockId) => {
+              setSelectedLockId(null);
+
+              const rentalId = allRentals.find((rental) => rental.lock.id === lockId)?.id;
+              setSelectedRentalId(rentalId as string);
+            }}
           />
           <p className="text-[10px] font-mono text-[#64748b]">
             Rent veMGN locks to vote without locking your own tokens.
@@ -563,12 +599,14 @@ export const MainView: React.FC = () => {
           )}
           <PrimaryButton
             className="gap-2 text-xs font-mono"
-            disabled={!isReadyToVote || initiateVote.isLoading}
-            onClick={initiateVote.execute}
+            disabled={!isReadyToVote || initiateVote.isLoading || initiateRentalVote.isLoading}
+            onClick={() => (selectedLockId ? initiateVote.execute() : initiateRentalVote.execute())}
           >
             <Vote size={14} />
             <span>Cast Vote</span>
-            {initiateVote.isLoading && <Spinner size="sm" className="ml-2" />}
+            {(initiateVote.isLoading || initiateRentalVote.isLoading) && (
+              <Spinner size="sm" className="ml-2" />
+            )}
           </PrimaryButton>
         </div>
       </div>
@@ -578,6 +616,7 @@ export const MainView: React.FC = () => {
         onOpenChange={(o) => {
           setShowSuccess(o);
           initiateVote.reset();
+          initiateRentalVote.reset();
           if (!o) {
             setTxHash(undefined);
             setExplorerLink('');
@@ -593,6 +632,7 @@ export const MainView: React.FC = () => {
         onOpenChange={(o) => {
           setShowError(o);
           initiateVote.reset();
+          initiateRentalVote.reset();
         }}
         message={'An error occurred while voting. Please try again.'}
         title="Transaction Failed"
