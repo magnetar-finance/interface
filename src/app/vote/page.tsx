@@ -5,7 +5,6 @@ import { PageHeader } from '@/components/PageHeader';
 import { MainView } from '@/views/vote/MainView';
 import useNextVoteEpoch from '@/hooks/governance/useNextVoteEpoch';
 import { REFETCH_INTERVALS, EPOCH_START_TIMESTAMP, SECONDS_PER_EPOCH } from '@/constants';
-import { epochToTimestamp } from '@/utils';
 
 export default function Page() {
   const [epochInfo, setEpochInfo] = useState({ current: 1, countdown: '' });
@@ -16,10 +15,7 @@ export default function Page() {
       const now = Math.floor(Date.now() / 1000);
       const elapsedSinceStart = now - EPOCH_START_TIMESTAMP;
       const currentEpoch = Math.max(1, Math.floor(elapsedSinceStart / SECONDS_PER_EPOCH));
-      const remainingSeconds = Math.max(
-        0,
-        epochToTimestamp(parseInt(nextEpochStart.toString())) - now,
-      );
+      const remainingSeconds = Math.max(0, parseInt(nextEpochStart.toString()) - now);
 
       const days = Math.floor(remainingSeconds / 86400);
       const hours = Math.floor((remainingSeconds % 86400) / 3600);

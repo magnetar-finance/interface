@@ -30,14 +30,21 @@ import { SplitLockModal } from '@/ui/modals/SplitLockModal';
 import { CreateLockModal } from '@/ui/modals/CreateLockModal';
 import { LockRentOutModal } from '@/ui/modals/LockRentOutModal';
 import { RentLockPreviewModal } from '@/ui/modals/RentLockPreviewModal';
+import { ReapRentalPreviewModal } from '@/ui/modals/ReapRentalPreviewModal';
 import useAccountInfo from '@/hooks/api/useAccountInfo';
 import useAllRentals from '@/hooks/api/useAllRentals';
-import { REFETCH_INTERVALS } from '@/constants';
+import { CHAINS_INFORMATION, REFETCH_INTERVALS } from '@/constants';
 import { GetAccountInfoQuery, RentalStatus, RentalsQuery } from '@/gql/codegen/graphql';
 import { useAtomicDate } from '@/hooks/app';
 import { formatNumber, splitString, timestampToEpoch } from '@/utils';
 import { Pagination } from '@/components/Pagination';
 import { Skeleton } from '@/components/Skeleton';
+import useCloseOutRental from '@/hooks/governance/useCloseOutRental';
+import { Address, zeroAddress } from 'viem';
+import { useChainId } from 'wagmi';
+import { Spinner } from '@/components/Spinner';
+import { TransactionSuccessModal } from '@/ui/modals/TransactionSuccessModal';
+import { TransactionErrorModal } from '@/ui/modals/TransactionErrorModal';
 
 type Lock = NonNullable<GetAccountInfoQuery['user']>['lockPositions'][number];
 
@@ -493,7 +500,7 @@ const RentedOutTab: React.FC = () => {
     return accountInfo.sellerRentals;
   }, [accountInfo]);
 
-  const [closingLock, setClosingLock] = useState<Lock | null>(null);
+  const [closingRental, setClosingRental] = useState<(typeof rentedLocks)[number] | null>(null);
   const [listModalOpen, setListModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const totalPages = useMemo(() => Math.ceil(rentedLocks.length / 10), [rentedLocks.length]);
@@ -516,10 +523,22 @@ const RentedOutTab: React.FC = () => {
     [rentedLocks, currentPage],
   );
 
-  const handleCloseOutConfirm = () => {
-    // TODO: wire up contract call (e.g. useCloseOutRental hook)
-    setClosingLock(null);
-  };
+  const [showSuccess, setShowSuccess] = useState<boolean>(false);
+  const [showError, setShowError] = useState<boolean>(false);
+  const [explorerLink, setExplorerLink] = useState<string>('');
+  const [txHash, setTxHash] = useState<string | undefined>();
+
+  const chainId = useChainId();
+
+  const closeOutRental = useCloseOutRental(
+    (closingRental?.id as Address) || zeroAddress,
+    (hash) => {
+      setExplorerLink(CHAINS_INFORMATION[chainId].explorerUrl);
+      setTxHash(hash);
+      setShowSuccess(true);
+    },
+    () => setShowError(true),
+  );
 
   return (
     <div className="flex flex-col gap-6">
@@ -670,7 +689,7 @@ const RentedOutTab: React.FC = () => {
                   {/* Close Out */}
                   <td className="py-3 text-right">
                     <button
-                      onClick={() => setClosingLock(rental.lock)}
+                      onClick={() => setClosingRental(rental)}
                       disabled={rental.status === 'EXPIRED'}
                       title={
                         rental.status === 'EXPIRED' ? 'Already expired' : 'Close out this rental'
@@ -679,6 +698,9 @@ const RentedOutTab: React.FC = () => {
                     >
                       <XCircleIcon size={11} />
                       Close Out
+                      {closeOutRental.isLoading && rental.id === closingRental?.id && (
+                        <Spinner size="xs" className="ml-2" />
+                      )}
                     </button>
                   </td>
                 </>
@@ -714,16 +736,42 @@ const RentedOutTab: React.FC = () => {
       </FancyCard>
 
       {/* Close-Out Confirmation */}
-      {closingLock && (
+      {closingRental && (
         <CloseOutDialog
-          lock={closingLock}
-          onConfirm={handleCloseOutConfirm}
-          onCancel={() => setClosingLock(null)}
+          lock={closingRental.lock}
+          onConfirm={() => {
+            closeOutRental.execute();
+          }}
+          onCancel={() => setClosingRental(null)}
         />
       )}
 
       {/* List for Rent Modal */}
       <LockRentOutModal open={listModalOpen} onOpenChange={setListModalOpen} />
+      <TransactionSuccessModal
+        open={showSuccess}
+        onOpenChange={(o) => {
+          setShowSuccess(o);
+          closeOutRental.reset();
+          if (!o) {
+            setTxHash(undefined);
+            setExplorerLink('');
+          }
+        }}
+        txHash={txHash}
+        explorerUrl={explorerLink}
+        message={'Rental was successfully closed!'}
+      />
+
+      <TransactionErrorModal
+        open={showError}
+        onOpenChange={(o) => {
+          setShowError(o);
+          closeOutRental.reset();
+        }}
+        message={'An error occurred while closing out rental. Please try again.'}
+        title="Transaction Failed"
+      />
     </div>
   );
 };
@@ -798,7 +846,7 @@ const RentALockTab: React.FC = () => {
             },
             {
               label: 'Total MGN Locked',
-              value: `${formatNumber(totalLocked.toString(), 'en-US', 0)} MGN`,
+              value: `${formatNumber(totalLocked.toString(), 'en-US', 2)} MGN`,
               color: 'text-[#2962ff]',
             },
             {
@@ -986,6 +1034,226 @@ const RentALockTab: React.FC = () => {
   );
 };
 
+// ─── Tab 4: My Rented Locks (Buyer's View) ────────────────────────────────────
+
+const MyRentedLocksTab: React.FC = () => {
+  const { data: accountInfo, isLoading: isLoadingAccount } = useAccountInfo(REFETCH_INTERVALS);
+  const rentedLocks = useMemo(() => {
+    if (!accountInfo) return [];
+    return accountInfo.buyerRentals;
+  }, [accountInfo]);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const totalPages = useMemo(() => Math.ceil(rentedLocks.length / 10), [rentedLocks.length]);
+
+  const [selectedRental, setSelectedRental] = useState<(typeof rentedLocks)[number] | null>(null);
+  const [previewModalOpen, setPreviewModalOpen] = useState(false);
+
+  const stats = useMemo(() => {
+    const total = rentedLocks.length;
+    const active = rentedLocks.filter((l) => l.status === 'RENTED_OUT').length;
+    const expired = rentedLocks.filter((l) => l.status === 'EXPIRED').length;
+    const totalSpent = rentedLocks.reduce((sum, l) => {
+      return sum + parseFloat(String(l.price));
+    }, 0);
+    return { total, active, expired, totalSpent };
+  }, [rentedLocks]);
+
+  const paginated = useMemo(
+    () => rentedLocks.slice((currentPage - 1) * 10, currentPage * 10),
+    [rentedLocks, currentPage],
+  );
+
+  return (
+    <div className="flex flex-col gap-6">
+      {/* Summary stats */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        {isLoadingAccount ? (
+          <>
+            <Skeleton className="h-18 w-full" />
+            <Skeleton className="h-18 w-full" />
+            <Skeleton className="h-18 w-full" />
+            <Skeleton className="h-18 w-full" />
+          </>
+        ) : (
+          [
+            { label: 'Total Rented', value: stats.total.toString(), color: 'text-white' },
+            {
+              label: 'Active Rentals',
+              value: stats.active.toString(),
+              color: 'text-[#2962ff]',
+            },
+            { label: 'Expired', value: stats.expired.toString(), color: 'text-[#64748b]' },
+            {
+              label: 'Total Spent',
+              value: formatNumber(stats.totalSpent.toString(), 'en-US', 2),
+              color: 'text-[#ffaf52]',
+            },
+          ].map((stat) => (
+            <div
+              key={stat.label}
+              className="border border-white/5 bg-white/3 px-4 py-3 flex flex-col gap-1"
+            >
+              <span className="text-[#64748b] text-[10px] font-mono uppercase tracking-widest">
+                {stat.label}
+              </span>
+              <span className={`font-bold font-mono text-sm ${stat.color}`}>{stat.value}</span>
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* Table */}
+      <FancyCard>
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-white font-bold font-mono text-xs uppercase tracking-widest">
+              My Rented Locks
+            </h3>
+          </div>
+
+          {isLoadingAccount ? (
+            <div className="flex flex-col gap-2">
+              <Skeleton className="h-12 w-full" />
+              <Skeleton className="h-12 w-full" />
+              <Skeleton className="h-12 w-full" />
+              <Skeleton className="h-12 w-full" />
+              <Skeleton className="h-12 w-full" />
+              <Skeleton className="h-12 w-full" />
+              <Skeleton className="h-12 w-full" />
+              <Skeleton className="h-12 w-full" />
+            </div>
+          ) : (
+            <Table<(typeof paginated)[number]>
+              headers={[
+                { label: 'Lock', align: 'left' },
+                { label: 'Amount Locked', align: 'right' },
+                { label: 'Rent Expiry', align: 'right' },
+                { label: 'Price Paid', align: 'right' },
+                { label: 'Owner', align: 'right' },
+                { label: 'Status', align: 'center' },
+                { label: '', align: 'right' },
+              ]}
+              data={paginated}
+              renderRow={(rental) => (
+                <>
+                  {/* Lock ID */}
+                  <td className="py-3 pr-4">
+                    <div className="flex items-center gap-2">
+                      <div className="border border-[#2962ff]/30 bg-[#2962ff]/5 p-1.5">
+                        <KeyRoundIcon size={12} className="text-[#2962ff]" />
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="font-bold font-mono text-white text-xs">
+                          Lock {rental.lock.id}
+                        </span>
+                        <span className="font-mono text-[10px] text-[#64748b]">
+                          {formatNumber(String(rental.lock.position), 'en-US', 2)} MGN
+                        </span>
+                      </div>
+                    </div>
+                  </td>
+
+                  {/* Amount Locked */}
+                  <td className="py-3 pr-4 text-right font-mono text-xs text-white font-bold">
+                    {formatNumber(String(rental.lock.position), 'en-US', 2)}
+                    <span className="text-[#64748b] font-normal ml-1">MGN</span>
+                  </td>
+
+                  {/* Rent Expiry */}
+                  <td className="py-3 pr-4 text-right">
+                    <div className="flex items-center justify-end gap-1.5">
+                      <ClockIcon size={11} className="text-[#64748b]" />
+                      <span className="font-mono text-xs text-white font-bold">
+                        {new Date(Number(rental.runsUntil) * 1000).toLocaleDateString()}
+                      </span>
+                    </div>
+                    <p className="text-[10px] font-mono text-[#64748b] text-right mt-0.5">
+                      Epoch #{timestampToEpoch(Number(rental.runsUntil))}
+                    </p>
+                  </td>
+
+                  {/* Price Paid */}
+                  <td className="py-3 pr-4 text-right">
+                    <div className="flex items-center justify-end gap-1">
+                      <CoinsIcon size={11} className="text-[#ffaf52]" />
+                      <span className="font-mono text-xs font-bold text-[#ffaf52]">
+                        {formatNumber(String(rental.price), 'en-US', 2)}
+                      </span>
+                    </div>
+                    <p className="text-[10px] font-mono text-[#64748b] text-right mt-0.5">
+                      {rental.paymentToken.symbol}
+                    </p>
+                  </td>
+
+                  {/* Owner */}
+                  <td className="py-3 pr-4 text-right">
+                    <span className="font-mono text-xs text-[#64748b]">
+                      {splitString(String(rental.seller.address))}
+                    </span>
+                  </td>
+
+                  {/* Status */}
+                  <td className="py-3 pr-4 text-center">
+                    <RentStatusBadge status={rental.status} />
+                  </td>
+
+                  {/* Claim Action */}
+                  <td className="py-3 text-right">
+                    <PrimaryButton
+                      className="text-[10px] font-mono gap-1.5 py-1.5 px-3"
+                      onClick={() => {
+                        setSelectedRental(rental);
+                        setPreviewModalOpen(true);
+                      }}
+                      disabled={rental.reaped}
+                      title={rental.reaped ? 'Already claimed' : 'Claim earned rewards'}
+                    >
+                      <CoinsIcon size={11} />
+                      Claim
+                    </PrimaryButton>
+                  </td>
+                </>
+              )}
+              renderEmpty={() => (
+                <div className="w-full flex flex-col items-center justify-center gap-6 py-16">
+                  <div className="border-2 border-dashed border-white/10 p-6">
+                    <KeyRoundIcon size={48} className="text-[#64748b]" />
+                  </div>
+                  <div className="text-center space-y-2">
+                    <h4 className="text-white font-bold text-base uppercase tracking-widest font-mono">
+                      No Rented Locks
+                    </h4>
+                    <p className="text-[#64748b] font-mono text-xs">
+                      You haven&apos;t rented any locks yet.
+                    </p>
+                  </div>
+                </div>
+              )}
+            />
+          )}
+
+          {!isLoadingAccount && (
+            <div className="mt-6 flex justify-end items-center w-full">
+              <Pagination
+                currentPage={currentPage}
+                onPageChange={setCurrentPage}
+                totalPages={totalPages}
+              />
+            </div>
+          )}
+        </div>
+      </FancyCard>
+
+      <ReapRentalPreviewModal
+        open={previewModalOpen}
+        onOpenChange={setPreviewModalOpen}
+        rental={selectedRental}
+      />
+    </div>
+  );
+};
+
 // ─── Coming Soon Panel ────────────────────────────────────────────────────────
 
 const ComingSoonPanel: React.FC<{
@@ -1049,7 +1317,7 @@ export const MainView: React.FC = () => {
       <SwitchGroup
         onSwitchClicked={setActiveTab}
         activeSwitchIndex={activeTab}
-        switchLabels={['My Locks', 'Rented Out', 'Rent a Lock']}
+        switchLabels={['My Locks', 'Rented Out', 'My Rentals', 'Rent a Lock']}
         fullWidth
       />
 
@@ -1058,7 +1326,9 @@ export const MainView: React.FC = () => {
 
       {activeTab === 1 && <RentedOutTab />}
 
-      {activeTab === 2 && <RentALockTab />}
+      {activeTab === 2 && <MyRentedLocksTab />}
+
+      {activeTab === 3 && <RentALockTab />}
     </div>
   );
 };

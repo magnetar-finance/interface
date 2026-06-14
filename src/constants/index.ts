@@ -10,7 +10,7 @@ export const V3_TICK_BASIS = 1.0001;
 export const BI_ZERO = BigInt(0);
 
 // Epoch constants
-export const EPOCH_START_TIMESTAMP = 1735689600; // Jan 1, 2025
+export const EPOCH_START_TIMESTAMP = 0; // Jan 1, 1970 (Unix epoch)
 export const SECONDS_PER_EPOCH = 604800; // 7 days in seconds
 
 export const CHAINS = {

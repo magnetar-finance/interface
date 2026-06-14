@@ -61,6 +61,10 @@ export const PositionsView: React.FC = () => {
     () => Math.ceil((accountInfo?.lpPositions.length || 0) / 20),
     [accountInfo?.lpPositions.length],
   );
+  const paginatedPositions = useMemo(
+    () => (accountInfo?.lpPositions || []).slice((currentPage - 1) * 20, currentPage * 20),
+    [accountInfo?.lpPositions, currentPage],
+  );
 
   return (
     <div className="w-full">
@@ -95,7 +99,7 @@ export const PositionsView: React.FC = () => {
                       { label: 'Actions', align: 'right' },
                     ]
               }
-              data={accountInfo?.lpPositions || []}
+              data={paginatedPositions}
               renderRow={(item) => {
                 const token0Info = getAssetInfo(item.pool.token0.address as string);
                 const token1Info = getAssetInfo(item.pool.token1.address as string);

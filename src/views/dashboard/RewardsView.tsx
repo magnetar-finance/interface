@@ -113,7 +113,12 @@ const RenderedRewardsRow: React.FC<{ lock: Lock; isFees?: boolean }> = ({
     REFETCH_INTERVALS,
   );
   const rewardTokens = useMemo(
-    () => notifyRewards.map((reward) => getAddress(reward.token.id)),
+    () =>
+      poolRewards.map((poolReward) => {
+        return notifyRewards
+          .filter((reward) => poolReward.toLowerCase() === reward.votingRewards.id.toLowerCase())
+          .map((reward) => getAddress(reward.token.id));
+      }),
     [notifyRewards],
   );
 
@@ -126,7 +131,7 @@ const RenderedRewardsRow: React.FC<{ lock: Lock; isFees?: boolean }> = ({
 
   const claimBribes = useClaimBribes(
     poolRewards,
-    [rewardTokens],
+    rewardTokens,
     BigInt(lock.id as string),
     (hash) => {
       setExplorerLink(CHAINS_INFORMATION[chainId].explorerUrl);
@@ -137,7 +142,7 @@ const RenderedRewardsRow: React.FC<{ lock: Lock; isFees?: boolean }> = ({
   );
   const claimFees = useClaimFees(
     poolRewards,
-    [rewardTokens],
+    rewardTokens,
     BigInt(lock.id as string),
     (hash) => {
       setExplorerLink(CHAINS_INFORMATION[chainId].explorerUrl);
@@ -157,7 +162,7 @@ const RenderedRewardsRow: React.FC<{ lock: Lock; isFees?: boolean }> = ({
 
   return (
     <>
-      <td className="py-3 pr-4">
+      <td className="py-3 pr-4 align-top">
         <div className="flex items-center gap-2">
           <div className="border border-[#2962ff]/30 bg-[#2962ff]/5 p-1.5">
             <LockIcon size={12} className="text-[#2962ff]" />
@@ -165,27 +170,44 @@ const RenderedRewardsRow: React.FC<{ lock: Lock; isFees?: boolean }> = ({
           <span className="font-bold font-mono text-white text-xs">Lock {lock.id}</span>
         </div>
       </td>
-      <td className="py-3 pr-4 font-mono text-xs text-white">{poolNames.join(', ')}</td>
-      <td className="py-3 pr-4">
-        <div className="flex flex-col items-end gap-4 font-mono text-xs">
-          {poolRewards.map((reward, index) => (
-            <RewardsColumn
-              key={index}
-              reward={reward}
-              tokenId={BigInt(lock.lockId as string)}
-              rewardTokens={rewardTokens}
-            />
+      <td className="py-3 pr-4 font-mono text-xs text-white align-top">
+        <div className="flex flex-col items-start gap-4">
+          {poolNames.map((name, index) => (
+            <div key={index} className="flex flex-col justify-center min-h-[40px]">
+              {name}
+            </div>
           ))}
         </div>
       </td>
-      <td className="py-3 text-right">
-        <button
-          onClick={initiateTransaction}
-          className="text-xs font-mono uppercase flex justify-center items-center gap-1 tracking-widest border border-[#ffaf52]/50 text-[#ffaf52] px-3 py-1.5 hover:bg-[#ffaf52]/10 transition-colors cursor-pointer"
-        >
-          {isFees ? 'Claim Fees' : 'Claim Bribes'}
-          {(claimBribes.isLoading || claimFees.isLoading) && <Spinner size="xs" className="ml-2" />}
-        </button>
+      <td className="py-3 pr-4 align-top">
+        <div className="flex flex-col items-end gap-4 font-mono text-xs">
+          {poolRewards.map((reward, index) => (
+            <div key={index} className="flex flex-col justify-center min-h-[40px]">
+              <RewardsColumn
+                reward={reward}
+                tokenId={BigInt(lock.lockId as string)}
+                rewardTokens={notifyRewards
+                  .filter(
+                    (nReward) => reward.toLowerCase() === nReward.votingRewards.id.toLowerCase(),
+                  )
+                  .map((reward) => getAddress(reward.token.id))}
+              />
+            </div>
+          ))}
+        </div>
+      </td>
+      <td className="py-3 pr-8 text-right align-top">
+        <div className="w-full flex justify-end">
+          <button
+            onClick={initiateTransaction}
+            className="text-xs font-mono uppercase inline-flex justify-center items-center gap-1 tracking-widest border border-[#ffaf52]/50 text-[#ffaf52] px-3 py-1.5 hover:bg-[#ffaf52]/10 transition-colors cursor-pointer"
+          >
+            {isFees ? 'Claim Fees' : 'Claim Bribes'}
+            {(claimBribes.isLoading || claimFees.isLoading) && (
+              <Spinner size="xs" className="ml-2" />
+            )}
+          </button>
+        </div>
       </td>
 
       <TransactionSuccessModal
@@ -267,12 +289,12 @@ const BribesRewardsTable: React.FC<{ locks: Lock[]; isLoading: boolean }> = ({
           />
         )}
 
-        {!isLoading && totalPages > 1 && (
-          <div className="flex justify-end">
+        {!isLoading && locks.length > 0 && (
+          <div className="flex justify-end mt-4">
             <Pagination
               currentPage={currentPage}
               onPageChange={setCurrentPage}
-              totalPages={totalPages}
+              totalPages={Math.max(1, totalPages)}
             />
           </div>
         )}
@@ -332,12 +354,12 @@ const FeesRewardsTable: React.FC<{ locks: Lock[]; isLoading: boolean }> = ({
           />
         )}
 
-        {!isLoading && totalPages > 1 && (
-          <div className="flex justify-end">
+        {!isLoading && locks.length > 0 && (
+          <div className="flex justify-end mt-4">
             <Pagination
               currentPage={currentPage}
               onPageChange={setCurrentPage}
-              totalPages={totalPages}
+              totalPages={Math.max(1, totalPages)}
             />
           </div>
         )}
@@ -474,20 +496,22 @@ const GaugeRewardsTable: React.FC<{ positions: LiquidityPosition[]; isLoading: b
                   </td>
 
                   {/* Actions */}
-                  <td className="py-3 text-right">
-                    <button
-                      onClick={() => {
-                        setSelectedGauge(item.pool.gauge?.address as Address);
-                        claimGaugeRewards.execute();
-                      }}
-                      className="text-xs font-mono uppercase tracking-widest border border-[#2962ff]/50 text-[#2962ff] px-3 py-1.5 hover:bg-[#2962ff]/10 transition-colors cursor-pointer"
-                    >
-                      Claim{' '}
-                      {claimGaugeRewards.isLoading &&
-                        selectedGauge === item.pool.gauge?.address && (
-                          <Spinner size="sm" className="ml-2" />
-                        )}
-                    </button>
+                  <td className="py-3 pr-8 text-right align-top">
+                    <div className="w-full flex justify-end">
+                      <button
+                        onClick={() => {
+                          setSelectedGauge(item.pool.gauge?.address as Address);
+                          claimGaugeRewards.execute();
+                        }}
+                        className="text-xs font-mono uppercase inline-flex items-center gap-1 tracking-widest border border-[#2962ff]/50 text-[#2962ff] px-3 py-1.5 hover:bg-[#2962ff]/10 transition-colors cursor-pointer"
+                      >
+                        Claim
+                        {claimGaugeRewards.isLoading &&
+                          selectedGauge === item.pool.gauge?.address && (
+                            <Spinner size="sm" className="ml-2" />
+                          )}
+                      </button>
+                    </div>
                   </td>
                 </>
               );
@@ -503,12 +527,12 @@ const GaugeRewardsTable: React.FC<{ positions: LiquidityPosition[]; isLoading: b
           />
         )}
 
-        {!isLoading && totalPages > 1 && (
-          <div className="flex justify-end">
+        {!isLoading && positions.length > 0 && (
+          <div className="flex justify-end mt-4">
             <Pagination
               currentPage={currentPage}
               onPageChange={setCurrentPage}
-              totalPages={totalPages}
+              totalPages={Math.max(1, totalPages)}
             />
           </div>
         )}

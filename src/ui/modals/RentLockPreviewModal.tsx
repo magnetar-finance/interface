@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Modal } from '@/components/Modal';
 import { PrimaryButton, SecondaryButton } from '@/components/Button';
 import {
@@ -13,6 +13,16 @@ import {
 } from 'lucide-react';
 import { formatNumber, splitString, timestampToEpoch, getCurrentEpoch } from '@/utils';
 import { RentalsQuery } from '@/gql/codegen/graphql';
+import useGetAllowance from '@/hooks/wallet/useGetAllowance';
+import { Address, parseUnits, zeroAddress } from 'viem';
+import { CHAINS_INFORMATION, REFETCH_INTERVALS } from '@/constants';
+import useGetBalance from '@/hooks/wallet/useGetBalance';
+import useBuyRental from '@/hooks/governance/useBuyRental';
+import { useChainId } from 'wagmi';
+import useApproveSpend from '@/hooks/wallet/useApproveSpend';
+import { Spinner } from '@/components/Spinner';
+import { TransactionSuccessModal } from './TransactionSuccessModal';
+import { TransactionErrorModal } from './TransactionErrorModal';
 
 export interface RentLockPreviewModalProps {
   open: boolean;
@@ -44,12 +54,67 @@ export const RentLockPreviewModal: React.FC<RentLockPreviewModalProps> = ({
     };
   }, [rental]);
 
+  const [showSuccess, setShowSuccess] = useState<boolean>(false);
+  const [showError, setShowError] = useState<boolean>(false);
+  const [explorerLink, setExplorerLink] = useState<string>('');
+  const [txHash, setTxHash] = useState<string | undefined>();
+
+  const chainId = useChainId();
+
+  const rentalAllowance = useGetAllowance(
+    (rental?.paymentToken.id as Address) || zeroAddress,
+    (rental?.id as Address) || zeroAddress,
+    REFETCH_INTERVALS,
+  );
+
+  const totalAmountToPayParsed = useMemo(
+    () => parseUnits(totalAmountToPay.toString(), rental?.paymentToken.decimals || 18),
+    [rental?.paymentToken.decimals, totalAmountToPay],
+  );
+
+  const balance = useGetBalance((rental?.paymentToken.id as Address) || zeroAddress);
+
+  const requiresApproval = useMemo(
+    () => rentalAllowance < totalAmountToPayParsed,
+    [rentalAllowance, totalAmountToPayParsed],
+  );
+
+  const buttonText = useMemo(() => {
+    if (requiresApproval) return 'Approve';
+    if (balance < totalAmountToPayParsed) return 'Insufficient Balance';
+    return 'Proceed';
+  }, [requiresApproval, balance, totalAmountToPayParsed]);
+
+  const approveRental = useApproveSpend(
+    (rental?.paymentToken.id as Address) || zeroAddress,
+    (rental?.id as Address) || zeroAddress,
+    totalAmountToPayParsed,
+  );
+
+  const buyRental = useBuyRental(
+    rental?.id as Address,
+    (hash) => {
+      setExplorerLink(CHAINS_INFORMATION[chainId].explorerUrl);
+      setTxHash(hash);
+      setShowSuccess(true);
+    },
+    () => setShowError(true),
+  );
+
+  const initiateTransaction = useCallback(() => {
+    if (requiresApproval) {
+      return approveRental.execute();
+    } else {
+      return buyRental.execute();
+    }
+  }, [approveRental, buyRental, requiresApproval]);
+
   if (!rental) return null;
 
   return (
     <>
       <Modal open={open} onOpenChange={onOpenChange} title="Rent Lock Preview" className="max-w-lg">
-        <div className="flex flex-col gap-5 w-full max-h-[80vh] overflow-y-auto px-2">
+        <div className="flex flex-col gap-5 w-full max-h-[80vh] overflow-y-auto px-2 py-1">
           {/* Subtitle */}
           <div className="flex items-center gap-2">
             <KeyRoundIcon size={14} className="text-[#2962ff]" />
@@ -208,21 +273,50 @@ export const RentLockPreviewModal: React.FC<RentLockPreviewModalProps> = ({
               Cancel
             </SecondaryButton>
             <PrimaryButton
-              onClick={() => {
-                // TODO: Wire up contract call to rent the lock
-                console.log('Renting lock:', rental.lock.lockId);
-                console.log('Total payment:', totalAmountToPay, rental.paymentToken.symbol);
-                console.log('Epochs remaining:', epochsRemaining);
-                onOpenChange(false);
-              }}
-              disabled={epochsRemaining === 0}
+              onClick={initiateTransaction}
+              disabled={
+                epochsRemaining === 0 ||
+                balance < totalAmountToPayParsed ||
+                approveRental.isLoading ||
+                buyRental.isLoading
+              }
               className="flex-1 py-3 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Confirm Rent
+              {buttonText}{' '}
+              {(buyRental.isLoading || approveRental.isLoading) && (
+                <Spinner size="sm" className="ml-2" />
+              )}
             </PrimaryButton>
           </div>
         </div>
       </Modal>
+
+      <TransactionSuccessModal
+        open={showSuccess}
+        onOpenChange={(o) => {
+          setShowSuccess(o);
+          approveRental.reset();
+          buyRental.reset();
+          if (!o) {
+            setTxHash(undefined);
+            setExplorerLink('');
+          }
+        }}
+        txHash={txHash}
+        explorerUrl={explorerLink}
+        message={'Rented lock successfully!'}
+      />
+
+      <TransactionErrorModal
+        open={showError}
+        onOpenChange={(o) => {
+          setShowError(o);
+          approveRental.reset();
+          buyRental.reset();
+        }}
+        message={'An error occurred while renting lock. Please try again.'}
+        title="Transaction Failed"
+      />
     </>
   );
 };

@@ -2,6 +2,7 @@ import { PrimaryButton, SecondaryButton } from '@/components/Button';
 import { FancyCard } from '@/components/Card';
 import { SwitchGroup } from '@/components/SwitchGroup';
 import { Table } from '@/components/Table';
+import { Pagination } from '@/components/Pagination';
 import { CHAINS_INFORMATION, OP_SETTINGS, SCREEN_WIDTHS } from '@/constants';
 import { useGHAssetsContext } from '@/contexts/github-assets';
 import { useDimensions } from '@/hooks/app';
@@ -77,6 +78,8 @@ export const MainView: React.FC = () => {
     OP_SETTINGS.default_refetch_interval,
   );
 
+  const [currentPage, setCurrentPage] = useState(1);
+
   const modifiedPools = useMemo(() => {
     let data = [...ALL_POOLS];
 
@@ -103,6 +106,16 @@ export const MainView: React.FC = () => {
 
     return data;
   }, [ALL_POOLS, poolTypeFilter, searchValue, sortType]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [poolTypeFilter, searchValue, sortType]);
+
+  const totalPages = useMemo(() => Math.ceil(modifiedPools.length / 10), [modifiedPools.length]);
+  const paginatedPools = useMemo(
+    () => modifiedPools.slice((currentPage - 1) * 10, currentPage * 10),
+    [modifiedPools, currentPage],
+  );
 
   // Styles setters
   const badgeColorForPoolType = useCallback((poolType: PoolType) => {
@@ -266,7 +279,7 @@ export const MainView: React.FC = () => {
                     { label: 'Actions', align: 'right' },
                   ]
             }
-            data={modifiedPools}
+            data={paginatedPools}
             renderRow={(item) => {
               const token0Info = getAssetInfo(item.token0.address as string);
               const token1Info = getAssetInfo(item.token1.address as string);
@@ -405,6 +418,15 @@ export const MainView: React.FC = () => {
             )}
           />
         </div>
+        {totalPages > 1 && (
+          <div className="flex justify-end mt-4">
+            <Pagination
+              currentPage={currentPage}
+              onPageChange={setCurrentPage}
+              totalPages={totalPages}
+            />
+          </div>
+        )}
       </FancyCard>
     </div>
   );
