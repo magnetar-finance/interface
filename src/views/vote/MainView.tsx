@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState, useEffect } from 'react';
 import { FancyCard } from '@/components/Card';
 import { PrimaryButton, SecondaryButton } from '@/components/Button';
 import { Table } from '@/components/Table';
+import { Pagination } from '@/components/Pagination';
 import { Skeleton } from '@/components/Skeleton';
 import { SwitchGroup } from '@/components/SwitchGroup';
 import { useGHAssetsContext } from '@/contexts/github-assets';
@@ -173,6 +174,7 @@ export const MainView: React.FC = () => {
   const [searchValue, setSearchValue] = useState('');
   const [activeSwitchIndex, setActiveSwitchIndex] = useState(0);
   const [selectedRentalId, setSelectedRentalId] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
 
   // Pool type filter (mirrors liquidity page pattern)
   const poolTypeFilter: PoolType | undefined = useMemo(() => {
@@ -206,6 +208,16 @@ export const MainView: React.FC = () => {
     }
     return data;
   }, [ALL_POOLS, poolTypeFilter, searchValue]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [poolTypeFilter, searchValue]);
+
+  const totalPages = useMemo(() => Math.ceil(filteredPools.length / 10), [filteredPools.length]);
+  const paginatedPools = useMemo(
+    () => filteredPools.slice((currentPage - 1) * 10, currentPage * 10),
+    [filteredPools, currentPage],
+  );
 
   // Helpers
   const getAssetInfo = useCallback(
@@ -402,7 +414,7 @@ export const MainView: React.FC = () => {
                       { label: 'Allocate %', align: 'right' },
                     ]
               }
-              data={filteredPools}
+              data={paginatedPools}
               renderRow={(item) => {
                 const token0Info = getAssetInfo(item.token0.address as string);
                 const token1Info = getAssetInfo(item.token1.address as string);
@@ -520,6 +532,15 @@ export const MainView: React.FC = () => {
             />
           )}
         </div>
+        {!poolsLoading && totalPages > 1 && (
+          <div className="flex justify-end mt-4">
+            <Pagination
+              currentPage={currentPage}
+              onPageChange={setCurrentPage}
+              totalPages={totalPages}
+            />
+          </div>
+        )}
       </FancyCard>
 
       {/* ── Vote Summary Bar ───────────────────────────────────────────── */}
