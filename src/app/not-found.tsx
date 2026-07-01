@@ -12,7 +12,7 @@ export default function NotFound() {
         </div>
 
         <div>
-          <h1 className="text-8xl md:text-[140px] font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white to-white/20">
+          <h1 className="text-8xl md:text-[140px] font-bold tracking-tighter text-transparent bg-clip-text bg-linear-to-b from-white to-white/20">
             404
           </h1>
         </div>
@@ -20,10 +20,10 @@ export default function NotFound() {
         <div className="space-y-6 w-full md:w-auto">
           <h2 className="text-xl md:text-2xl text-white font-semibold">Page Not Found</h2>
 
-          <div className="bg-[#161618] border border-white/[0.08] p-6 rounded-2xl text-left shadow-[0_1px_0_rgba(255,255,255,0.04)_inset] mx-auto max-w-md w-full">
+          <div className="bg-[#161618] border border-white/8 p-6 rounded-2xl text-left shadow-[0_1px_0_rgba(255,255,255,0.04)_inset] mx-auto max-w-md w-full">
             <p className="text-white/70 text-sm leading-relaxed">
-              We couldn't find the page you're looking for. It might have been moved, deleted, or
-              perhaps it never existed.
+              We couldn&apos;t find the page you&apos;re looking for. It might have been moved,
+              deleted, or perhaps it never existed.
             </p>
           </div>
         </div>
