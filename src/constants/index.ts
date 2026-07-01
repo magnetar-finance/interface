@@ -16,6 +16,7 @@ export const SECONDS_PER_EPOCH = 604800; // 7 days in seconds
 export const CHAINS = {
   ARC_TESTNET: 5042002,
   LITVM_TESTNET: 4441,
+  NEURA_TESTNET: 267,
 };
 
 export const CHAINS_INFORMATION = {
@@ -34,6 +35,14 @@ export const CHAINS_INFORMATION = {
     img: '/assets/images/litvm_network.png',
     name: 'Liteforge Testnet',
     symbol: 'zkLTC',
+  },
+  [CHAINS.NEURA_TESTNET]: {
+    chainId: CHAINS.NEURA_TESTNET,
+    rpcUrl: 'https://testnet.rpc.neuraprotocol.io',
+    explorerUrl: 'https://testnet-blockscout.infra.neuraprotocol.io',
+    img: '/assets/images/neura_protocol.png',
+    name: 'Neura Testnet',
+    symbol: 'ANKR',
   },
 };
 
@@ -59,6 +68,8 @@ export const CHAIN_GQL_URI = {
     validateClientEnv().data?.NEXT_PUBLIC_GQL_URI || clientEnv.NEXT_PUBLIC_GQL_URI, // Arc network GQL is the same as the default GQL URI, but this allows for chain-specific overrides in the future if needed
   [CHAINS.LITVM_TESTNET]:
     'https://api.goldsky.com/api/public/project_clws3jv71bgap01u93r59ccbm/subgraphs/magnetar-liteforge/1.0.1/gn',
+  [CHAINS.NEURA_TESTNET]:
+    'https://api.goldsky.com/api/public/project_clws3jv71bgap01u93r59ccbm/subgraphs/magnetar-neura/1.0.0/gn',
 };
 
 export const RouterType = {
@@ -72,52 +83,65 @@ export const ETHER = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
 export const V2_ROUTERS: { [key: number]: `0x${string}` } = {
   [CHAINS.ARC_TESTNET]: '0x7961c29F9007ADbE089c1C4163a77e453A960583',
   [CHAINS.LITVM_TESTNET]: '0x7961c29F9007ADbE089c1C4163a77e453A960583',
+  [CHAINS.NEURA_TESTNET]: '0x7961c29F9007ADbE089c1C4163a77e453A960583',
 };
 export const NFPM: { [key: number]: `0x${string}` } = {
   [CHAINS.ARC_TESTNET]: '0x8948f9d59203F9dCF4de4B2baa10887993274C3C',
   [CHAINS.LITVM_TESTNET]: '0x842CDC95B8BC3A19a8fFc91f200e51c8aF6faFC6',
+  [CHAINS.NEURA_TESTNET]: '0x8948f9d59203F9dCF4de4B2baa10887993274C3C',
 };
 export const AUTO_SWAP_EXECUTORS: { [key: number]: `0x${string}` } = {
   [CHAINS.ARC_TESTNET]: '0x3562cceE39adc7465f1bAed088043C5C5B41e4e6',
   [CHAINS.LITVM_TESTNET]: '0xD3F9Ba8b83D5a71bb75a9955A1494d5B1D4E76da',
+  [CHAINS.NEURA_TESTNET]: '0xF6a7F229447FB986195c4dC8305553C8A8518d06',
 };
 export const V2_SWAP_EXECUTORS: { [key: number]: `0x${string}` } = {
   [CHAINS.ARC_TESTNET]: '0xEeeC1d828520fC26541624c4e2E34376220CB93a',
   [CHAINS.LITVM_TESTNET]: '0xb33B33B1c457a4E26e3Bb2391cE07a73B73b0d22',
+  [CHAINS.NEURA_TESTNET]: '0x023AF3A2F01982A07c80BDe582E48b4B9b491034',
 };
 export const V3_SWAP_EXECUTORS: { [key: number]: `0x${string}` } = {
   [CHAINS.ARC_TESTNET]: '0x2D67FC1622099Ed068a2049c83773D9016c4aaEf',
   [CHAINS.LITVM_TESTNET]: '0x4dCE4c7902fed6f3874901348595505B32752e05',
+  [CHAINS.NEURA_TESTNET]: '0x4a61F6a5ee25d04271fec17471E727a089c7A22D',
 };
 export const WETH: { [key: number]: `0x${string}` } = {
   [CHAINS.ARC_TESTNET]: '0x911b4000D3422F482F4062a913885f7b035382Df',
   [CHAINS.LITVM_TESTNET]: '0xeb29947d9c1cd59af2b413b47505bf89a47be0d4',
+  [CHAINS.NEURA_TESTNET]: '0x422f5eae5fee0227fb31f149e690a73c4ad02db8',
 };
 export const V2_FACTORY: { [key: number]: `0x${string}` } = {
   [CHAINS.ARC_TESTNET]: '0xE41d241720FEE7cD6BDfA9aB3204d23687703CD5',
   [CHAINS.LITVM_TESTNET]: '0xE41d241720FEE7cD6BDfA9aB3204d23687703CD5',
+  [CHAINS.NEURA_TESTNET]: '0xE41d241720FEE7cD6BDfA9aB3204d23687703CD5',
 };
 export const V3_FACTORY: { [key: number]: `0x${string}` } = {
   [CHAINS.ARC_TESTNET]: '0xf6a6a429a0b9676293Df0E3616A6a33cA673b5C3',
   [CHAINS.LITVM_TESTNET]: '0xC05b371680057B55e23C27d23453592cdf972Ec1',
+  [CHAINS.NEURA_TESTNET]: '0xf6a6a429a0b9676293Df0E3616A6a33cA673b5C3',
 };
 export const VE: { [key: number]: `0x${string}` } = {
   [CHAINS.ARC_TESTNET]: '0xF1B1c2f4E8FcD4aFCA0E608B1c7dB8b4e700154F',
   [CHAINS.LITVM_TESTNET]: '0xF1B1c2f4E8FcD4aFCA0E608B1c7dB8b4e700154F',
+  [CHAINS.NEURA_TESTNET]: '0xF1B1c2f4E8FcD4aFCA0E608B1c7dB8b4e700154F',
 };
 export const VOTER: { [key: number]: `0x${string}` } = {
   [CHAINS.ARC_TESTNET]: '0x2914f5e8A40047C7421aaDad35CDB06870ecA0c5',
   [CHAINS.LITVM_TESTNET]: '0x2914f5e8A40047C7421aaDad35CDB06870ecA0c5',
+  [CHAINS.NEURA_TESTNET]: '0x2914f5e8A40047C7421aaDad35CDB06870ecA0c5',
 };
 export const ORACLE: { [key: number]: `0x${string}` } = {
   [CHAINS.ARC_TESTNET]: '0xF6a7F229447FB986195c4dC8305553C8A8518d06',
   [CHAINS.LITVM_TESTNET]: '0x46e65AfC0BBF7cc037D82AC2eA9aaf560dD962Cc',
+  [CHAINS.NEURA_TESTNET]: '0x3562cceE39adc7465f1bAed088043C5C5B41e4e6',
 };
 export const VE_RENTAL_MARKETPLACE: { [key: number]: `0x${string}` } = {
   [CHAINS.ARC_TESTNET]: '0x17e1d9be008582f861860b2421a22233253bc726',
   [CHAINS.LITVM_TESTNET]: '0x17ec3da3c87497fc85e6f59d0a81151dd357aadd',
+  [CHAINS.NEURA_TESTNET]: '0xec5A20480c49B9286388F72f1AA95aF0D2525c94',
 };
 export const MGN: { [key: number]: `0x${string}` } = {
   [CHAINS.ARC_TESTNET]: '0x64FAF984Bf60dE19e24238521814cA98574E3b00',
   [CHAINS.LITVM_TESTNET]: '0x64FAF984Bf60dE19e24238521814cA98574E3b00',
+  [CHAINS.NEURA_TESTNET]: '0x64FAF984Bf60dE19e24238521814cA98574E3b00',
 };
