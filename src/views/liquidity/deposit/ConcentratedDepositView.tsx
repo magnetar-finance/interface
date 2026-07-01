@@ -386,8 +386,8 @@ export const ConcentratedDepositView: React.FC<{
             data={DISTRIBUTION_DATA}
             chartMinIndex={chartMinIndex}
             chartMaxIndex={chartMaxIndex}
-            activeColor="#2962ff"
-            inactiveColor="rgba(255,255,255,0.05)"
+            activeColor="#00ff9d"
+            inactiveColor="rgba(255,255,255,0.04)"
             onMinIndexChange={handleMinIndexChange}
             onMaxIndexChange={handleMaxIndexChange}
           />

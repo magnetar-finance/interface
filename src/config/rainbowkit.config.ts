@@ -36,11 +36,34 @@ const litVMTestnet = defineChain({
   },
 });
 
+const neuraTestnet = defineChain({
+  id: 267,
+  name: 'Neura Testnet',
+  testnet: true,
+  rpcUrls: {
+    default: {
+      http: ['https://testnet.rpc.neuraprotocol.io'],
+      webSocket: ['wss://testnet.rpc.neuraprotocol.io'],
+    },
+  },
+  blockExplorers: {
+    default: {
+      name: 'Neura Testnet',
+      url: 'https://testnet-blockscout.infra.neuraprotocol.io',
+    },
+  },
+  nativeCurrency: {
+    symbol: 'ANKR',
+    name: 'Neura Testnet',
+    decimals: 18,
+  },
+});
+
 export function loadRainbowkitConfig(projectId: string) {
   return getDefaultConfig({
     appName: 'Magnetar Finance - MegaDEX',
     projectId,
-    chains: [litVMTestnet, arcTestnet],
+    chains: [litVMTestnet, neuraTestnet, arcTestnet],
     ssr: true,
     storage: createStorage({
       storage: cookieStorage,
