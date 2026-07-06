@@ -12,7 +12,7 @@ function useNextVoteEpoch(refetch_intervals = DEFAULT_PROCESS_DURATION) {
   const { data: epochVoteStart = BI_ZERO } = useReadContract({
     abi,
     address: voter,
-    functionName: 'epochVoteStart',
+    functionName: 'epochNext',
     args: [currentBlock?.timestamp || BI_ZERO],
   });
   return epochVoteStart;
