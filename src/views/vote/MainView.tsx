@@ -423,7 +423,7 @@ export const MainView: React.FC = () => {
                 return (
                   <>
                     {/* Pool name + icons */}
-                    <td className="py-3 pr-4">
+                    <td className="py-3 pr-4 pl-1">
                       <div className="flex items-center gap-3">
                         <div className="-space-x-3 flex items-center">
                           {token0Info ? (
@@ -487,8 +487,8 @@ export const MainView: React.FC = () => {
                     )}
 
                     {/* Allocation input */}
-                    <td className="py-3 text-right">
-                      <div className="flex items-center justify-end gap-1">
+                    <td className="py-3 text-right pr-1">
+                      <div className="flex items-center justify-end gap-2">
                         <input
                           type="number"
                           min="0"
@@ -545,16 +545,37 @@ export const MainView: React.FC = () => {
 
       {/* ── Vote Summary Bar ───────────────────────────────────────────── */}
       <div
-        className={`border bg-black px-5 py-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 transition-colors ${
+        className={`bg-[#131525]/80 backdrop-blur-md border px-5 py-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 transition-all duration-300 rounded-xl relative overflow-hidden ${
           isOverAllocated
-            ? 'border-[#ff4757]/40'
+            ? 'border-[#ff4757]/40 shadow-[0_0_20px_rgba(255,71,87,0.1)]'
             : selectedPoolCount > 0
-            ? 'border-[#2962ff]/40'
-            : 'border-white/5'
+            ? 'border-[#2962ff]/40 shadow-[0_0_30px_rgba(41,98,255,0.15)]'
+            : 'border-[#2962ff]/15'
         }`}
       >
+        {/* Decorations */}
+        <div
+          className={`absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r to-transparent ${
+            isOverAllocated
+              ? 'from-[#ff4757]/70 via-[#ff4757]/20'
+              : selectedPoolCount > 0
+              ? 'from-[#2962ff]/70 via-[#2962ff]/20'
+              : 'from-[#2962ff]/40 via-[#2962ff]/10'
+          }`}
+        />
+        <div
+          className={`absolute top-0 left-0 w-3 h-3 border-t-[1.5px] border-l-[1.5px] rounded-tl-xl ${
+            isOverAllocated ? 'border-[#ff4757]/60' : 'border-[#2962ff]/60'
+          }`}
+        />
+        <div
+          className={`absolute bottom-0 right-0 w-3 h-3 border-b-[1.5px] border-r-[1.5px] rounded-br-xl ${
+            isOverAllocated ? 'border-[#ff4757]/20' : 'border-[#2962ff]/20'
+          }`}
+        />
+
         {/* Stats */}
-        <div className="flex flex-wrap items-center gap-x-6 gap-y-2 font-mono text-xs">
+        <div className="flex flex-wrap items-center gap-x-6 gap-y-2 font-mono text-xs relative z-10">
           <div className="flex flex-col gap-0.5">
             <span className="text-[#64748b] uppercase tracking-widest text-[10px]">
               Selected Pools
@@ -612,7 +633,7 @@ export const MainView: React.FC = () => {
         </div>
 
         {/* CTA */}
-        <div className="flex items-center gap-3 shrink-0">
+        <div className="flex items-center gap-3 shrink-0 relative z-10">
           {selectedPoolCount > 0 && (
             <SecondaryButton className="text-xs font-mono gap-2" onClick={() => setAllocations({})}>
               Clear All

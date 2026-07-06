@@ -31,7 +31,7 @@ function parseQLDate(n: number) {
 
 const TX_COLORS: Record<TxType | string, string> = {
   Swap: 'text-[#2962ff] bg-[#2962ff]/10 border-[#2962ff]/30',
-  Add: 'text-[#2962ff] bg-[#2962ff]/10 border-[#2962ff]/30',
+  Add: 'text-[#00ff9d] bg-[#00ff9d]/10 border-[#00ff9d]/30',
   Remove: 'text-[#ffaf52] bg-[#ffaf52]/10 border-[#ffaf52]/30',
 };
 
