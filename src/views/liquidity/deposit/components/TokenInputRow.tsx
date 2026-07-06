@@ -25,7 +25,7 @@ export const TokenInputRow: React.FC<TokenInputRowProps> = ({
   usdValue = '0.00',
 }) => {
   return (
-    <div className="w-full flex flex-col bg-black border border-white/5 p-4 transition-all duration-300 group hover:border-[#2962ff]/30 focus-within:border-[#2962ff] focus-within:shadow-[0_0_15px_rgba(41,98,255,0.2)]">
+    <div className="w-full flex flex-col bg-[#131525]/50 backdrop-blur-sm border border-white/10 rounded-xl p-4 transition-all duration-300 group hover:border-[#2962ff]/30 focus-within:border-[#2962ff] focus-within:shadow-[0_0_15px_rgba(41,98,255,0.2)]">
       <div className="flex justify-between items-center mb-3">
         <span className="text-[#64748b] text-xs font-bold tracking-widest uppercase">{label}</span>
         <div className="text-xs text-[#64748b] flex gap-2">
@@ -43,7 +43,7 @@ export const TokenInputRow: React.FC<TokenInputRowProps> = ({
         {/* Token Selector */}
         <button
           onClick={onSelectClick}
-          className="flex items-center gap-2 bg-[#050508] border border-white/10 hover:bg-[#2962ff]/10 hover:border-[#2962ff]/50 px-3 py-2 transition-all min-w-30"
+          className="flex items-center gap-2 bg-white/5 border border-white/10 hover:bg-[#2962ff]/10 hover:border-[#2962ff]/50 px-3 py-2 transition-all duration-200 min-w-30 rounded-xl"
         >
           {token ? (
             <>

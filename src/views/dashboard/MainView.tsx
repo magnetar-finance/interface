@@ -8,21 +8,40 @@ const StatCard: React.FC<{ label: string; value: string; sub?: string; comingSoo
   sub,
   comingSoon,
 }) => (
-  <div className="bg-black border border-[#2962ff]/30 p-5 relative overflow-hidden group hover:border-[#2962ff]/70 transition-colors">
-    <div className="absolute top-0 left-0 w-full h-0.5 bg-[#2962ff]/20 group-hover:bg-[#2962ff]/60 transition-colors" />
+  <div className="bg-[#131525]/80 backdrop-blur-md border border-[#2962ff]/15 p-5 relative overflow-hidden group hover:border-[#2962ff]/40 hover:shadow-[0_0_40px_rgba(41,98,255,0.1)] transition-all duration-300 rounded-xl">
+    {/* Top gradient accent */}
+    <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-[#2962ff] via-[#9d4edd]/60 to-transparent" />
+    {/* Active indicator bar */}
+    <div className="absolute top-0 left-0 w-10 h-px bg-[#2962ff] group-hover:w-full transition-all duration-500" />
+    {/* Corner brackets */}
+    <div className="absolute top-0 left-0 w-3 h-3 border-t-[1.5px] border-l-[1.5px] border-[#2962ff]/70 rounded-tl-xl" />
+    <div className="absolute bottom-0 right-0 w-3 h-3 border-b-[1.5px] border-r-[1.5px] border-[#2962ff]/15 rounded-br-xl" />
+    {/* Scanline overlay */}
+    <div
+      className="absolute inset-0 pointer-events-none opacity-[0.02]"
+      style={{
+        backgroundImage:
+          'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.5) 2px, rgba(255,255,255,0.5) 3px)',
+        backgroundSize: '100% 3px',
+      }}
+    />
 
-    <div className="flex items-center justify-between mb-3">
-      <h3 className="text-white/50 text-xs font-mono uppercase tracking-widest">{label}</h3>
+    <div className="flex items-center justify-between mb-3 relative">
+      <h3 className="text-[#475569] text-[9px] font-sans font-bold uppercase tracking-[0.18em]">
+        {label}
+      </h3>
       {comingSoon && (
         <span className="text-[9px] font-mono font-bold uppercase tracking-widest px-1.5 py-0.5 border border-[#ff4757]/40 text-[#ff4757] bg-[#ff4757]/10 animate-pulse">
           PENDING_UPDATE
         </span>
       )}
     </div>
-    <p className="text-[#2962ff] text-2xl font-mono font-bold tracking-widest drop-shadow-[0_0_10px_rgba(41,98,255,0.4)]">
+    <p className="text-[#2962ff] text-2xl font-mono font-bold tracking-widest drop-shadow-[0_0_12px_rgba(41,98,255,0.5)] relative">
       {value}
     </p>
-    {sub && <p className="text-white/40 text-xs font-mono mt-2 tracking-widest">{sub}</p>}
+    {sub && (
+      <p className="text-[#334155] text-[10px] font-mono mt-2 tracking-widest relative">{sub}</p>
+    )}
   </div>
 );
 

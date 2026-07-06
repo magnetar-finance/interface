@@ -34,8 +34,8 @@ const TokenView: React.FC<{
       onClick={() => onSingleTokenClick(token)}
       className={`
         w-full flex justify-between items-center px-5 py-3.5
-        transition-colors duration-150
-        ${isSelected ? 'opacity-50' : 'hover:bg-white/[0.04]'}
+        transition-all duration-200 rounded-xl mx-1
+        ${isSelected ? 'opacity-50' : 'hover:bg-[#2962ff]/5 hover:border hover:border-[#2962ff]/10'}
         ${isDisabled ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer'}
       `}
     >
@@ -54,8 +54,8 @@ const TokenView: React.FC<{
           </div>
         )}
         <div className="flex flex-col items-start gap-0.5">
-          <span className="font-semibold text-base">{token.symbol}</span>
-          <span className="text-white/40 text-xs">{token.name}</span>
+          <span className="font-bold text-base font-sans">{token.symbol}</span>
+          <span className="text-white/40 text-xs font-mono">{token.name}</span>
         </div>
       </div>
       <div className="flex flex-col items-end gap-0.5">
@@ -91,17 +91,20 @@ export const TokenSelectModal: React.FC<TokenSelectModalProps> = ({
   return (
     <Modal open={open} onOpenChange={onOpenChange} title="Select a token" className="h-[500px]">
       <div className="px-4 py-3 shrink-0">
-        <div className="flex items-center gap-3 bg-white/[0.04] rounded-xl px-4 py-3 border border-transparent focus-within:border-white/10 focus-within:bg-white/[0.06] transition-colors">
-          <SearchIcon size={18} className="text-white/40 shrink-0" />
+        <div className="flex items-center gap-3 bg-[#131525]/60 rounded-xl px-4 py-3 border border-white/5 focus-within:border-[#2962ff]/30 focus-within:bg-[#2962ff]/5 transition-all duration-200">
+          <SearchIcon size={18} className="text-[#2962ff]/60 shrink-0" />
           <input
-            className="bg-transparent text-white text-base flex-1 outline-none placeholder:text-white/40 font-medium"
+            className="bg-transparent text-white text-base flex-1 outline-none placeholder:text-white/30 font-medium"
             placeholder="Search name or paste address"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             autoFocus
           />
           {search && (
-            <button onClick={() => setSearch('')} className="text-white/40 hover:text-white">
+            <button
+              onClick={() => setSearch('')}
+              className="text-white/40 hover:text-white rounded-md p-0.5 hover:bg-white/10 transition-all"
+            >
               <XIcon size={16} />
             </button>
           )}

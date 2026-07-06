@@ -79,7 +79,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
   const isCustom = !SLIPPAGE_PRESETS.includes(slippage);
 
   return (
-    <div className="bg-black border border-white/10 p-4 flex flex-col gap-4">
+    <div className="bg-[#131525]/80 backdrop-blur-md border border-white/10 rounded-xl p-4 flex flex-col gap-4">
       {/* Slippage */}
       <div className="flex flex-col gap-2">
         <div className="flex items-center gap-1.5">
@@ -93,10 +93,10 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
             <button
               key={preset}
               onClick={() => onSlippageSelect(preset)}
-              className={`px-3 py-1.5 text-xs font-semibold transition-colors
+              className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all duration-200 font-sans
                 ${
                   slippage === preset && !isCustom
-                    ? 'bg-[#2962ff] text-white'
+                    ? 'bg-[#2962ff] text-white shadow-[0_0_12px_rgba(41,98,255,0.4)]'
                     : 'bg-white/5 text-[#94a3b8] hover:bg-white/10 hover:text-white'
                 }`}
             >
@@ -104,7 +104,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
             </button>
           ))}
           <div
-            className={`flex items-center border px-2 py-1 gap-1 flex-1 min-w-20
+            className={`flex items-center border px-2 py-1 gap-1 flex-1 min-w-20 rounded-lg
               ${isCustom ? 'border-[#2962ff]' : 'border-white/10'}`}
           >
             <input
@@ -141,10 +141,10 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
                 onClick={() =>
                   onRouterTypeSelect(RouterType[router_type as keyof typeof RouterType])
                 }
-                className={`flex-1 py-2 px-1 border text-[10px] sm:text-xs font-mono font-bold transition-colors ${
+                className={`flex-1 py-2 px-1 border rounded-lg text-[10px] sm:text-xs font-sans font-bold transition-all duration-200 ${
                   isSelected
-                    ? 'bg-[#00ff9d]/10 text-[#00ff9d] border-[#00ff9d]/50'
-                    : 'bg-black border-white/10 text-[#64748b] hover:border-[#00ff9d]/30 hover:text-[#00ff9d]'
+                    ? 'bg-[#00ff9d]/10 text-[#00ff9d] border-[#00ff9d]/50 shadow-[0_0_10px_rgba(0,255,157,0.2)]'
+                    : 'bg-[#131525]/50 border-white/10 text-[#64748b] hover:border-[#00ff9d]/30 hover:text-[#00ff9d]'
                 }`}
               >
                 {router_type}
@@ -158,7 +158,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
       <div className="flex flex-col gap-2">
         <span className="text-[#94a3b8] text-xs uppercase tracking-widest">Tx Deadline</span>
         <div className="flex items-center gap-2">
-          <div className="flex items-center border border-white/10 px-2 py-1 gap-1 w-24">
+          <div className="flex items-center border border-white/10 px-2 py-1 gap-1 w-24 rounded-lg">
             <input
               type="number"
               min="1"
@@ -200,15 +200,17 @@ const TokenInputRow: React.FC<TokenInputRowProps> = ({
   onMaxClick,
   onTokenClick,
 }) => (
-  <div className="flex flex-col gap-2 bg-black/60 border border-white/10 px-4 py-4 w-full">
+  <div className="flex flex-col gap-2 bg-[#131525]/60 backdrop-blur-sm border border-white/10 rounded-xl px-4 py-4 w-full transition-all duration-200 hover:border-[#2962ff]/20">
     <div className="flex justify-between items-center">
-      <span className="text-[#64748b] text-xs uppercase tracking-widest">{label}</span>
+      <span className="text-[#64748b] text-xs uppercase tracking-widest font-sans font-bold">
+        {label}
+      </span>
       <div className="flex items-center gap-1.5">
         <span className="text-[#64748b] text-xs">Balance: {formatNumber(balance, 'en-US', 3)}</span>
         {!readOnly && onMaxClick && (
           <button
             onClick={onMaxClick}
-            className="text-[#2962ff] text-xs font-semibold hover:text-white transition-colors"
+            className="text-[#2962ff] text-xs font-bold hover:text-white transition-colors px-1.5 py-0.5 rounded bg-[#2962ff]/10 hover:bg-[#2962ff]/20"
           >
             MAX
           </button>
@@ -220,10 +222,10 @@ const TokenInputRow: React.FC<TokenInputRowProps> = ({
       {/* Token Selector */}
       <button
         onClick={onTokenClick}
-        className={`flex items-center gap-2 px-3 py-2 border shrink-0 transition-colors
+        className={`flex items-center gap-2 px-3 py-2 border rounded-xl shrink-0 transition-all duration-200
           ${
             token
-              ? 'border-white/10 hover:border-[#2962ff] bg-white/5'
+              ? 'border-white/10 hover:border-[#2962ff]/50 bg-white/5 hover:bg-[#2962ff]/5'
               : 'border-[#2962ff] bg-[#2962ff]/10 animate-pulse'
           }`}
       >
@@ -304,7 +306,7 @@ const PriceInfoRow: React.FC<PriceInfoRowProps> = ({
   const minAmountOut = parseFloat(amountOut) - (parseFloat(amountOut) * parseFloat(slippage)) / 100;
 
   return (
-    <div className="w-full bg-black/40 border border-white/10 px-4 py-3">
+    <div className="w-full bg-[#131525]/40 backdrop-blur-sm border border-white/10 rounded-xl px-4 py-3 transition-all duration-200 hover:border-[#2962ff]/15">
       {/* Summary row */}
       <button
         onClick={() => setExpanded((v) => !v)}
@@ -717,7 +719,7 @@ export const MainView: React.FC = () => {
                 <button
                   onClick={handleSwapDirection}
                   title="Flip tokens"
-                  className="group bg-black border border-white/10 p-2 hover:border-[#2962ff] hover:bg-[#2962ff]/10 transition-all"
+                  className="group bg-[#131525] border border-white/10 p-2.5 rounded-xl hover:border-[#2962ff]/50 hover:bg-[#2962ff]/10 transition-all duration-200 shadow-sm"
                 >
                   <ArrowDownUpIcon
                     size={16}
@@ -787,7 +789,7 @@ export const MainView: React.FC = () => {
         {/* Info Strip */}
         <div className="w-full max-w-lg flex flex-wrap justify-between items-center px-1 gap-y-2">
           <div className="flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 bg-[#00ff9d] animate-pulse block" />
+            <span className="w-1.5 h-1.5 rounded-full bg-[#2962ff] animate-pulse block" />
             <span className="text-[#64748b] text-xs">
               Slippage: <span className="text-white">{slippage}%</span>
             </span>

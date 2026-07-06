@@ -151,7 +151,7 @@ export const MainView: React.FC = () => {
                 <DropdownMenu.Trigger asChild>
                   <button
                     disabled={poolsLoading}
-                    className="flex justify-between items-center w-full px-4 py-3 bg-black border border-white/10 hover:border-[#2962ff]/50 transition-colors cursor-pointer outline-none font-mono text-xs"
+                    className="flex justify-between items-center w-full px-4 py-3 bg-[#131525]/60 backdrop-blur-sm border border-white/10 rounded-xl hover:border-[#2962ff]/50 transition-colors cursor-pointer outline-none font-mono text-xs"
                   >
                     {!selectedPool ? (
                       <span className="text-[#94a3b8]">
@@ -195,7 +195,7 @@ export const MainView: React.FC = () => {
                   <DropdownMenu.Content
                     align="start"
                     sideOffset={4}
-                    className="w-(--radix-popper-anchor-width) max-h-64 overflow-y-auto bg-black border border-[#2962ff]/30 py-1 shadow-xl z-50 font-mono text-xs"
+                    className="w-(--radix-popper-anchor-width) max-h-64 overflow-y-auto bg-[#131525]/50 backdrop-blur-sm border border-[#2962ff]/20 rounded-xl py-1 shadow-xl z-50 font-mono text-xs"
                   >
                     {viablePools.map((pool) => {
                       const t0 = assetsDictionary[(pool.token0.address as string).toLowerCase()];
@@ -255,7 +255,7 @@ export const MainView: React.FC = () => {
                 </span>
               </div>
 
-              <div className="flex items-center gap-2 bg-black border border-white/10 p-2 focus-within:border-[#2962ff] focus-within:shadow-[0_0_15px_rgba(41,98,255,0.2)] transition-all duration-300 h-14">
+              <div className="flex items-center gap-2 bg-[#131525]/60 backdrop-blur-sm border border-white/10 rounded-xl p-2 focus-within:border-[#2962ff] focus-within:shadow-[0_0_15px_rgba(41,98,255,0.2)] transition-all duration-300 h-14">
                 <button
                   onClick={() => setIsTokenModalOpen(true)}
                   className="flex items-center gap-2 px-3 py-1.5 hover:bg-white/5 transition-colors rounded-sm"

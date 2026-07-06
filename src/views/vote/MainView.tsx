@@ -58,10 +58,10 @@ const LockDropdown: React.FC<{
       <DropdownMenu.Trigger asChild>
         <button
           disabled={disabled}
-          className={`flex items-center justify-between gap-3 border px-3 py-2.5 w-full text-left font-mono text-xs transition-colors ${
+          className={`flex items-center justify-between gap-3 border rounded-xl px-3 py-2.5 w-full text-left font-mono text-xs transition-all duration-200 ${
             disabled
               ? 'border-white/5 text-[#64748b] cursor-not-allowed bg-white/3'
-              : 'border-white/10 text-white hover:border-[#2962ff]/50 bg-transparent cursor-pointer'
+              : 'border-white/10 text-white hover:border-[#2962ff]/50 hover:bg-[#2962ff]/5 bg-transparent cursor-pointer'
           }`}
         >
           <div className="flex items-center gap-2 min-w-0">
@@ -83,7 +83,7 @@ const LockDropdown: React.FC<{
           </div>
           <div className="flex items-center gap-2 shrink-0">
             {comingSoon && (
-              <span className="text-[8px] font-bold uppercase tracking-widest px-1.5 py-0.5 border border-[#ffaf52]/40 text-[#ffaf52]/80 bg-[#ffaf52]/5">
+              <span className="text-[8px] font-bold uppercase tracking-widest px-1.5 py-0.5 border border-[#ffaf52]/40 text-[#ffaf52]/80 bg-[#ffaf52]/5 rounded-md">
                 Coming Soon
               </span>
             )}
@@ -99,7 +99,7 @@ const LockDropdown: React.FC<{
       {!disabled && !comingSoon && (
         <DropdownMenu.Portal>
           <DropdownMenu.Content
-            className="border border-[#2962ff]/30 bg-black px-2 py-2 space-y-1 z-50 font-mono text-xs shadow-[0_10px_38px_-10px_rgba(41,98,255,0.15)] data-[state=open]:animate-dropdown-enter data-[state=closed]:animate-dropdown-exit w-(--radix-popper-anchor-width)"
+            className="bg-[#131525]/90 backdrop-blur-xl border border-[#2962ff]/15 rounded-xl px-2 py-2 space-y-1 z-50 font-sans text-xs shadow-[0_8px_32px_rgba(0,0,0,0.5),0_0_15px_rgba(41,98,255,0.08)] data-[state=open]:animate-dropdown-enter data-[state=closed]:animate-dropdown-exit w-(--radix-popper-anchor-width)"
             sideOffset={4}
           >
             {locks.length === 0 ? (
@@ -109,7 +109,7 @@ const LockDropdown: React.FC<{
                 <DropdownMenu.Item
                   key={lock.id}
                   onClick={() => onSelect(lock.id)}
-                  className={`flex items-center justify-between gap-3 px-3 py-2.5 cursor-pointer transition-colors ${
+                  className={`flex items-center justify-between gap-3 px-3 py-2.5 cursor-pointer transition-all duration-150 rounded-lg outline-none ${
                     selectedId === lock.id
                       ? 'bg-[#2962ff]/10 text-[#2962ff]'
                       : 'text-[#94a3b8] hover:bg-white/5 hover:text-white'

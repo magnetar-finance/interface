@@ -31,12 +31,12 @@ function parseQLDate(n: number) {
 
 const TX_COLORS: Record<TxType | string, string> = {
   Swap: 'text-[#2962ff] bg-[#2962ff]/10 border-[#2962ff]/30',
-  Add: 'text-[#00ff9d] bg-[#00ff9d]/10 border-[#00ff9d]/30',
+  Add: 'text-[#2962ff] bg-[#2962ff]/10 border-[#2962ff]/30',
   Remove: 'text-[#ffaf52] bg-[#ffaf52]/10 border-[#ffaf52]/30',
 };
 
 const POOL_TYPE_COLORS: Record<PoolType, string> = {
-  STABLE: 'text-[#00ff9d] bg-[#00ff9d]/10',
+  STABLE: 'text-[#2962ff] bg-[#2962ff]/10',
   VOLATILE: 'text-[#ffaf52] bg-[#ffaf52]/10',
   CONCENTRATED: 'text-[#2962ff] bg-[#2962ff]/10',
 };
@@ -46,10 +46,17 @@ const StatCard: React.FC<{ label: string; value: string; sub?: string }> = ({
   value,
   sub,
 }) => (
-  <div className="flex-1 min-w-0 bg-black border border-white/5 p-4">
-    <p className="text-[#64748b] text-[10px] font-bold uppercase tracking-widest mb-2">{label}</p>
-    <p className="text-white font-mono text-2xl font-bold">{value}</p>
-    {sub && <p className="text-[#64748b] text-xs font-mono mt-1">{sub}</p>}
+  <div className="flex-1 min-w-0 bg-[#131525]/80 backdrop-blur-md border border-[#2962ff]/15 p-4 relative overflow-hidden group hover:border-[#2962ff]/40 hover:shadow-[0_0_30px_rgba(41,98,255,0.1)] transition-all duration-300 rounded-xl">
+    <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-[#2962ff]/70 via-[#2962ff]/20 to-transparent" />
+    <div className="absolute top-0 left-0 w-3 h-3 border-t-[1.5px] border-l-[1.5px] border-[#2962ff]/60 rounded-tl-xl" />
+    <div className="absolute bottom-0 right-0 w-3 h-3 border-b-[1.5px] border-r-[1.5px] border-[#2962ff]/20 rounded-br-xl" />
+    <p className="text-[#475569] text-[9px] font-bold uppercase tracking-[0.15em] mb-2 font-sans">
+      {label}
+    </p>
+    <p className="text-white font-mono text-2xl font-bold tracking-wide group-hover:text-[#f8fafc] transition-colors">
+      {value}
+    </p>
+    {sub && <p className="text-[#475569] text-[10px] font-mono mt-1.5 tracking-wider">{sub}</p>}
   </div>
 );
 
@@ -288,7 +295,7 @@ export const PoolAnalyticsView: React.FC<{ poolId: string }> = ({ poolId }) => {
       {/* Back link */}
       <button
         onClick={() => router.push('/analytics')}
-        className="flex items-center gap-2 text-[#94a3b8] hover:text-[#00ff9d] transition-colors group font-mono text-xs uppercase tracking-widest w-fit"
+        className="flex items-center gap-2 text-[#94a3b8] hover:text-[#2962ff] transition-colors group font-mono text-xs uppercase tracking-widest w-fit"
       >
         <ArrowLeftIcon size={14} className="group-hover:-translate-x-1 transition-transform" />
         <span>Back to Analytics</span>
@@ -339,17 +346,23 @@ export const PoolAnalyticsView: React.FC<{ poolId: string }> = ({ poolId }) => {
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div className="bg-black border border-white/5 p-4">
-          <p className="text-[#64748b] text-[10px] font-bold uppercase tracking-widest mb-3">TVL</p>
+        <div className="bg-[#131525]/50 backdrop-blur-sm border border-[#2962ff]/10 p-4 relative overflow-hidden rounded-xl">
+          <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-[#2962ff]/60 via-[#2962ff]/20 to-transparent" />
+          <div className="absolute top-0 left-0 w-3 h-3 border-t-[1.5px] border-l-[1.5px] border-[#2962ff]/50 rounded-tl-xl" />
+          <p className="text-[#475569] text-[9px] font-bold uppercase tracking-[0.15em] mb-4 font-sans flex items-center gap-1.5">
+            <span className="text-[#2962ff]/50 font-mono">&gt;</span> TVL
+          </p>
           {isLoading1D || isLoading7D || isLoading30D || isLoading1Y ? (
             <Skeleton className="h-45 w-full" />
           ) : (
             <TimeSeriesChart data={tvlSeries} color="#2962ff" height={180} />
           )}
         </div>
-        <div className="bg-black border border-white/5 p-4">
-          <p className="text-[#64748b] text-[10px] font-bold uppercase tracking-widest mb-3">
-            Volume
+        <div className="bg-[#131525]/50 backdrop-blur-sm border border-[#2962ff]/10 p-4 relative overflow-hidden rounded-xl">
+          <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-[#2962ff]/50 via-[#2962ff]/15 to-transparent" />
+          <div className="absolute top-0 left-0 w-3 h-3 border-t-[1.5px] border-l-[1.5px] border-[#2962ff]/40 rounded-tl-xl" />
+          <p className="text-[#475569] text-[9px] font-bold uppercase tracking-[0.15em] mb-4 font-sans flex items-center gap-1.5">
+            <span className="text-[#2962ff]/50 font-mono">&gt;</span> Volume
           </p>
           {isLoading1D || isLoading7D || isLoading30D || isLoading1Y ? (
             <Skeleton className="h-45 w-full" />
@@ -360,9 +373,10 @@ export const PoolAnalyticsView: React.FC<{ poolId: string }> = ({ poolId }) => {
       </div>
 
       {/* Pool ratio */}
-      <div className="bg-black border border-white/5 p-4">
-        <p className="text-[#64748b] text-[10px] font-bold uppercase tracking-widest mb-3">
-          Pool Composition
+      <div className="bg-[#131525]/50 backdrop-blur-sm border border-[#2962ff]/10 p-4 relative rounded-xl">
+        <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-[#2962ff]/40 to-transparent" />
+        <p className="text-[#475569] text-[9px] font-bold uppercase tracking-[0.15em] mb-4 font-sans flex items-center gap-1.5">
+          <span className="text-[#2962ff]/50 font-mono">&gt;</span> Pool Composition
         </p>
         <div className="flex flex-col md:flex-row gap-4 md:gap-4 text-sm font-mono">
           <div className="flex-1">
@@ -396,9 +410,11 @@ export const PoolAnalyticsView: React.FC<{ poolId: string }> = ({ poolId }) => {
       </div>
 
       {/* Transactions */}
-      <div className="bg-black border border-white/5 p-4 mb-8 overflow-x-auto">
-        <p className="text-[#64748b] text-[10px] font-bold uppercase tracking-widest mb-3">
-          Transactions
+      <div className="bg-[#131525]/50 backdrop-blur-sm border border-[#2962ff]/10 p-4 mb-8 overflow-x-auto relative rounded-xl">
+        <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-[#2962ff]/50 via-[#2962ff]/15 to-transparent" />
+        <div className="absolute top-0 left-0 w-3 h-3 border-t-[1.5px] border-l-[1.5px] border-[#2962ff]/40 rounded-tl-xl" />
+        <p className="text-[#475569] text-[9px] font-bold uppercase tracking-[0.15em] mb-4 font-sans flex items-center gap-1.5">
+          <span className="text-[#2962ff]/50 font-mono">&gt;</span> Transactions
         </p>
 
         {isLoadingTxns ? (

@@ -14,21 +14,24 @@ interface TableProps<T> {
 }
 
 export const Table = <T,>({ headers, data, renderRow, renderEmpty, onRowClick }: TableProps<T>) => (
-  <div className="w-full overflow-x-auto border border-white/10 p-1 bg-black">
-    <table className="w-full text-xs font-mono">
+  <div className="w-full overflow-x-auto rounded-lg">
+    {/* Top border accent */}
+    <div className="w-full h-[2px] bg-gradient-to-r from-[#2962ff]/80 via-[#9d4edd]/50 to-transparent" />
+    <table className="w-full text-xs font-mono border border-white/[0.06] border-t-0">
       <thead>
-        <tr className="border-b border-dashed border-white/30">
+        <tr className="bg-[#2962ff]/[0.02]">
           {headers.map((header, index) => (
             <th
               key={index}
               className={`
-                pb-2 pt-1 pr-4 text-[#2962ff] uppercase tracking-widest
+                pb-2.5 pt-3 pr-4 text-[#2962ff]/80 uppercase tracking-widest text-[10px] font-bold
+                border-b border-white/[0.07]
                 ${
                   header.align === 'right'
                     ? 'text-right'
                     : header.align === 'center'
                     ? 'text-center'
-                    : 'text-left'
+                    : 'text-left pl-3'
                 }
               `}
             >
@@ -44,10 +47,11 @@ export const Table = <T,>({ headers, data, renderRow, renderEmpty, onRowClick }:
               key={index}
               onClick={() => onRowClick?.(item)}
               className={`
-                border-b border-white/5
-                transition-colors duration-150
-                hover:bg-white/[0.03] hover:text-[#2962ff]
-                ${onRowClick ? 'cursor-pointer' : ''}
+                border-b border-white/[0.04]
+                transition-all duration-150
+                ${index % 2 === 0 ? 'bg-transparent' : 'bg-white/[0.012]'}
+                hover:bg-[#2962ff]/[0.05] hover:border-b-[#2962ff]/30
+                ${onRowClick ? 'cursor-pointer group' : ''}
               `}
             >
               {renderRow(item, index)}
@@ -59,7 +63,14 @@ export const Table = <T,>({ headers, data, renderRow, renderEmpty, onRowClick }:
               colSpan={headers.length}
               className="py-16 text-center text-[#64748b] uppercase tracking-widest"
             >
-              {renderEmpty ? renderEmpty() : '--- NO DATA FOUND ---'}
+              {renderEmpty ? (
+                renderEmpty()
+              ) : (
+                <span className="text-[#334155] font-mono">
+                  <span className="text-[#2962ff]/40">{'>'}</span>
+                  {' --- NO DATA FOUND ---'}
+                </span>
+              )}
             </td>
           </tr>
         )}

@@ -11,7 +11,7 @@ export const SwitchGroup: React.FC<SwitchGroupProps> = ({
   switchLabels,
   fullWidth = false,
 }) => (
-  <div className="flex items-center gap-2 w-full border-b border-white/20 pb-2">
+  <div className="flex items-center gap-2 w-full border-b border-white/10 pb-2">
     {switchLabels.map((label, index) => {
       const isActive = index === activeSwitchIndex;
       return (
@@ -19,17 +19,23 @@ export const SwitchGroup: React.FC<SwitchGroupProps> = ({
           key={index}
           onClick={() => onSwitchClicked?.(index)}
           className={`
-            px-4 py-1 text-xs font-mono uppercase tracking-widest
-            transition-all duration-100
+            px-4 py-1.5 text-xs font-sans font-bold uppercase tracking-widest rounded-lg
+            transition-all duration-200
             ${fullWidth ? 'flex-1 min-w-0 truncate' : ''}
             ${
               isActive
-                ? 'text-[#2962ff] bg-[#2962ff]/10 border border-[#2962ff]/50'
-                : 'text-[#64748b] border border-transparent hover:text-[#94a3b8] hover:border-white/20'
+                ? 'text-[#2962ff] bg-[#2962ff]/10 border border-[#2962ff]/50 shadow-[0_0_12px_rgba(41,98,255,0.15)]'
+                : 'text-[#64748b] border border-transparent hover:text-white hover:bg-white/5 hover:border-white/10'
             }
           `}
         >
-          {isActive ? `[ ${label} ]` : label}
+          {isActive ? (
+            <span className="flex items-center justify-center gap-1.5">
+              <span className="text-[#2962ff]/50 font-mono">&gt;</span> {label}
+            </span>
+          ) : (
+            label
+          )}
         </button>
       );
     })}

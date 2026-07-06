@@ -71,7 +71,7 @@ export const PositionsView: React.FC = () => {
       <FancyCard>
         <div className="flex flex-col gap-3 py-3 w-full justify-start items-center">
           <div className="w-full flex justify-between items-center gap-6">
-            <h4 className="text-white font-semibold text-lg md:text-xl">Active Positions</h4>
+            <h4 className="text-white font-bold text-lg md:text-xl font-sans">Active Positions</h4>
             <span className="text-[#94a3b8] font-normal text-sm md:text-lg">
               {isLoading ? '-' : accountInfo?.lpPositions.length || 0} positions
             </span>
@@ -164,11 +164,11 @@ export const PositionsView: React.FC = () => {
                         </DropdownMenu.Trigger>
                         <DropdownMenu.Portal>
                           <DropdownMenu.Content
-                            className="border border-[rgb(34,34,34)] bg-black w-3xs px-3 py-2 space-y-2 z-50 font-mono text-xs shadow-[0_10px_38px_-10px_rgba(41,98,255,0.15)] data-[state=open]:animate-dropdown-enter data-[state=closed]:animate-dropdown-exit"
+                            className="bg-[#131525]/90 backdrop-blur-xl border border-white/10 rounded-xl w-3xs px-2 py-2 space-y-1 z-50 font-sans text-xs shadow-[0_8px_32px_rgba(0,0,0,0.5),0_0_15px_rgba(41,98,255,0.08)] data-[state=open]:animate-dropdown-enter data-[state=closed]:animate-dropdown-exit"
                             sideOffset={4}
                           >
                             <DropdownMenu.Item
-                              className="flex justify-start items-center gap-2 text-[#94a3b8] cursor-pointer hover:bg-white/10 hover:text-white py-2 px-3 transition-colors"
+                              className="flex justify-start items-center gap-2 text-[#94a3b8] cursor-pointer rounded-lg hover:bg-white/5 hover:text-white py-2 px-3 transition-all duration-150 outline-none"
                               onClick={() => {
                                 setSelectedPosition(item);
                                 setStakeModalOpen(true);
@@ -177,7 +177,7 @@ export const PositionsView: React.FC = () => {
                               <ShieldPlusIcon size={14} /> <span>Stake</span>
                             </DropdownMenu.Item>
                             <DropdownMenu.Item
-                              className="flex justify-start items-center gap-2 text-[#94a3b8] cursor-pointer hover:bg-white/10 hover:text-white py-2 px-3 transition-colors"
+                              className="flex justify-start items-center gap-2 text-[#94a3b8] cursor-pointer rounded-lg hover:bg-white/5 hover:text-white py-2 px-3 transition-all duration-150 outline-none"
                               onClick={() => {
                                 setSelectedPosition(item);
                                 setUnstakeModalOpen(true);
@@ -187,7 +187,7 @@ export const PositionsView: React.FC = () => {
                             </DropdownMenu.Item>
                             {item.pool.poolType === 'CONCENTRATED' && (
                               <DropdownMenu.Item
-                                className="flex justify-start items-center gap-2 text-[#94a3b8] cursor-pointer hover:bg-white/10 hover:text-white py-2 px-3 transition-colors"
+                                className="flex justify-start items-center gap-2 text-[#94a3b8] cursor-pointer rounded-lg hover:bg-white/5 hover:text-white py-2 px-3 transition-all duration-150 outline-none"
                                 onClick={() => {
                                   setSelectedPosition(item);
                                   setIncreaseModalOpen(true);
@@ -197,7 +197,7 @@ export const PositionsView: React.FC = () => {
                               </DropdownMenu.Item>
                             )}
                             <DropdownMenu.Item
-                              className="flex justify-start items-center gap-2 text-[#ff4757] cursor-pointer hover:bg-[#ff4757]/10 py-2 px-3 transition-colors"
+                              className="flex justify-start items-center gap-2 text-[#ff4757] cursor-pointer rounded-lg hover:bg-[#ff4757]/10 py-2 px-3 transition-all duration-150 outline-none"
                               onClick={() => {
                                 setSelectedPosition(item);
                                 setRemoveModalOpen(true);
@@ -214,15 +214,11 @@ export const PositionsView: React.FC = () => {
               }}
               renderEmpty={() => (
                 <div className="w-full flex justify-center items-center my-20 flex-col py-5 gap-10">
-                  <div className="border-2 border-dashed border-[rgba(255,255,255,0.1)] flex justify-center items-center p-4">
-                    <DropletIcon
-                      size={90}
-                      color="#64748b"
-                      className="animate-[float_6s_ease-in-out_infinite]"
-                    />
+                  <div className="bg-[#2962ff]/5 border border-dashed border-[#2962ff]/20 flex justify-center items-center p-6 rounded-3xl">
+                    <DropletIcon size={90} className="text-[#2962ff]/40 animate-float" />
                   </div>
                   <div className="w-full flex justify-center items-center flex-col py-2 gap-5">
-                    <h4 className="text-3xl md:text-4xl text-white font-extrabold">
+                    <h4 className="text-3xl md:text-4xl text-white font-extrabold font-sans">
                       No Active Positions
                     </h4>
                     <p className="text-[#94a3b8] font-normal text-sm md:text-xl text-center text-wrap w-full lg:w-132">

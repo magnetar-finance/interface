@@ -25,7 +25,7 @@ export function Spinner({ size = 'sm', className = '' }: SpinnerProps) {
         animation: 'spin 0.8s linear infinite',
       }}
     >
-      <span className={`block rounded-full bg-[#161618] ${inner}`} />
+      <span className={`block rounded-full bg-[#131525] ${inner}`} />
     </span>
   );
 }

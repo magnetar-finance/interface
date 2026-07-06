@@ -82,69 +82,87 @@ export const MainView: React.FC = () => {
 
             {/* Settings Panel (Inline) */}
             {showSettings && (
-              <div className="w-full bg-[#050508] border border-[#2962ff]/30 p-4 mb-6 space-y-4 shadow-[0_0_15px_rgba(41,98,255,0.1)]">
-                <div className="space-y-2">
-                  <span className="text-[#64748b] text-xs font-bold uppercase tracking-widest">
-                    Slippage Tolerance
-                  </span>
-                  <div className="flex gap-2">
+              <div className="w-full bg-[#131525]/80 backdrop-blur-md border border-white/10 p-4 mb-6 flex flex-col gap-4 rounded-xl">
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[#94a3b8] text-xs uppercase tracking-widest">
+                      Slippage Tolerance
+                    </span>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2">
                     {['0.1', '0.25', '0.5', '1.0'].map((val) => (
                       <button
                         key={val}
                         onClick={() => setSlippage(parseFloat(val))}
-                        className={`px-3 py-1.5 text-xs font-mono font-bold transition-colors ${
-                          slippage === parseFloat(val)
-                            ? 'bg-[#2962ff] text-white'
-                            : 'bg-black border border-white/10 text-[#94a3b8] hover:border-[#2962ff]/50'
+                        className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all duration-200 font-sans ${
+                          slippage === parseFloat(val) &&
+                          !['0.1', '0.25', '0.5', '1.0'].includes(slippage.toString()) === false
+                            ? 'bg-[#2962ff] text-white shadow-[0_0_12px_rgba(41,98,255,0.4)]'
+                            : 'bg-white/5 text-[#94a3b8] hover:bg-white/10 hover:text-white border border-transparent'
                         }`}
                       >
                         {val}%
                       </button>
                     ))}
-                    <div className="flex items-center bg-black border border-white/10 px-2 flex-1 focus-within:border-[#2962ff] transition-colors">
+                    <div
+                      className={`flex items-center border px-2 py-1 gap-1 flex-1 min-w-20 rounded-lg ${
+                        !['0.1', '0.25', '0.5', '1.0'].includes(slippage.toString())
+                          ? 'border-[#2962ff]'
+                          : 'border-white/10'
+                      }`}
+                    >
                       <input
-                        type="text"
-                        className="bg-transparent text-[#00ff9d] text-xs font-mono w-full outline-none text-right placeholder:text-[#64748b]/50 border-none ring-0 focus:outline-none"
+                        type="number"
+                        min="0.01"
+                        max="50"
+                        step="0.1"
+                        className="bg-transparent text-white text-xs w-full outline-none placeholder:text-[#64748b]"
                         placeholder="Custom"
-                        value={['0.1', '0.5', '1.0'].includes(slippage.toString()) ? '' : slippage}
+                        value={
+                          ['0.1', '0.25', '0.5', '1.0'].includes(slippage.toString())
+                            ? ''
+                            : slippage
+                        }
                         onChange={(e) => setSlippage(parseFloat(e.target.value) || 0)}
                       />
-                      <span className="text-[#2962ff] text-xs font-bold ml-1">%</span>
+                      <span className="text-[#64748b] text-xs">%</span>
                     </div>
                   </div>
                 </div>
-                <div className="space-y-2 flex justify-between items-center">
-                  <span className="text-[#64748b] text-xs font-bold uppercase tracking-widest">
-                    TX Deadline (Mins)
-                  </span>
-                  <input
-                    type="number"
-                    value={deadline}
-                    onChange={(e) => setDeadline(parseInt(e.target.value) || 0)}
-                    className="bg-black border border-white/10 px-3 py-1.5 text-[#00ff9d] text-xs font-mono w-20 outline-none focus:border-[#2962ff] transition-colors text-right border-none ring-0"
-                  />
+                <div className="flex flex-col gap-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-[#94a3b8] text-xs uppercase tracking-widest">
+                      TX Deadline (Mins)
+                    </span>
+                    <input
+                      type="number"
+                      value={deadline}
+                      onChange={(e) => setDeadline(parseInt(e.target.value) || 0)}
+                      className="bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-white text-xs font-mono w-20 outline-none focus:border-[#2962ff] transition-colors text-right"
+                    />
+                  </div>
                 </div>
               </div>
             )}
 
             {/* Mode Tabs */}
-            <div className="w-full flex border border-white/10 p-1 bg-[#050508] mb-2">
+            <div className="w-full flex bg-[#131525]/50 backdrop-blur-sm border border-white/10 p-1 rounded-xl mb-2">
               <button
                 onClick={() => setActiveTab('STANDARD')}
-                className={`flex-1 py-2 text-sm font-bold uppercase tracking-widest transition-colors ${
+                className={`flex-1 py-2 text-sm font-bold tracking-wide transition-all duration-200 rounded-lg ${
                   activeTab === 'STANDARD'
-                    ? 'bg-[#2962ff]/20 text-[#2962ff] border border-[#2962ff]'
-                    : 'text-[#64748b] hover:text-[#94a3b8] border border-transparent'
+                    ? 'bg-[#2962ff] text-white shadow-[0_0_15px_rgba(41,98,255,0.3)]'
+                    : 'text-[#94a3b8] hover:text-white hover:bg-white/5'
                 }`}
               >
                 Standard
               </button>
               <button
                 onClick={() => setActiveTab('CONCENTRATED')}
-                className={`flex-1 py-2 text-sm font-bold uppercase tracking-widest transition-colors ${
+                className={`flex-1 py-2 text-sm font-bold tracking-wide transition-all duration-200 rounded-lg ${
                   activeTab === 'CONCENTRATED'
-                    ? 'bg-[#00ff9d]/10 text-[#00ff9d] border border-[#00ff9d]/50'
-                    : 'text-[#64748b] hover:text-[#94a3b8] border border-transparent'
+                    ? 'bg-[#2962ff] text-white shadow-[0_0_15px_rgba(41,98,255,0.3)]'
+                    : 'text-[#94a3b8] hover:text-white hover:bg-white/5'
                 }`}
               >
                 Concentrated

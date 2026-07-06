@@ -30,12 +30,12 @@ function parseQLDate(n: number) {
 
 const TX_COLORS: Record<TxType | string, string> = {
   Swap: 'text-[#2962ff] bg-[#2962ff]/10 border-[#2962ff]/30',
-  Add: 'text-[#00ff9d] bg-[#00ff9d]/10 border-[#00ff9d]/30',
+  Add: 'text-[#2962ff] bg-[#2962ff]/10 border-[#2962ff]/30',
   Remove: 'text-[#ffaf52] bg-[#ffaf52]/10 border-[#ffaf52]/30',
 };
 
 const POOL_TYPE_COLORS: Record<PoolType, string> = {
-  STABLE: 'text-[#00ff9d] bg-[#00ff9d]/10',
+  STABLE: 'text-[#2962ff] bg-[#2962ff]/10',
   VOLATILE: 'text-[#ffaf52] bg-[#ffaf52]/10',
   CONCENTRATED: 'text-[#2962ff] bg-[#2962ff]/10',
 };
@@ -45,10 +45,17 @@ const StatCard: React.FC<{ label: string; value: string; sub?: string }> = ({
   value,
   sub,
 }) => (
-  <div className="flex-1 min-w-0 bg-black border border-white/5 p-4">
-    <p className="text-[#64748b] text-[10px] font-bold uppercase tracking-widest mb-2">{label}</p>
-    <p className="text-white font-mono text-2xl font-bold">{value}</p>
-    {sub && <p className="text-[#64748b] text-xs font-mono mt-1">{sub}</p>}
+  <div className="flex-1 min-w-0 bg-[#131525]/80 backdrop-blur-md border border-[#2962ff]/15 p-4 relative overflow-hidden group hover:border-[#2962ff]/40 hover:shadow-[0_0_30px_rgba(41,98,255,0.1)] transition-all duration-300 rounded-xl">
+    <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-[#2962ff]/70 via-[#2962ff]/20 to-transparent" />
+    <div className="absolute top-0 left-0 w-3 h-3 border-t-[1.5px] border-l-[1.5px] border-[#2962ff]/60 rounded-tl-xl" />
+    <div className="absolute bottom-0 right-0 w-3 h-3 border-b-[1.5px] border-r-[1.5px] border-[#2962ff]/20 rounded-br-xl" />
+    <p className="text-[#475569] text-[9px] font-bold uppercase tracking-[0.15em] mb-2 font-sans">
+      {label}
+    </p>
+    <p className="text-white font-mono text-2xl font-bold tracking-wide group-hover:text-[#f8fafc] transition-colors">
+      {value}
+    </p>
+    {sub && <p className="text-[#475569] text-[10px] font-mono mt-1.5 tracking-wider">{sub}</p>}
   </div>
 );
 
@@ -155,6 +162,16 @@ export const TokenAnalyticsView: React.FC<{ tokenId: string }> = ({ tokenId }) =
     () => Math.ceil(mergedTransactions.length / 20),
     [mergedTransactions.length],
   );
+  const [poolsPage, setPoolsPage] = useState(1);
+  const POOLS_PER_PAGE = 10;
+  const totalPoolPages = useMemo(
+    () => Math.max(1, Math.ceil(relatedPools.length / POOLS_PER_PAGE)),
+    [relatedPools.length],
+  );
+  const paginatedRelatedPools = useMemo(
+    () => relatedPools.slice((poolsPage - 1) * POOLS_PER_PAGE, poolsPage * POOLS_PER_PAGE),
+    [relatedPools, poolsPage],
+  );
   const chainId = useChainId();
 
   const priceSeries: Partial<Record<Timeframe, TimeSeriesDataPoint[]>> = useMemo(() => {
@@ -232,7 +249,7 @@ export const TokenAnalyticsView: React.FC<{ tokenId: string }> = ({ tokenId }) =
       {/* Back */}
       <button
         onClick={() => router.push('/analytics')}
-        className="flex items-center gap-2 text-[#94a3b8] hover:text-[#00ff9d] transition-colors group font-mono text-xs uppercase tracking-widest w-fit"
+        className="flex items-center gap-2 text-[#94a3b8] hover:text-[#2962ff] transition-colors group font-mono text-xs uppercase tracking-widest w-fit"
       >
         <ArrowLeftIcon size={14} className="group-hover:-translate-x-1 transition-transform" />
         <span>Back to Analytics</span>
@@ -288,9 +305,11 @@ export const TokenAnalyticsView: React.FC<{ tokenId: string }> = ({ tokenId }) =
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div className="bg-black border border-white/5 p-4">
-          <p className="text-[#64748b] text-[10px] font-bold uppercase tracking-widest mb-3">
-            Price (USD)
+        <div className="bg-[#131525]/50 backdrop-blur-sm border border-[#2962ff]/15 p-4 relative overflow-hidden rounded-xl">
+          <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-[#2962ff]/60 via-[#2962ff]/20 to-transparent" />
+          <div className="absolute top-0 left-0 w-3 h-3 border-t-[1.5px] border-l-[1.5px] border-[#2962ff]/50 rounded-tl-xl" />
+          <p className="text-[#475569] text-[9px] font-bold uppercase tracking-[0.15em] mb-4 font-sans flex items-center gap-1.5">
+            <span className="text-[#2962ff]/50 font-mono">&gt;</span> Price (USD)
           </p>
           {isTokenDayDatasLoading ? (
             <Skeleton className="h-45 w-full" />
@@ -303,9 +322,11 @@ export const TokenAnalyticsView: React.FC<{ tokenId: string }> = ({ tokenId }) =
             />
           )}
         </div>
-        <div className="bg-black border border-white/5 p-4">
-          <p className="text-[#64748b] text-[10px] font-bold uppercase tracking-widest mb-3">
-            Volume
+        <div className="bg-[#131525]/50 backdrop-blur-sm border border-[#2962ff]/10 p-4 relative overflow-hidden rounded-xl">
+          <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-[#2962ff]/50 via-[#2962ff]/15 to-transparent" />
+          <div className="absolute top-0 left-0 w-3 h-3 border-t-[1.5px] border-l-[1.5px] border-[#2962ff]/40 rounded-tl-xl" />
+          <p className="text-[#475569] text-[9px] font-bold uppercase tracking-[0.15em] mb-4 font-sans flex items-center gap-1.5">
+            <span className="text-[#2962ff]/50 font-mono">&gt;</span> Volume
           </p>
           {isTokenDayDatasLoading ? (
             <Skeleton className="h-45 w-full" />
@@ -316,8 +337,12 @@ export const TokenAnalyticsView: React.FC<{ tokenId: string }> = ({ tokenId }) =
       </div>
 
       {/* Pools containing this token */}
-      <div className="bg-black border border-white/5 p-4 mb-8">
-        <p className="text-[#64748b] text-[10px] font-bold uppercase tracking-widest mb-3">Pools</p>
+      <div className="bg-[#131525]/50 backdrop-blur-sm border border-[#2962ff]/15 p-4 mb-8 relative rounded-xl">
+        <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-[#2962ff]/50 via-[#2962ff]/15 to-transparent" />
+        <div className="absolute top-0 left-0 w-3 h-3 border-t-[1.5px] border-l-[1.5px] border-[#2962ff]/40 rounded-tl-xl" />
+        <p className="text-[#475569] text-[9px] font-bold uppercase tracking-[0.15em] mb-4 font-sans flex items-center gap-1.5">
+          <span className="text-[#2962ff]/50 font-mono">&gt;</span> Pools
+        </p>
 
         {isPoolsLoading ? (
           <div className="flex flex-col gap-2">
@@ -326,43 +351,56 @@ export const TokenAnalyticsView: React.FC<{ tokenId: string }> = ({ tokenId }) =
             <Skeleton className="h-10 w-full" />
           </div>
         ) : (
-          <Table<(typeof relatedPools)[number]>
-            headers={[
-              { label: 'Pool', align: 'left' },
-              { label: 'Type', align: 'left' },
-              { label: 'TVL', align: 'right' },
-              { label: 'Vol', align: 'right' },
-            ]}
-            data={relatedPools}
-            onRowClick={(pool) => router.push(`/analytics/pools/${encodeURIComponent(pool.id)}`)}
-            renderRow={(pool) => (
-              <>
-                <td className="py-3 pr-4 text-white font-bold">{pool.name}</td>
-                <td className="py-3 pr-4">
-                  <span
-                    className={`px-2 py-0.5 text-[10px] uppercase ${
-                      POOL_TYPE_COLORS[pool.poolType as PoolType]
-                    }`}
-                  >
-                    {pool.poolType.toLowerCase()}
-                  </span>
-                </td>
-                <td className="py-3 pr-4 text-right text-[#94a3b8]">
-                  {formatNumber(pool.reserveUSD as string, 'en-US', 2, true)}
-                </td>
-                <td className="py-3 pr-4 text-right text-[#94a3b8]">
-                  {formatNumber(pool.volumeUSD as string, 'en-US', 2, true)}
-                </td>
-              </>
+          <>
+            <Table<(typeof relatedPools)[number]>
+              headers={[
+                { label: 'Pool', align: 'left' },
+                { label: 'Type', align: 'left' },
+                { label: 'TVL', align: 'right' },
+                { label: 'Vol', align: 'right' },
+              ]}
+              data={paginatedRelatedPools}
+              onRowClick={(pool) => router.push(`/analytics/pools/${encodeURIComponent(pool.id)}`)}
+              renderRow={(pool) => (
+                <>
+                  <td className="py-3 pr-4 pl-3 text-white font-bold">{pool.name}</td>
+                  <td className="py-3 pr-4">
+                    <span
+                      className={`px-2 py-0.5 text-[10px] uppercase ${
+                        POOL_TYPE_COLORS[pool.poolType as PoolType]
+                      }`}
+                    >
+                      {pool.poolType.toLowerCase()}
+                    </span>
+                  </td>
+                  <td className="py-3 pr-4 text-right text-[#94a3b8] font-mono">
+                    {formatNumber(pool.reserveUSD as string, 'en-US', 2, true)}
+                  </td>
+                  <td className="py-3 pr-4 text-right text-[#94a3b8] font-mono">
+                    {formatNumber(pool.volumeUSD as string, 'en-US', 2, true)}
+                  </td>
+                </>
+              )}
+            />
+            {totalPoolPages > 1 && (
+              <div className="mt-4 flex justify-end">
+                <Pagination
+                  currentPage={poolsPage}
+                  onPageChange={setPoolsPage}
+                  totalPages={totalPoolPages}
+                />
+              </div>
             )}
-          />
+          </>
         )}
       </div>
 
       {/* Transactions */}
-      <div className="bg-black border border-white/5 p-4 mb-8 overflow-x-auto">
-        <p className="text-[#64748b] text-[10px] font-bold uppercase tracking-widest mb-3">
-          Transactions
+      <div className="bg-[#131525]/50 backdrop-blur-sm border border-[#2962ff]/15 p-4 mb-8 overflow-x-auto relative rounded-xl">
+        <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-[#2962ff]/50 via-[#2962ff]/15 to-transparent" />
+        <div className="absolute top-0 left-0 w-3 h-3 border-t-[1.5px] border-l-[1.5px] border-[#2962ff]/40 rounded-tl-xl" />
+        <p className="text-[#475569] text-[9px] font-bold uppercase tracking-[0.15em] mb-4 font-sans flex items-center gap-1.5">
+          <span className="text-[#2962ff]/50 font-mono">&gt;</span> Transactions
         </p>
 
         {isLoadingTxns ? (
