@@ -4,7 +4,7 @@ import { PrimaryButton, WalletConnectButton } from '@/components/Button';
 import { AssetResponseType } from '@/config/github-assets.config';
 import { TokenSelectModal } from '@/ui/modals/TokenSelectModal';
 import { PlusIcon } from 'lucide-react';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { RangeDistributionChart } from '@/ui/charts/RangeDistributionChart';
 import { useAccount, useChainId } from 'wagmi';
 import { TokenInputRow } from './components/TokenInputRow';
@@ -79,8 +79,8 @@ export const ConcentratedDepositView: React.FC<{
 }> = ({ initialTokenA, initialTokenB }) => {
   const { isConnected } = useAccount();
 
-  const [tokenA, setTokenA] = useState<AssetResponseType[number] | null>(initialTokenA);
-  const [tokenB, setTokenB] = useState<AssetResponseType[number] | null>(initialTokenB);
+  const [tokenA, setTokenA] = useState<AssetResponseType[number] | null>(null);
+  const [tokenB, setTokenB] = useState<AssetResponseType[number] | null>(null);
   const [feeTier, setFeeTier] = useState<number>(3000);
   const [amountA, setAmountA] = useState('');
   const [amountB, setAmountB] = useState('');
@@ -331,6 +331,11 @@ export const ConcentratedDepositView: React.FC<{
     amount1Parsed,
   ]);
 
+  useEffect(() => {
+    if (initialTokenA) setTokenA(initialTokenA);
+    if (initialTokenB) setTokenB(initialTokenB);
+  }, [initialTokenA, initialTokenB]);
+
   return (
     <div className="w-full flex flex-col gap-6 mt-4">
       {/* Fee Tier Selection */}
@@ -348,10 +353,10 @@ export const ConcentratedDepositView: React.FC<{
               <button
                 key={tier}
                 onClick={() => setFeeTier(tier)}
-                className={`flex-1 py-2 px-1 border text-[10px] sm:text-xs font-mono font-bold transition-colors ${
+                className={`flex-1 py-2 px-1 border rounded-lg text-[10px] sm:text-xs font-sans font-bold transition-all duration-200 ${
                   isSelected
-                    ? 'bg-[#00ff9d]/10 text-[#00ff9d] border-[#00ff9d]/50'
-                    : 'bg-black border-white/10 text-[#64748b] hover:border-[#00ff9d]/30 hover:text-[#00ff9d]'
+                    ? 'bg-[#2962ff]/10 text-[#2962ff] border-[#2962ff]/50 shadow-[0_0_10px_rgba(41,98,255,0.2)]'
+                    : 'bg-[#131525]/50 border-white/10 text-[#64748b] hover:border-[#2962ff]/30 hover:text-[#2962ff]'
                 }`}
               >
                 {percentage}%
@@ -362,13 +367,13 @@ export const ConcentratedDepositView: React.FC<{
       </div>
 
       {/* Visualizer Region */}
-      <div className="w-full bg-[#050508] border border-white/5 p-4 relative group">
+      <div className="w-full bg-[#131525]/60 backdrop-blur-md border border-white/10 p-4 rounded-xl relative group">
         <div className="flex justify-between items-center mb-4">
           <span className="text-[#64748b] text-xs font-bold tracking-widest uppercase">
             Set Price Range
           </span>
           {tokenA && tokenB && (
-            <span className="text-xs font-mono text-[#00ff9d]">
+            <span className="text-xs font-mono text-[#2962ff]">
               {sqrtPriceX96ToPrice !== 0
                 ? `Current Price: 1 ${tokenA.symbol} = ${sqrtPriceX96ToPrice.toFixed(3)} ${
                     tokenB.symbol
@@ -386,7 +391,7 @@ export const ConcentratedDepositView: React.FC<{
             data={DISTRIBUTION_DATA}
             chartMinIndex={chartMinIndex}
             chartMaxIndex={chartMaxIndex}
-            activeColor="#00ff9d"
+            activeColor="#2962ff"
             onMinIndexChange={handleMinIndexChange}
             onMaxIndexChange={handleMaxIndexChange}
           />
@@ -394,7 +399,7 @@ export const ConcentratedDepositView: React.FC<{
 
         {/* Min/Max Inputs */}
         <div className="flex flex-col md:flex-row gap-4 w-full">
-          <div className="flex-1 bg-black border border-white/10 p-3 focus-within:border-[#2962ff]/80 transition-colors">
+          <div className="flex-1 bg-[#131525]/50 rounded-lg border border-white/10 p-3 focus-within:border-[#2962ff]/80 transition-all duration-200">
             <span className="text-[#64748b] text-[10px] font-bold uppercase tracking-widest block mb-1">
               Min Price
             </span>
@@ -411,7 +416,7 @@ export const ConcentratedDepositView: React.FC<{
             </span>
           </div>
 
-          <div className="flex-1 bg-black border border-white/10 p-3 focus-within:border-[#2962ff]/80 transition-colors">
+          <div className="flex-1 bg-[#131525]/50 rounded-lg border border-white/10 p-3 focus-within:border-[#2962ff]/80 transition-all duration-200">
             <span className="text-[#64748b] text-[10px] font-bold uppercase tracking-widest block mb-1">
               Max Price
             </span>
@@ -439,7 +444,7 @@ export const ConcentratedDepositView: React.FC<{
               setMinPrice(min.toFixed(4));
               setMaxPrice(max.toFixed(4));
             }}
-            className="flex-1 py-1 px-2 border border-white/10 text-[#94a3b8] hover:border-[#2962ff]/50 hover:text-[#2962ff] text-xs font-mono font-bold transition-colors bg-black"
+            className="flex-1 py-1 px-2 border border-white/10 rounded-lg text-[#94a3b8] hover:border-[#2962ff]/50 hover:bg-[#2962ff]/10 hover:text-[#2962ff] text-xs font-mono font-bold transition-all duration-200 bg-[#131525]/50"
           >
             10%
           </button>
@@ -451,7 +456,7 @@ export const ConcentratedDepositView: React.FC<{
               setMinPrice(min.toFixed(4));
               setMaxPrice(max.toFixed(4));
             }}
-            className="flex-1 py-1 px-2 border border-white/10 text-[#94a3b8] hover:border-[#2962ff]/50 hover:text-[#2962ff] text-xs font-mono font-bold transition-colors bg-black"
+            className="flex-1 py-1 px-2 border border-white/10 rounded-lg text-[#94a3b8] hover:border-[#2962ff]/50 hover:bg-[#2962ff]/10 hover:text-[#2962ff] text-xs font-mono font-bold transition-all duration-200 bg-[#131525]/50"
           >
             20%
           </button>
@@ -463,7 +468,7 @@ export const ConcentratedDepositView: React.FC<{
               setMinPrice(min.toFixed(4));
               setMaxPrice(max.toFixed(4));
             }}
-            className="flex-1 py-1 px-2 border border-white/10 text-[#94a3b8] hover:border-[#2962ff]/50 hover:text-[#2962ff] text-xs font-mono font-bold transition-colors bg-black"
+            className="flex-1 py-1 px-2 border border-white/10 rounded-lg text-[#94a3b8] hover:border-[#2962ff]/50 hover:bg-[#2962ff]/10 hover:text-[#2962ff] text-xs font-mono font-bold transition-all duration-200 bg-[#131525]/50"
           >
             20%
           </button>
@@ -475,7 +480,7 @@ export const ConcentratedDepositView: React.FC<{
               setMinPrice(min.toFixed(4));
               setMaxPrice(max.toFixed(4));
             }}
-            className="flex-1 py-1 px-2 border border-white/10 text-[#94a3b8] hover:border-[#2962ff]/50 hover:text-[#2962ff] text-xs font-mono font-bold transition-colors bg-black"
+            className="flex-1 py-1 px-2 border border-white/10 rounded-lg text-[#94a3b8] hover:border-[#2962ff]/50 hover:bg-[#2962ff]/10 hover:text-[#2962ff] text-xs font-mono font-bold transition-all duration-200 bg-[#131525]/50"
           >
             30%
           </button>
@@ -487,7 +492,7 @@ export const ConcentratedDepositView: React.FC<{
               setMinPrice(min.toFixed(4));
               setMaxPrice(max.toFixed(4));
             }}
-            className="flex-1 py-1 px-2 border border-white/10 text-[#94a3b8] hover:border-[#2962ff]/50 hover:text-[#2962ff] text-xs font-mono font-bold transition-colors bg-black"
+            className="flex-1 py-1 px-2 border border-white/10 rounded-lg text-[#94a3b8] hover:border-[#2962ff]/50 hover:bg-[#2962ff]/10 hover:text-[#2962ff] text-xs font-mono font-bold transition-all duration-200 bg-[#131525]/50"
           >
             40%
           </button>
@@ -497,7 +502,7 @@ export const ConcentratedDepositView: React.FC<{
               setMinPrice(tickToPrice(-887272));
               setMaxPrice(tickToPrice(887272));
             }}
-            className="flex-2 py-1 px-2 border border-[#00ff9d]/30 text-[#00ff9d] hover:bg-[#00ff9d]/10 text-xs font-mono font-bold transition-colors bg-[#00ff9d]/5"
+            className="flex-2 py-1 px-2 border border-[#2962ff]/30 rounded-lg text-[#2962ff] hover:bg-[#2962ff]/10 text-xs font-mono font-bold transition-all duration-200 bg-[#2962ff]/5 shadow-[0_0_10px_rgba(41,98,255,0.1)]"
           >
             Full Range
           </button>
@@ -518,8 +523,8 @@ export const ConcentratedDepositView: React.FC<{
 
         {/* Plus Divider */}
         <div className="w-full flex justify-center -my-3 z-10">
-          <div className="bg-[#050508] border border-[#2962ff]/30 p-1">
-            <div className="bg-black border border-[#2962ff]/50 p-1 flex justify-center items-center text-[#2962ff]">
+          <div className="bg-transparent border border-transparent p-1">
+            <div className="bg-[#131525]/60 backdrop-blur-sm rounded-xl border border-[#2962ff]/50 p-1 flex justify-center items-center text-[#2962ff] shadow-[0_0_15px_rgba(41,98,255,0.2)]">
               <PlusIcon size={16} />
             </div>
           </div>

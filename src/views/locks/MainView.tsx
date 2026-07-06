@@ -90,7 +90,7 @@ const LockActionMenu: React.FC<{
     <DropdownMenu.Root>
       <DropdownMenu.Trigger asChild>
         <button
-          className="p-1.5 border border-white/10 text-[#94a3b8] hover:border-[#2962ff]/50 hover:text-white transition-colors cursor-pointer"
+          className="p-1.5 border border-white/10 text-[#94a3b8] hover:border-[#2962ff]/50 hover:text-white hover:bg-[#2962ff]/5 transition-all duration-200 cursor-pointer rounded-lg"
           aria-label="Lock actions"
         >
           <MoreHorizontalIcon size={14} />
@@ -99,7 +99,7 @@ const LockActionMenu: React.FC<{
 
       <DropdownMenu.Portal>
         <DropdownMenu.Content
-          className="border border-[#2962ff]/30 bg-black py-1 z-50 font-mono text-xs shadow-xl min-w-45"
+          className="bg-[#131525]/90 backdrop-blur-xl border border-[#2962ff]/15 rounded-xl py-1.5 z-50 font-sans text-xs shadow-[0_8px_32px_rgba(0,0,0,0.5),0_0_15px_rgba(41,98,255,0.08)] min-w-45"
           sideOffset={4}
           align="end"
         >
@@ -107,7 +107,7 @@ const LockActionMenu: React.FC<{
             <DropdownMenu.Item
               key={action.label}
               onClick={action.onClick}
-              className={`flex items-center gap-2.5 px-3 py-2.5 cursor-pointer transition-colors outline-none ${
+              className={`flex items-center gap-2.5 px-3 py-2.5 cursor-pointer transition-all duration-150 outline-none rounded-lg mx-1 ${
                 action.danger
                   ? 'text-[#ff4757] hover:bg-[#ff4757]/10 focus:bg-[#ff4757]/10'
                   : 'text-[#94a3b8] hover:bg-white/5 hover:text-white focus:bg-white/5 focus:text-white'
@@ -429,7 +429,7 @@ const CloseOutDialog: React.FC<{
     {/* Backdrop */}
     <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onCancel} />
     {/* Dialog */}
-    <div className="relative border border-[#ff4757]/30 bg-black p-6 w-full max-w-sm mx-4 flex flex-col gap-5 shadow-[0_0_40px_rgba(255,71,87,0.15)]">
+    <div className="relative border border-[#ff4757]/30 bg-[#131525]/50 backdrop-blur-sm rounded-xl  w-full max-w-sm mx-4 flex flex-col gap-5 shadow-[0_0_40px_rgba(255,71,87,0.15)]">
       {/* Header */}
       <div className="flex items-start gap-3">
         <div className="border border-[#ff4757]/30 bg-[#ff4757]/5 p-2 shrink-0">
@@ -1267,7 +1267,9 @@ const ComingSoonPanel: React.FC<{
       {/* Icon */}
       <div className="relative">
         <div className="absolute inset-0 bg-[#2962ff]/10 blur-2xl rounded-full scale-150" />
-        <div className="relative border border-[#2962ff]/30 bg-black p-6">{icon}</div>
+        <div className="relative border border-[#2962ff]/30 bg-[#131525]/50 backdrop-blur-sm rounded-xl ">
+          {icon}
+        </div>
       </div>
 
       {/* Text */}

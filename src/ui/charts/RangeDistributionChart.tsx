@@ -24,7 +24,7 @@ export const RangeDistributionChart: React.FC<RangeDistributionChartProps> = ({
   data,
   chartMinIndex,
   chartMaxIndex,
-  activeColor = '#00ff9d',
+  activeColor = '#2962ff',
   currentPriceTick,
   onMinIndexChange,
   onMaxIndexChange,
@@ -216,9 +216,9 @@ export const RangeDistributionChart: React.FC<RangeDistributionChartProps> = ({
               transform: 'translateX(-50%)',
               fontSize: '8px',
               letterSpacing: '0.05em',
-              color: '#00ff9d',
-              background: 'rgba(0,255,157,0.12)',
-              border: '1px solid rgba(0,255,157,0.4)',
+              color: activeColor,
+              background: 'rgba(41,98,255,0.12)',
+              border: '1px solid rgba(41,98,255,0.4)',
               padding: '1px 5px',
               borderRadius: '2px',
               lineHeight: '1.4',
@@ -232,9 +232,8 @@ export const RangeDistributionChart: React.FC<RangeDistributionChartProps> = ({
             style={{
               width: '1px',
               transform: 'translateX(-50%)',
-              backgroundImage:
-                'repeating-linear-gradient(to bottom, #00ff9d 0px, #00ff9d 5px, transparent 5px, transparent 9px)',
-              boxShadow: '0 0 6px #00ff9d80',
+              backgroundImage: `repeating-linear-gradient(to bottom, ${activeColor} 0px, ${activeColor} 5px, transparent 5px, transparent 9px)`,
+              boxShadow: `0 0 6px ${activeColor}80`,
             }}
           />
           {/* Base dot */}
@@ -244,8 +243,8 @@ export const RangeDistributionChart: React.FC<RangeDistributionChartProps> = ({
               width: '5px',
               height: '5px',
               borderRadius: '50%',
-              background: '#00ff9d',
-              boxShadow: '0 0 8px #00ff9d',
+              background: activeColor,
+              boxShadow: `0 0 8px ${activeColor}`,
               transform: 'translateX(-50%) translateY(2px)',
             }}
           />
@@ -342,7 +341,7 @@ const HandleBar: React.FC<HandleBarProps> = ({
           width: 10,
           height: 22,
           flexShrink: 0,
-          background: isActive ? color : '#0d1120',
+          background: isActive ? color : '#131525',
           border: `1px solid ${isActive ? color : `${color}88`}`,
           boxShadow: isActive
             ? `0 0 0 1px ${glowFaint}, 0 0 12px ${glowStrong}, inset 0 0 4px ${color}44`

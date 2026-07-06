@@ -5,7 +5,7 @@ import { SwitchGroup } from '@/components/SwitchGroup';
 import { AssetResponseType } from '@/config/github-assets.config';
 import { TokenSelectModal } from '@/ui/modals/TokenSelectModal';
 import { PlusIcon } from 'lucide-react';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useAccount, useChainId } from 'wagmi';
 import { TokenInputRow } from './components/TokenInputRow';
 import { formatUnits, parseUnits, zeroAddress } from 'viem';
@@ -32,16 +32,14 @@ export const StandardDepositView: React.FC<{
 }> = ({ initialTokenA, initialTokenB, initialPoolTypeIndex }) => {
   const { isConnected } = useAccount();
 
-  const [tokenA, setTokenA] = useState<AssetResponseType[number] | null>(initialTokenA);
-  const [tokenB, setTokenB] = useState<AssetResponseType[number] | null>(initialTokenB);
+  const [tokenA, setTokenA] = useState<AssetResponseType[number] | null>(null);
+  const [tokenB, setTokenB] = useState<AssetResponseType[number] | null>(null);
   const [amountA, setAmountA] = useState('');
   const [amountB, setAmountB] = useState('');
 
   // Standard Pools only support Stable (0) or Volatile (1).
   // If concentrated was passed, default to volatile.
-  const [activePoolTypeIndex, setActivePoolTypeIndex] = useState(
-    initialPoolTypeIndex === 0 ? 0 : 1,
-  );
+  const [activePoolTypeIndex, setActivePoolTypeIndex] = useState(0);
 
   const [modalType, setModalType] = useState<SelectModalType | null>(null);
 
@@ -157,6 +155,14 @@ export const StandardDepositView: React.FC<{
     balanceB,
   ]);
 
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (initialTokenA) setTokenA(initialTokenA);
+    if (initialTokenB) setTokenB(initialTokenB);
+    if (initialPoolTypeIndex !== undefined && initialPoolTypeIndex !== null)
+      setActivePoolTypeIndex(initialPoolTypeIndex);
+  }, [initialTokenA, initialTokenB, initialPoolTypeIndex]);
+
   return (
     <div className="w-full flex flex-col gap-6 mt-4">
       {/* Type Selector */}
@@ -183,8 +189,8 @@ export const StandardDepositView: React.FC<{
 
         {/* Plus Divider */}
         <div className="w-full flex justify-center -my-3 z-10">
-          <div className="bg-[#050508] border border-[#2962ff]/30 p-1">
-            <div className="bg-black border border-[#2962ff]/50 p-1 flex justify-center items-center text-[#2962ff]">
+          <div className="bg-transparent border border-transparent p-1">
+            <div className="bg-[#131525]/60 backdrop-blur-sm rounded-xl border border-[#2962ff]/50 p-1 flex justify-center items-center text-[#2962ff] shadow-[0_0_15px_rgba(41,98,255,0.2)]">
               <PlusIcon size={16} />
             </div>
           </div>

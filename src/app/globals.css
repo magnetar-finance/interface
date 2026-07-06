@@ -2,36 +2,46 @@
 
 /* ─── Terminal Design Tokens ────────────────────────────── */
 :root {
-  --background: #000000;
-  --surface: #050505;
-  --surface-raised: #0a0a0a;
+  --background: #0d0e1c;
+  --surface: #131525;
+  --surface-raised: #1a1b2e;
   --foreground: #f8fafc; /* White text */
 
-  --accent-primary: #2962ff; /* Electric Blue */
+  --accent-primary: #2962ff; /* Uniswap Pink */
   --accent-secondary: #00ff9d; /* Green for success/highlights */
+  --accent-tertiary: #9d4edd; /* Deep Purple */
+  --accent-info: #4c82fb; /* Soft Blue */
   --accent-alert: #ff4757;
 
-  --border-dim: rgba(41, 98, 255, 0.2);
-  --border-glow: rgba(41, 98, 255, 0.5);
+  --border-dim: rgba(41, 98, 255, 0.15);
+  --border-glow: rgba(41, 98, 255, 0.4);
 
-  --radius: 0px; /* Sharp corners for terminal feel */
+  --radius: 0.75rem; /* Rounded corners for Uniswap feel */
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-mono: var(--font-fira-code), monospace;
+  --font-sans: var(--font-inter), sans-serif;
 }
 
 /* ─── Base ──────────────────────────────────────────────── */
 body {
   background-color: var(--background);
-  /* Subtle terminal grid */
-  background-image: linear-gradient(rgba(41, 98, 255, 0.03) 1px, transparent 1px),
+  /* Subtle terminal grid + Uniswap radial glow */
+  background-image: radial-gradient(circle at 50% -20%, rgba(41, 98, 255, 0.15), transparent 50%),
+    radial-gradient(circle at 80% 50%, rgba(157, 78, 221, 0.1), transparent 50%),
+    linear-gradient(rgba(41, 98, 255, 0.03) 1px, transparent 1px),
     linear-gradient(90deg, rgba(41, 98, 255, 0.03) 1px, transparent 1px);
-  background-size: 30px 30px;
+  background-size:
+    100% 100%,
+    100% 100%,
+    30px 30px,
+    30px 30px;
+  background-attachment: fixed;
   color: var(--foreground);
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   margin: 0;
   padding: 0;
 }
@@ -165,4 +175,32 @@ button {
   to {
     transform: rotate(360deg);
   }
+}
+
+/* ─── New Fusion Animations ─────────────────────────────── */
+@keyframes shimmer {
+  0% {
+    background-position: 200% center;
+  }
+  100% {
+    background-position: -200% center;
+  }
+}
+.animate-shimmer {
+  animation: shimmer 4s linear infinite;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+.animate-float {
+  animation: float 4s ease-in-out infinite;
 }

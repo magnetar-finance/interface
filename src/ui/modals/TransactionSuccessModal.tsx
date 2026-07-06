@@ -27,7 +27,7 @@ export const TransactionSuccessModal: React.FC<TransactionSuccessModalProps> = (
       </div>
 
       <div className="flex flex-col gap-2 w-full">
-        <p className="text-white text-lg font-semibold">{message}</p>
+        <p className="text-white text-lg font-bold font-sans">{message}</p>
         {txHash && (
           <a
             href={explorerUrl ? `${explorerUrl}/tx/${txHash}` : '#'}

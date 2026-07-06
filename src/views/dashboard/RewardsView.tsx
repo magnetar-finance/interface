@@ -37,9 +37,9 @@ const SectionHeader: React.FC<{
 }> = ({ icon, title, subtitle, count, isLoading }) => (
   <div className="w-full flex justify-between items-center gap-6">
     <div className="flex items-center gap-3">
-      <div className="border border-[#2962ff]/30 bg-[#2962ff]/5 p-1.5">{icon}</div>
+      <div className="border border-[#2962ff]/30 bg-[#2962ff]/5 p-1.5 rounded-lg">{icon}</div>
       <div className="flex flex-col gap-0.5">
-        <h4 className="text-white font-semibold text-base md:text-lg">{title}</h4>
+        <h4 className="text-white font-bold text-base md:text-lg font-sans">{title}</h4>
         <p className="text-[#64748b] text-[10px] font-mono uppercase tracking-widest">{subtitle}</p>
       </div>
     </div>

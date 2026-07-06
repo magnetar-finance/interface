@@ -185,7 +185,7 @@ export const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
             <span className="text-[#94a3b8] text-sm font-semibold">You will receive</span>
 
             <div className="flex flex-col gap-2">
-              <div className="flex justify-between items-center bg-black border border-white/10 p-3">
+              <div className="flex justify-between items-center bg-[#131525]/60 backdrop-blur-sm border border-white/10 rounded-xl p-3">
                 <div className="flex items-center gap-2">
                   {getAssetInfo(liquidityPosition.pool.token0.address as string)?.logoURI ? (
                     <Image
@@ -210,7 +210,7 @@ export const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
                 </span>
               </div>
 
-              <div className="flex justify-between items-center bg-black border border-white/10 p-3">
+              <div className="flex justify-between items-center bg-[#131525]/60 backdrop-blur-sm border border-white/10 rounded-xl p-3">
                 <div className="flex items-center gap-2">
                   {getAssetInfo(liquidityPosition.pool.token1.address as string)?.logoURI ? (
                     <Image

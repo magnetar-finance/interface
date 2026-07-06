@@ -1,7 +1,7 @@
 import './globals.css';
 import '@rainbow-me/rainbowkit/styles.css';
 import type { Metadata } from 'next';
-import { Fira_Code } from 'next/font/google';
+import { Fira_Code, Inter } from 'next/font/google';
 import { Sidebar } from '@/partials/Sidebar';
 import { StickyMobileNavbar } from '@/partials/StickyMobileNavbar';
 import { Header } from '@/partials/Header';
@@ -9,6 +9,11 @@ import { Providers } from './providers';
 
 const firaCode = Fira_Code({
   variable: '--font-fira-code',
+  subsets: ['latin'],
+});
+
+const inter = Inter({
+  variable: '--font-inter',
   subsets: ['latin'],
 });
 
@@ -25,7 +30,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${firaCode.variable} font-mono antialiased overflow-x-hidden`}>
+      <body
+        className={`${firaCode.variable} ${inter.variable} font-sans antialiased overflow-x-hidden`}
+      >
         <Providers>
           <div className="flex flex-col md:flex-row min-h-screen min-w-screen justify-center items-start gap-0 overflow-y-auto overflow-x-hidden relative">
             <div className="hidden md:block w-[20%] min-h-screen">

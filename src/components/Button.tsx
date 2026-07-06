@@ -18,21 +18,25 @@ export const PrimaryButton: React.FC<CustomButtonProperties> = ({
 }) => (
   <button
     className={`
-      relative overflow-hidden
+      relative overflow-hidden rounded-lg
       bg-[#2962ff]/10 text-[#2962ff] font-mono text-xs font-bold uppercase tracking-widest
       flex justify-center items-center gap-2
       px-6 py-3 border border-[#2962ff]/50
-      transition-all duration-100
-      hover:bg-[#2962ff] hover:text-white hover:shadow-[0_0_15px_rgba(41,98,255,0.5)]
+      transition-all duration-300
+      hover:text-white hover:border-transparent hover:shadow-[0_0_20px_rgba(41,98,255,0.4)]
       active:translate-y-px active:shadow-none
       disabled:opacity-40 disabled:pointer-events-none disabled:hover:bg-[#2962ff]/10 disabled:hover:text-[#2962ff]
       ${className}
     `}
     {...props}
   >
-    <span className="opacity-0 group-hover:opacity-100 transition-opacity">&gt;</span>
+    {/* Hover Gradient Background */}
+    <div className="absolute inset-0 bg-gradient-to-r from-[#2962ff] to-[#9d4edd] opacity-0 group-hover:opacity-100 hover:opacity-100 transition-opacity duration-300 -z-10" />
+    <span className="opacity-0 group-hover:opacity-100 hover:opacity-100 transition-opacity">
+      &gt;
+    </span>
     {children}
-    <span className="w-1.5 h-3 bg-current animate-blink opacity-0 group-hover:opacity-100" />
+    <span className="w-1.5 h-3 bg-current animate-blink opacity-0 group-hover:opacity-100 hover:opacity-100" />
   </button>
 );
 
@@ -43,11 +47,11 @@ export const SecondaryButton: React.FC<CustomButtonProperties> = ({
 }) => (
   <button
     className={`
-      bg-black text-[#94a3b8] font-mono text-xs font-bold uppercase tracking-widest
-      flex justify-center items-center gap-2
-      px-6 py-3 border border-white/20
-      transition-all duration-100
-      hover:text-white hover:border-white/60 hover:bg-white/5
+      bg-[#131525]/80 backdrop-blur-sm text-[#94a3b8] font-mono text-xs font-bold uppercase tracking-widest
+      flex justify-center items-center gap-2 rounded-lg
+      px-6 py-3 border border-white/10
+      transition-all duration-200
+      hover:text-white hover:border-[#2962ff]/40 hover:bg-[#2962ff]/10 hover:shadow-[0_0_15px_rgba(41,98,255,0.15)]
       active:translate-y-px
       disabled:opacity-40 disabled:pointer-events-none
       ${className}

@@ -124,7 +124,7 @@ export const RentLockPreviewModal: React.FC<RentLockPreviewModalProps> = ({
           </div>
 
           {/* Lock Details */}
-          <div className="border border-white/10 bg-black p-4">
+          <div className="border border-white/10 bg-[#131525]/50 backdrop-blur-sm rounded-xl ">
             <h4 className="text-[#64748b] font-mono text-[10px] uppercase tracking-widest mb-3 flex items-center gap-2">
               <KeyRoundIcon size={12} className="text-[#64748b]" />
               Lock Information
@@ -164,7 +164,7 @@ export const RentLockPreviewModal: React.FC<RentLockPreviewModalProps> = ({
           </div>
 
           {/* Payment Details */}
-          <div className="border border-white/10 bg-black p-4">
+          <div className="border border-white/10 bg-[#131525]/50 backdrop-blur-sm rounded-xl ">
             <h4 className="text-[#64748b] font-mono text-[10px] uppercase tracking-widest mb-3 flex items-center gap-2">
               <CoinsIcon size={12} className="text-[#64748b]" />
               Payment Details

@@ -40,23 +40,28 @@ const NavItem: React.FC<{ item: NavItem }> = ({ item }) => {
     <Link
       href={item.href}
       className={`
-        flex flex-col items-center justify-center gap-1.5 flex-1 py-3 transition-colors
-        font-mono uppercase
+        flex flex-col items-center justify-center gap-1.5 flex-1 py-3 transition-all duration-300
+        font-sans uppercase relative
         ${
           isActive
-            ? 'text-[#2962ff] bg-[#2962ff]/10 border-t border-[#2962ff]'
-            : 'text-[#64748b] border-t border-transparent hover:text-white hover:bg-white/5'
+            ? 'text-[#2962ff] bg-[#2962ff]/5'
+            : 'text-[#64748b] hover:text-[#f8fafc] hover:bg-white/5'
         }
       `}
     >
-      <span>{item.icon}</span>
+      {isActive && (
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-[2px] bg-gradient-to-r from-transparent via-[#2962ff] to-transparent shadow-[0_0_10px_rgba(41,98,255,0.8)]" />
+      )}
+      <span className={isActive ? 'drop-shadow-[0_0_8px_rgba(41,98,255,0.4)]' : ''}>
+        {item.icon}
+      </span>
       <span className="text-[9px] font-bold tracking-widest">{item.label}</span>
     </Link>
   );
 };
 
 export const StickyMobileNavbar: React.FC = () => (
-  <nav className="bg-black border border-[#2962ff]/30 w-full shadow-[0_0_15px_rgba(41,98,255,0.15)]">
+  <nav className="bg-[#131525]/90 backdrop-blur-xl border-t border-[#2962ff]/15 w-full shadow-[0_-8px_32px_rgba(0,0,0,0.4),0_0_20px_rgba(41,98,255,0.05)]">
     <div className="flex justify-around items-stretch w-full">
       {NAV_ITEMS.map((item) => (
         <NavItem key={item.href} item={item} />

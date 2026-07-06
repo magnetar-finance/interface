@@ -346,7 +346,7 @@ export const MainView: React.FC = () => {
                       </DropdownMenu.Trigger>
                       <DropdownMenu.Portal>
                         <DropdownMenu.Content
-                          className="border border-[rgb(34,34,34)] bg-black w-3xs px-3 py-2 space-y-2 z-50 font-mono text-xs shadow-[0_10px_38px_-10px_rgba(41,98,255,0.15)] data-[state=open]:animate-dropdown-enter data-[state=closed]:animate-dropdown-exit"
+                          className="bg-[#131525]/90 backdrop-blur-xl border border-white/10 rounded-xl w-3xs px-3 py-2 space-y-2 z-50 font-mono text-xs shadow-[0_10px_38px_-10px_rgba(41,98,255,0.15)] data-[state=open]:animate-dropdown-enter data-[state=closed]:animate-dropdown-exit"
                           sideOffset={4}
                         >
                           <DropdownMenu.Item
