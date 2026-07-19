@@ -51,7 +51,7 @@ export const IncreaseLockAmountModal: React.FC<IncreaseLockAmountModalProps> = (
   const [txHash, setTxHash] = useState<string | undefined>();
 
   // Executions
-  const escrowApproval = useApproveSpend(mgn, escrow, amountBI);
+  const escrowApproval = useApproveSpend(mgn, escrow);
   const lockAmountIncrease = useIncreaseLockAmount(
     tokenId,
     amountBI,

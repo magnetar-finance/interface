@@ -88,7 +88,6 @@ export const RentLockPreviewModal: React.FC<RentLockPreviewModalProps> = ({
   const approveRental = useApproveSpend(
     (rental?.paymentToken.id as Address) || zeroAddress,
     (rental?.id as Address) || zeroAddress,
-    totalAmountToPayParsed,
   );
 
   const buyRental = useBuyRental(

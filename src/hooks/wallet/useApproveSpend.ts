@@ -1,6 +1,7 @@
 import {
   Address,
   encodeFunctionData,
+  maxUint256,
   SendTransactionErrorType,
   WaitForTransactionReceiptErrorType,
   zeroAddress,
@@ -11,12 +12,12 @@ import { Composition } from '@/typings';
 import { useMemo, useCallback, useEffect } from 'react';
 import { useSendTransaction, useWaitForTransactionReceipt } from 'wagmi';
 
-function composeBytes(spender: Address, value: bigint) {
+function composeBytes(spender: Address) {
   const composition: Composition = {} as Composition;
   composition.bytes = encodeFunctionData({
     abi,
     functionName: 'approve',
-    args: [spender, value],
+    args: [spender, maxUint256],
   });
 
   return composition;
@@ -25,11 +26,10 @@ function composeBytes(spender: Address, value: bigint) {
 function useApproveSpend(
   token: Address,
   spender: Address,
-  amount: bigint,
   onSuccess?: (hash: `0x${string}`) => void,
   onError?: (error: SendTransactionErrorType | WaitForTransactionReceiptErrorType) => void,
 ) {
-  const composition = useMemo(() => composeBytes(spender, amount), [amount, spender]);
+  const composition = useMemo(() => composeBytes(spender), [spender]);
 
   const { sendTransaction, data: hash, error: sendError, reset, isPending } = useSendTransaction();
   const { error: waitError, isLoading, isSuccess } = useWaitForTransactionReceipt({ hash });

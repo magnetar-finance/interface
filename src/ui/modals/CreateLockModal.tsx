@@ -77,7 +77,7 @@ export const CreateLockModal: React.FC<CreateLockModalProps> = ({ open, onOpenCh
   const [txHash, setTxHash] = useState<string | undefined>();
 
   // Executions
-  const escrowApproval = useApproveSpend(mgn, escrow, amountBI);
+  const escrowApproval = useApproveSpend(mgn, escrow);
   const lockCreation = useCreateLock(
     amountBI,
     BigInt(parsedDays * 60 * 60 * 24),

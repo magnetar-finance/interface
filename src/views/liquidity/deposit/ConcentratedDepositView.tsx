@@ -268,8 +268,8 @@ export const ConcentratedDepositView: React.FC<{
   const allowanceB = useGetAllowance(tokenB?.address, positionCreator, REFETCH_INTERVALS);
 
   // Approvals
-  const approvalA = useApproveSpend(tokenA?.address || zeroAddress, positionCreator, amount0Parsed);
-  const approvalB = useApproveSpend(tokenB?.address || zeroAddress, positionCreator, amount1Parsed);
+  const approvalA = useApproveSpend(tokenA?.address || zeroAddress, positionCreator);
+  const approvalB = useApproveSpend(tokenB?.address || zeroAddress, positionCreator);
 
   const amount0ParsedSorted = isSorted ? amount0Parsed : amount1Parsed;
   const amount1ParsedSorted = isSorted ? amount1Parsed : amount0Parsed;

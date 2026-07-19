@@ -91,7 +91,6 @@ export const MainView: React.FC = () => {
   const bribeApproval = useApproveSpend(
     selectedToken?.address || zeroAddress,
     (selectedPool?.gauge?.bribeVotingReward as Address) || zeroAddress,
-    amountBI,
   );
 
   const incentivize = useNotifyRewardAmount(

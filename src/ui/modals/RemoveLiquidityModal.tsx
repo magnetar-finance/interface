@@ -85,11 +85,7 @@ export const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
   );
 
   // Approval
-  const routerLPApproval = useApproveSpend(
-    liquidityPosition.pool.address as Address,
-    v2Router,
-    parseEther(receivedLiquidity.toString()),
-  );
+  const routerLPApproval = useApproveSpend(liquidityPosition.pool.address as Address, v2Router);
 
   // Remove liquidity
   const v2LPRemoval = useRemoveLiquidityV2(
