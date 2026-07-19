@@ -78,8 +78,8 @@ export const StandardDepositView: React.FC<{
   const allowanceB = useGetAllowance(tokenB?.address || zeroAddress, router);
 
   // Approvals
-  const approvalA = useApproveSpend(tokenA?.address || zeroAddress, router, amount0Parsed);
-  const approvalB = useApproveSpend(tokenB?.address || zeroAddress, router, amount1Parsed);
+  const approvalA = useApproveSpend(tokenA?.address || zeroAddress, router);
+  const approvalB = useApproveSpend(tokenB?.address || zeroAddress, router);
 
   // Add liquidity
   const addLiquidity = useAddLiquidityV2(

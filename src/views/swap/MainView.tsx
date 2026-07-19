@@ -471,21 +471,9 @@ export const MainView: React.FC = () => {
   const clSwapperAllowance = useGetAllowance(tokenIn?.address, clSwapper, REFETCH_INTERVALS);
 
   // Approvals
-  const autoSwapperApproval = useApproveSpend(
-    tokenIn?.address || zeroAddress,
-    autoSwapper,
-    amountInParsed,
-  );
-  const v2SwapperApproval = useApproveSpend(
-    tokenIn?.address || zeroAddress,
-    v2Swapper,
-    amountInParsed,
-  );
-  const clSwapperApproval = useApproveSpend(
-    tokenIn?.address || zeroAddress,
-    clSwapper,
-    amountInParsed,
-  );
+  const autoSwapperApproval = useApproveSpend(tokenIn?.address || zeroAddress, autoSwapper);
+  const v2SwapperApproval = useApproveSpend(tokenIn?.address || zeroAddress, v2Swapper);
+  const clSwapperApproval = useApproveSpend(tokenIn?.address || zeroAddress, clSwapper);
 
   const { useDeposit, useWithdrawal } = useWETHTx();
   const depositETH = useDeposit(

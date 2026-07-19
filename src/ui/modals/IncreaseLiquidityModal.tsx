@@ -56,8 +56,8 @@ export const IncreaseLiquidityModal: React.FC<IncreaseLiquidityModalProps> = ({
   const allowanceB = useGetAllowance(token1?.address, positionCreator, REFETCH_INTERVALS);
 
   // Approvals
-  const approvalA = useApproveSpend(token0?.address || zeroAddress, positionCreator, amount0Parsed);
-  const approvalB = useApproveSpend(token1?.address || zeroAddress, positionCreator, amount1Parsed);
+  const approvalA = useApproveSpend(token0?.address || zeroAddress, positionCreator);
+  const approvalB = useApproveSpend(token1?.address || zeroAddress, positionCreator);
 
   const isETH = useMemo(
     () =>

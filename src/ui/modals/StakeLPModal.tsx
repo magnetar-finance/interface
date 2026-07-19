@@ -77,7 +77,7 @@ export const StakeLPModal: React.FC<StakeLPModalProps> = ({
   const gaugeAllowanceCL = useERC721Allowance(nfpm, gauge, REFETCH_INTERVALS);
 
   // Approval
-  const gaugeApproval = useApproveSpend(poolAddress, gauge, parseEther(parsedAmount.toString()));
+  const gaugeApproval = useApproveSpend(poolAddress, gauge);
   const gaugeApprovalCL = useERC721Approve(nfpm, gauge);
 
   // Stake
