@@ -23,20 +23,18 @@ export const PrimaryButton: React.FC<CustomButtonProperties> = ({
       flex justify-center items-center gap-2
       px-6 py-3 border border-[#2962ff]/50
       transition-all duration-300
-      hover:text-white hover:border-transparent hover:shadow-[0_0_20px_rgba(41,98,255,0.4)]
+      before:absolute before:inset-0 before:bg-gradient-to-r before:from-[#2962ff] before:to-[#9d4edd]
+      before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300
+      hover:text-white hover:border-transparent
+      hover:shadow-[0_0_25px_rgba(41,98,255,0.5),0_0_60px_rgba(41,98,255,0.2)]
       active:translate-y-px active:shadow-none
-      disabled:opacity-40 disabled:pointer-events-none disabled:hover:bg-[#2962ff]/10 disabled:hover:text-[#2962ff]
+      disabled:opacity-40 disabled:pointer-events-none
+      [&>*]:relative [&>*]:z-10
       ${className}
     `}
     {...props}
   >
-    {/* Hover Gradient Background */}
-    <div className="absolute inset-0 bg-gradient-to-r from-[#2962ff] to-[#9d4edd] opacity-0 group-hover:opacity-100 hover:opacity-100 transition-opacity duration-300 -z-10" />
-    <span className="opacity-0 group-hover:opacity-100 hover:opacity-100 transition-opacity">
-      &gt;
-    </span>
     {children}
-    <span className="w-1.5 h-3 bg-current animate-blink opacity-0 group-hover:opacity-100 hover:opacity-100" />
   </button>
 );
 
@@ -51,7 +49,8 @@ export const SecondaryButton: React.FC<CustomButtonProperties> = ({
       flex justify-center items-center gap-2 rounded-lg
       px-6 py-3 border border-white/10
       transition-all duration-200
-      hover:text-white hover:border-[#2962ff]/40 hover:bg-[#2962ff]/10 hover:shadow-[0_0_15px_rgba(41,98,255,0.15)]
+      hover:text-white hover:border-[#2962ff]/40 hover:bg-[#2962ff]/8
+      hover:shadow-[0_0_20px_rgba(41,98,255,0.15),inset_0_0_0_1px_rgba(41,98,255,0.1)]
       active:translate-y-px
       disabled:opacity-40 disabled:pointer-events-none
       ${className}
@@ -97,6 +96,8 @@ export const WalletConnectButton: React.FC<ConnectButtonProperties> = ({ hasIcon
 
       return (
         <SecondaryButton onClick={openAccountModal} {...props}>
+          {/* Pulsing connected indicator */}
+          <span className="w-1.5 h-1.5 rounded-full bg-[#00ff9d] shadow-[0_0_6px_rgba(0,255,157,0.8)] animate-pulse shrink-0" />
           <span className="font-mono text-xs text-[#2962ff]">[{splitString(account.address)}]</span>
         </SecondaryButton>
       );

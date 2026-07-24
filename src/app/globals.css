@@ -7,7 +7,7 @@
   --surface-raised: #1a1b2e;
   --foreground: #f8fafc; /* White text */
 
-  --accent-primary: #2962ff; /* Uniswap Pink */
+  --accent-primary: #2962ff; /* Electric Blue */
   --accent-secondary: #00ff9d; /* Green for success/highlights */
   --accent-tertiary: #9d4edd; /* Deep Purple */
   --accent-info: #4c82fb; /* Soft Blue */
@@ -16,7 +16,11 @@
   --border-dim: rgba(41, 98, 255, 0.15);
   --border-glow: rgba(41, 98, 255, 0.4);
 
-  --radius: 0.75rem; /* Rounded corners for Uniswap feel */
+  --glow-primary: 0 0 20px rgba(41, 98, 255, 0.4), 0 0 60px rgba(41, 98, 255, 0.15);
+  --glow-purple: 0 0 20px rgba(157, 78, 221, 0.4), 0 0 60px rgba(157, 78, 221, 0.15);
+  --glow-green: 0 0 20px rgba(0, 255, 157, 0.4), 0 0 60px rgba(0, 255, 157, 0.15);
+
+  --radius: 0.75rem;
 }
 
 @theme inline {
@@ -29,16 +33,18 @@
 /* ─── Base ──────────────────────────────────────────────── */
 body {
   background-color: var(--background);
-  /* Subtle terminal grid + Uniswap radial glow */
-  background-image: radial-gradient(circle at 50% -20%, rgba(41, 98, 255, 0.15), transparent 50%),
-    radial-gradient(circle at 80% 50%, rgba(157, 78, 221, 0.1), transparent 50%),
-    linear-gradient(rgba(41, 98, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(41, 98, 255, 0.03) 1px, transparent 1px);
+  /* Rich multi-radial glow + terminal grid */
+  background-image: radial-gradient(ellipse at 50% -10%, rgba(41, 98, 255, 0.18), transparent 55%),
+    radial-gradient(ellipse at 85% 60%, rgba(157, 78, 221, 0.12), transparent 50%),
+    radial-gradient(ellipse at 10% 80%, rgba(41, 98, 255, 0.07), transparent 40%),
+    linear-gradient(rgba(41, 98, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(41, 98, 255, 0.04) 1px, transparent 1px);
   background-size:
     100% 100%,
     100% 100%,
-    30px 30px,
-    30px 30px;
+    100% 100%,
+    28px 28px,
+    28px 28px;
   background-attachment: fixed;
   color: var(--foreground);
   font-family: var(--font-sans);
@@ -57,18 +63,19 @@ button {
 
 /* ─── Scrollbar ─────────────────────────────────────────── */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 ::-webkit-scrollbar-track {
   background: var(--background);
   border-left: 1px solid var(--border-dim);
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--border-dim);
+  background: linear-gradient(180deg, rgba(41, 98, 255, 0.4), rgba(157, 78, 221, 0.3));
+  border-radius: 999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--accent-primary);
+  background: linear-gradient(180deg, var(--accent-primary), var(--accent-tertiary));
 }
 
 /* ─── Terminal Animations ───────────────────────────────── */
@@ -113,7 +120,7 @@ button {
 @keyframes modal-enter {
   from {
     opacity: 0;
-    transform: translate(-50%, -48%) scale(0.98);
+    transform: translate(-50%, -48%) scale(0.97);
   }
   to {
     opacity: 1;
@@ -127,39 +134,39 @@ button {
   }
   to {
     opacity: 0;
-    transform: translate(-50%, -48%) scale(0.98);
+    transform: translate(-50%, -48%) scale(0.97);
   }
 }
 .animate-modal-enter {
-  animation: modal-enter 0.15s ease-out forwards;
+  animation: modal-enter 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 .animate-modal-exit {
-  animation: modal-exit 0.1s ease-in forwards;
+  animation: modal-exit 0.12s ease-in forwards;
 }
 
 /* ─── Dropdown ──────────────────────────────────────────── */
 @keyframes dropdown-enter {
   from {
     opacity: 0;
-    transform: translateY(-4px);
+    transform: translateY(-6px) scale(0.98);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
 }
 @keyframes dropdown-exit {
   from {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
   to {
     opacity: 0;
-    transform: translateY(-4px);
+    transform: translateY(-6px) scale(0.98);
   }
 }
 .animate-dropdown-enter {
-  animation: dropdown-enter 0.1s ease-out forwards;
+  animation: dropdown-enter 0.12s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   transform-origin: top;
 }
 .animate-dropdown-exit {
@@ -177,7 +184,7 @@ button {
   }
 }
 
-/* ─── New Fusion Animations ─────────────────────────────── */
+/* ─── Shimmer ───────────────────────────────────────────── */
 @keyframes shimmer {
   0% {
     background-position: 200% center;
@@ -190,6 +197,7 @@ button {
   animation: shimmer 4s linear infinite;
 }
 
+/* ─── Float ─────────────────────────────────────────────── */
 @keyframes float {
   0% {
     transform: translateY(0px);
@@ -203,4 +211,67 @@ button {
 }
 .animate-float {
   animation: float 4s ease-in-out infinite;
+}
+
+/* ─── Pulse Glow ────────────────────────────────────────── */
+@keyframes pulse-glow {
+  0%,
+  100% {
+    box-shadow:
+      0 0 10px rgba(41, 98, 255, 0.25),
+      0 0 24px rgba(41, 98, 255, 0.08);
+  }
+  50% {
+    box-shadow:
+      0 0 22px rgba(41, 98, 255, 0.55),
+      0 0 50px rgba(41, 98, 255, 0.22);
+  }
+}
+.animate-pulse-glow {
+  animation: pulse-glow 2.5s ease-in-out infinite;
+}
+
+/* ─── Gradient Shift ────────────────────────────────────── */
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+.animate-gradient-shift {
+  animation: gradient-shift 5s ease infinite;
+  background-size: 300% 300%;
+}
+
+/* ─── Slide Up ──────────────────────────────────────────── */
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-slide-up {
+  animation: slide-up 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* ─── Scan Line ─────────────────────────────────────────── */
+@keyframes scan-line {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100vh);
+  }
+}
+.animate-scan-line {
+  animation: scan-line 8s linear infinite;
 }

@@ -45,26 +45,42 @@ const NavLink: React.FC<{ item: NavItem }> = ({ item }) => {
     <Link
       href={item.href}
       className={`
-        group relative flex items-center gap-3 px-4 py-2 mx-2 my-1
+        group relative flex items-center gap-3 px-4 py-2.5 mx-2 my-0.5
         transition-all duration-200 font-sans text-xs uppercase tracking-widest font-bold rounded-lg
+        overflow-hidden
         ${
           isActive
-            ? 'text-[#2962ff] bg-[#2962ff]/5 border border-[#2962ff]/30 shadow-[0_0_15px_rgba(41,98,255,0.05)]'
-            : 'text-[#64748b] border border-transparent hover:border-[#2962ff]/20 hover:text-[#f8fafc] hover:bg-[#2962ff]/[0.02]'
+            ? 'text-white bg-gradient-to-r from-[#2962ff]/15 to-transparent border border-[#2962ff]/35 shadow-[0_0_20px_rgba(41,98,255,0.08)]'
+            : 'text-[#64748b] border border-transparent hover:border-white/8 hover:text-[#f8fafc] hover:bg-white/[0.03]'
         }
       `}
     >
+      {/* Active left-side accent bar */}
+      {isActive && (
+        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 bg-gradient-to-b from-[#2962ff] to-[#9d4edd] rounded-full shadow-[0_0_8px_rgba(41,98,255,0.8)]" />
+      )}
+
       <span
         className={
           isActive
-            ? 'text-[#2962ff]'
+            ? 'text-[#2962ff] drop-shadow-[0_0_6px_rgba(41,98,255,0.6)]'
             : 'text-[#64748b] group-hover:text-[#2962ff]/70 transition-colors'
         }
       >
-        {isActive ? <span className="animate-blink mr-1 font-mono">&gt;</span> : ''}
         {item.icon}
       </span>
-      <span>{item.label}</span>
+      <span
+        className={
+          isActive ? 'text-transparent bg-clip-text bg-gradient-to-r from-white to-[#94a3b8]' : ''
+        }
+      >
+        {item.label}
+      </span>
+
+      {/* Active cursor indicator */}
+      {isActive && (
+        <span className="ml-auto font-mono text-[#2962ff]/50 text-[10px] animate-blink">▋</span>
+      )}
     </Link>
   );
 };
@@ -76,51 +92,56 @@ export const Sidebar: React.FC = () => {
   const { data: blockNumber = BigInt(0) } = useBlockNumber({ query: { refetchInterval: 60000 } });
 
   return (
-    <aside className="bg-[#131525]/60 backdrop-blur-xl min-h-screen border-r border-[#2962ff]/10 py-6 fixed left-0 top-0 bottom-0 w-[20%] flex flex-col z-40 shadow-[4px_0_24px_rgba(0,0,0,0.2)]">
+    <aside className="bg-[#0f1020]/80 backdrop-blur-xl min-h-screen border-r border-[#2962ff]/12 py-6 fixed left-0 top-0 bottom-0 w-[20%] flex flex-col z-40 shadow-[4px_0_40px_rgba(0,0,0,0.4)]">
+      {/* Top glow gradient */}
+      <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-[#2962ff]/[0.06] to-transparent pointer-events-none" />
+
       {/* Logo */}
-      <div className="flex items-center gap-3 px-6 mb-8 border-b border-[#2962ff]/10 pb-6 mx-2">
-        <div className="border border-[#2962ff]/40 p-1 bg-[#2962ff]/10 rounded-lg shadow-[0_0_10px_rgba(41,98,255,0.2)]">
+      <div className="flex items-center gap-3 px-6 mb-8 border-b border-[#2962ff]/10 pb-6 mx-2 relative">
+        <div className="border border-[#2962ff]/50 p-1.5 bg-gradient-to-br from-[#2962ff]/20 to-[#9d4edd]/10 rounded-xl shadow-[0_0_20px_rgba(41,98,255,0.3)] animate-pulse-glow">
           <Image
             src="/assets/images/magnetar.png"
             alt="logo"
-            width={24}
-            height={24}
+            width={26}
+            height={26}
             className="hue-rotate-[-45deg] saturate-150 brightness-110"
           />
         </div>
         <div className="flex flex-col">
-          <h3 className="text-transparent bg-clip-text bg-gradient-to-r from-[#2962ff] to-[#9d4edd] text-sm font-bold tracking-[0.2em] font-sans">
+          <h3 className="text-transparent bg-clip-text bg-gradient-to-r from-[#2962ff] via-[#7b9fff] to-[#9d4edd] text-sm font-bold tracking-[0.2em] font-sans animate-gradient-shift">
             MAGNETAR
           </h3>
-          <span className="text-[#2962ff] text-[9px] font-mono tracking-widest uppercase opacity-80">
+          <span className="text-[#2962ff]/70 text-[9px] font-mono tracking-widest uppercase flex items-center gap-1">
+            <span className="w-1 h-1 rounded-full bg-[#00ff9d] shadow-[0_0_4px_rgba(0,255,157,0.8)] animate-pulse" />
             SYS_ACTIVE
           </span>
         </div>
       </div>
 
       {/* Nav items */}
-      <nav className="flex flex-col w-full flex-1">
+      <nav className="flex flex-col w-full flex-1 relative">
         {NAV_ITEMS.map((item) => (
           <NavLink key={item.href} item={item} />
         ))}
       </nav>
 
       {/* Stats panel */}
-      <div className="mx-4 mt-auto border border-[#2962ff]/20 bg-[#2962ff]/[0.03] rounded-xl p-3 space-y-2 font-mono uppercase tracking-widest backdrop-blur-md">
+      <div className="mx-4 mt-auto border border-[#2962ff]/20 bg-gradient-to-b from-[#2962ff]/[0.05] to-transparent rounded-xl p-3.5 space-y-2.5 font-mono uppercase tracking-widest backdrop-blur-md shadow-[inset_0_1px_0_rgba(255,255,255,0.04),0_0_20px_rgba(41,98,255,0.05)]">
         <div className="flex justify-between items-center text-[10px]">
-          <span className="text-[#2962ff] flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#2962ff] shadow-[0_0_8px_rgba(41,98,255,0.8)] animate-pulse" />
+          <span className="text-[#2962ff] flex items-center gap-2 font-bold">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#00ff9d] shadow-[0_0_8px_rgba(0,255,157,0.9)] animate-pulse" />
             {networkInfo.name}
           </span>
           <ZapIcon size={10} className="text-[#2962ff]" />
         </div>
+        <div className="h-px bg-gradient-to-r from-[#2962ff]/20 to-transparent" />
         <div className="flex justify-between items-center text-[10px]">
-          <span className="text-[#94a3b8]">GAS</span>
-          <span className="text-[#2962ff]">{formatUnits(gas, 9)} GWEI</span>
+          <span className="text-[#475569]">GAS</span>
+          <span className="text-[#4c82fb] font-bold">{formatUnits(gas, 9)} GWEI</span>
         </div>
         <div className="flex justify-between items-center text-[10px]">
-          <span className="text-[#94a3b8]">BLOCK</span>
-          <span className="text-white">#{blockNumber.toString()}</span>
+          <span className="text-[#475569]">BLOCK</span>
+          <span className="text-white font-bold">#{blockNumber.toString()}</span>
         </div>
       </div>
     </aside>
