@@ -122,11 +122,11 @@ export const MainView: React.FC = () => {
   const badgeColorForPoolType = useCallback((poolType: PoolType) => {
     switch (poolType) {
       case 'STABLE':
-        return 'bg-[#00ff9d]/10 text-[#00ff9d]';
+        return 'bg-accent-2/10 text-accent-2';
       case 'VOLATILE':
-        return 'bg-[#ffaf52]/10 text-[#ffaf52]';
+        return 'bg-warning/10 text-warning';
       case 'CONCENTRATED':
-        return 'bg-[#2962ff]/10 text-[#2962ff]';
+        return 'bg-accent/10 text-accent';
     }
   }, []);
 
@@ -181,10 +181,10 @@ export const MainView: React.FC = () => {
           />
         </div>
         <div className="flex flex-col md:flex-row gap-3 justify-start items-stretch md:items-center w-full xl:w-auto">
-          <div className="border border-[rgb(255,255,255,0.1)] flex justify-start items-center gap-3 px-2 py-2 bg-transparent flex-1 w-full md:w-auto">
-            <SearchIcon size={16} color="#64748b" />
+          <div className="flex w-full flex-1 items-center gap-3 rounded-2xl border border-white/[0.08] bg-surface/60 px-3 py-2 md:w-auto">
+            <SearchIcon size={16} className="text-muted" />
             <input
-              className="bg-transparent px-1 py-1 border border-[rgb(34,34,34)]"
+              className="w-full bg-transparent px-1 py-1 text-sm text-foreground outline-none placeholder:text-muted"
               placeholder="Search pools..."
               onChange={(e) => setSearchValue(e.target.value)}
             />
@@ -195,32 +195,32 @@ export const MainView: React.FC = () => {
               <SecondaryButton>
                 <div className="flex justify-between items-center gap-2 text-xs md:text-sm">
                   <>
-                    <span className="text-[#94a3b8]">Sort By:</span>
-                    <span className="text-[#2962ff]">
+                    <span className="text-muted">Sort By:</span>
+                    <span className="text-accent">
                       {sortType === SortType.TVL && 'TVL'}
                       {sortType === SortType.APR && 'APR'}
                       {sortType === SortType.VOLUME && 'Volume'}
                     </span>
                   </>
                   {sortOpen ? (
-                    <ChevronUp size={14} color="#64748b" />
+                    <ChevronUp size={14} className="text-muted" />
                   ) : (
-                    <ChevronDown size={14} color="#64748b" />
+                    <ChevronDown size={14} className="text-muted" />
                   )}
                 </div>
               </SecondaryButton>
             </DropdownMenu.Trigger>
             <DropdownMenu.Portal>
               <DropdownMenu.Content
-                className="border border-[#2962ff]/50 bg-black w-3xs px-3 py-2 space-y-2 z-50 font-mono text-xs shadow-[0_10px_38px_-10px_rgba(41,98,255,0.15)] data-[state=open]:animate-dropdown-enter data-[state=closed]:animate-dropdown-exit"
+                className="z-50 mt-1 w-3xs space-y-1 rounded-2xl border border-white/[0.08] bg-surface/95 px-1.5 py-2 font-sans text-xs shadow-[0_16px_50px_rgba(0,0,0,0.4)] backdrop-blur-xl data-[state=open]:animate-dropdown-enter data-[state=closed]:animate-dropdown-exit"
                 sideOffset={4}
               >
                 <DropdownMenu.Item
                   onClick={() => switchSortType(SortType.TVL)}
                   className={`flex justify-start items-center gap-2 ${
                     sortType === SortType.TVL
-                      ? 'text-[#2962ff] bg-[#2962ff]/10'
-                      : 'text-white bg-transparent hover:text-[#2962ff] hover:bg-white/5'
+                      ? 'text-accent bg-accent/10'
+                      : 'text-foreground bg-transparent hover:text-accent hover:bg-white/5'
                   } cursor-pointer py-2 px-3 transition-colors`}
                 >
                   <span>TVL (High to Low)</span>{' '}
@@ -230,8 +230,8 @@ export const MainView: React.FC = () => {
                   onClick={() => switchSortType(SortType.VOLUME)}
                   className={`flex justify-start items-center gap-2 ${
                     sortType === SortType.VOLUME
-                      ? 'text-[#2962ff] bg-[#2962ff]/10'
-                      : 'text-white bg-transparent hover:text-[#2962ff] hover:bg-white/5'
+                      ? 'text-accent bg-accent/10'
+                      : 'text-foreground bg-transparent hover:text-accent hover:bg-white/5'
                   } cursor-pointer py-2 px-3 transition-colors`}
                 >
                   <span>Volume (24h)</span>{' '}
@@ -241,8 +241,8 @@ export const MainView: React.FC = () => {
                   onClick={() => switchSortType(SortType.APR)}
                   className={`flex justify-start items-center gap-2 ${
                     sortType === SortType.APR
-                      ? 'text-[#00ff9d] bg-[#00ff9d]/10'
-                      : 'text-white bg-transparent hover:text-[#00ff9d] hover:bg-white/5'
+                      ? 'text-accent-2 bg-accent-2/10'
+                      : 'text-foreground bg-transparent hover:text-accent-2 hover:bg-white/5'
                   } cursor-pointer py-2 px-3 transition-colors`}
                 >
                   <span>APR (High to Low)</span>{' '}
@@ -295,10 +295,10 @@ export const MainView: React.FC = () => {
                             alt={item.token0.symbol}
                             width={24}
                             height={24}
-                            className="w-6 h-6 rounded-full border border-black bg-amber-100"
+                            className="w-6 h-6 rounded-full border border-surface bg-amber-100"
                           />
                         ) : (
-                          <div className="w-6 h-6 rounded-full border border-black bg-amber-100" />
+                          <div className="w-6 h-6 rounded-full border border-surface bg-amber-100" />
                         )}
                         {token1Info ? (
                           <Image
@@ -306,14 +306,14 @@ export const MainView: React.FC = () => {
                             alt={item.token1.symbol}
                             width={24}
                             height={24}
-                            className="w-6 h-6 rounded-full border border-black bg-blue-100"
+                            className="w-6 h-6 rounded-full border border-surface bg-blue-100"
                           />
                         ) : (
-                          <div className="w-6 h-6 rounded-full border border-black bg-blue-100" />
+                          <div className="w-6 h-6 rounded-full border border-surface bg-blue-100" />
                         )}
                       </div>
                       <div className="flex gap-2 justify-start items-center">
-                        <h3 className="font-bold text-white uppercase whitespace-nowrap">
+                        <h3 className="font-bold text-foreground uppercase whitespace-nowrap">
                           {item.name}
                         </h3>
                         <span
@@ -326,27 +326,27 @@ export const MainView: React.FC = () => {
                       </div>
                     </div>
                   </td>
-                  <td className="py-3 pr-4 text-white text-right font-bold w-1/4">
+                  <td className="py-3 pr-4 text-foreground text-right font-bold w-1/4">
                     {formatNumber(item.reserveUSD as string, 'en-US', 2, true)}
                   </td>
-                  <td className="py-3 pr-4 text-[#94a3b8] text-right font-bold w-1/4">
+                  <td className="py-3 pr-4 text-muted text-right font-bold w-1/4">
                     {formatNumber(item.volumeUSD as string, 'en-US', 2, true)}
                   </td>
                   {!isMobile && (
-                    <td className="py-3 pr-4 text-[#00ff9d] text-right font-bold drop-shadow-[0_0_8px_rgba(0,255,157,0.5)]">
+                    <td className="py-3 pr-4 text-accent-2 text-right font-bold">
                       {formatNumber((item.gauge?.rewardRate as string) || '0', 'en-US', 2)}%
                     </td>
                   )}
                   <td className="py-3 text-right">
                     <DropdownMenu.Root key={item.id}>
                       <DropdownMenu.Trigger asChild>
-                        <button className="text-[#64748b] hover:text-white transition-colors">
+                        <button className="text-muted hover:text-foreground transition-colors">
                           <MoreVerticalIcon size={16} />
                         </button>
                       </DropdownMenu.Trigger>
                       <DropdownMenu.Portal>
                         <DropdownMenu.Content
-                          className="bg-[#131525]/90 backdrop-blur-xl border border-white/10 rounded-xl w-3xs px-3 py-2 space-y-2 z-50 font-mono text-xs shadow-[0_10px_38px_-10px_rgba(41,98,255,0.15)] data-[state=open]:animate-dropdown-enter data-[state=closed]:animate-dropdown-exit"
+                          className="z-50 w-3xs space-y-2 rounded-2xl border border-white/[0.08] bg-surface/95 px-1.5 py-2 text-xs shadow-[0_16px_50px_rgba(0,0,0,0.4)] backdrop-blur-xl data-[state=open]:animate-dropdown-enter data-[state=closed]:animate-dropdown-exit"
                           sideOffset={4}
                         >
                           <DropdownMenu.Item
@@ -357,7 +357,7 @@ export const MainView: React.FC = () => {
                                 false,
                               )
                             }
-                            className="flex justify-start items-center gap-2 text-[#94a3b8] cursor-pointer hover:bg-white/10 hover:text-white py-2 px-3 transition-colors"
+                            className="flex justify-start items-center gap-2 text-muted cursor-pointer hover:bg-white/10 hover:text-foreground py-2 px-3 transition-colors"
                           >
                             <ChartNoAxesColumnIcon size={14} /> <span>Analytics</span>
                           </DropdownMenu.Item>
@@ -369,7 +369,7 @@ export const MainView: React.FC = () => {
                                 poolType: item.poolType,
                               })
                             }
-                            className="flex justify-start items-center gap-2 text-[#94a3b8] cursor-pointer hover:bg-white/10 hover:text-white py-2 px-3 transition-colors"
+                            className="flex justify-start items-center gap-2 text-muted cursor-pointer hover:bg-white/10 hover:text-foreground py-2 px-3 transition-colors"
                           >
                             <PlusIcon size={14} /> <span>Add liquidity</span>
                           </DropdownMenu.Item>
@@ -381,7 +381,7 @@ export const MainView: React.FC = () => {
                                 true,
                               )
                             }
-                            className="flex justify-start items-center gap-2 text-[#94a3b8] cursor-pointer hover:bg-white/10 hover:text-white py-2 px-3 transition-colors"
+                            className="flex justify-start items-center gap-2 text-muted cursor-pointer hover:bg-white/10 hover:text-foreground py-2 px-3 transition-colors"
                           >
                             <LinkIcon size={14} /> <span>View on explorer</span>
                           </DropdownMenu.Item>
@@ -393,28 +393,20 @@ export const MainView: React.FC = () => {
               );
             }}
             renderEmpty={() => (
-              <div className="w-full flex justify-center items-center my-20 flex-col py-5 gap-10">
-                <div className="border-2 border-dashed border-[rgba(255,255,255,0.1)] flex justify-center items-center p-4">
-                  <DropletIcon
-                    size={90}
-                    color="#64748b"
-                    className="animate-[float_6s_ease-in-out_infinite]"
-                  />
+              <div className="my-10 flex w-full flex-col items-center gap-4 py-4">
+                <div className="flex items-center justify-center rounded-2xl border border-dashed border-white/10 p-4">
+                  <DropletIcon size={28} className="text-muted" />
                 </div>
-                <div className="w-full flex justify-center items-center flex-col py-2 gap-5">
-                  <h4 className="text-xl md:text-2xl text-white font-extrabold">
-                    No Active Liquidity Pools
-                  </h4>
-                  <p className="text-[#94a3b8] font-normal text-xs md:text-sm text-center text-wrap w-full lg:w-132">
+                <div className="flex w-full max-w-md flex-col items-center gap-1.5 text-center">
+                  <h4 className="text-lg font-semibold text-foreground">No pools yet</h4>
+                  <p className="text-sm text-muted">
                     There are no liquidity pools yet. Add liquidity to start earning fees and
-                    rewards
+                    rewards.
                   </p>
                 </div>
-                <div className="w-full flex flex-col gap-7 justify-center items-center">
-                  <PrimaryButton className="py-4 px-4">
-                    <PlusIcon size={25} /> <span>Add Liquidity</span>
-                  </PrimaryButton>
-                </div>
+                <PrimaryButton>
+                  <PlusIcon size={15} /> <span>Add liquidity</span>
+                </PrimaryButton>
               </div>
             )}
           />

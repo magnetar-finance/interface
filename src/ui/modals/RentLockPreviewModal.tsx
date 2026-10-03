@@ -116,46 +116,42 @@ export const RentLockPreviewModal: React.FC<RentLockPreviewModalProps> = ({
         <div className="flex flex-col gap-5 w-full max-h-[80vh] overflow-y-auto px-2 py-1">
           {/* Subtitle */}
           <div className="flex items-center gap-2">
-            <KeyRoundIcon size={14} className="text-[#2962ff]" />
-            <p className="text-[#64748b] font-mono text-[10px]">
+            <KeyRoundIcon size={14} className="text-accent" />
+            <p className="text-muted font-mono text-[10px]">
               Review rental details before proceeding
             </p>
           </div>
 
           {/* Lock Details */}
-          <div className="border border-white/10 bg-[#131525]/50 backdrop-blur-sm rounded-xl ">
-            <h4 className="text-[#64748b] font-mono text-[10px] uppercase tracking-widest mb-3 flex items-center gap-2">
-              <KeyRoundIcon size={12} className="text-[#64748b]" />
+          <div className="border border-white/10 bg-surface/50 backdrop-blur-sm rounded-xl ">
+            <h4 className="text-muted text-[11px] font-semibold mb-3 flex items-center gap-2">
+              <KeyRoundIcon size={12} className="text-muted" />
               Lock Information
             </h4>
             <div className="grid grid-cols-2 gap-3">
               {/* Lock ID */}
               <div className="col-span-1">
-                <p className="text-[#64748b] font-mono text-[9px] uppercase tracking-wider mb-1">
-                  Lock ID
-                </p>
-                <p className="font-mono text-sm text-white font-bold">
+                <p className="text-muted font-mono text-[9px] mb-1">Lock ID</p>
+                <p className="font-mono text-sm text-foreground font-bold">
                   #{String(rental.lock.lockId)}
                 </p>
               </div>
 
               {/* Amount Locked */}
               <div className="col-span-1">
-                <p className="text-[#64748b] font-mono text-[9px] uppercase tracking-wider mb-1">
-                  Amount Locked
-                </p>
-                <p className="font-mono text-sm text-white font-bold">
+                <p className="text-muted font-mono text-[9px] mb-1">Amount Locked</p>
+                <p className="font-mono text-sm text-foreground font-bold">
                   {formatNumber(String(rental.lock.position), 'en-US', 2)} MGN
                 </p>
               </div>
 
               {/* Seller Address */}
               <div className="col-span-2">
-                <p className="text-[#64748b] font-mono text-[9px] uppercase tracking-wider mb-1 flex items-center gap-1">
+                <p className="text-muted font-mono text-[9px] mb-1 flex items-center gap-1">
                   <UserIcon size={9} />
                   Seller Address
                 </p>
-                <p className="font-mono text-sm text-white font-bold break-all">
+                <p className="font-mono text-sm text-foreground font-bold break-all">
                   {splitString(String(rental.seller.address))}
                 </p>
               </div>
@@ -163,28 +159,24 @@ export const RentLockPreviewModal: React.FC<RentLockPreviewModalProps> = ({
           </div>
 
           {/* Payment Details */}
-          <div className="border border-white/10 bg-[#131525]/50 backdrop-blur-sm rounded-xl ">
-            <h4 className="text-[#64748b] font-mono text-[10px] uppercase tracking-widest mb-3 flex items-center gap-2">
-              <CoinsIcon size={12} className="text-[#64748b]" />
+          <div className="border border-white/10 bg-surface/50 backdrop-blur-sm rounded-xl ">
+            <h4 className="text-muted text-[11px] font-semibold mb-3 flex items-center gap-2">
+              <CoinsIcon size={12} className="text-muted" />
               Payment Details
             </h4>
             <div className="grid grid-cols-2 gap-3">
               {/* Payment Token */}
               <div className="col-span-1">
-                <p className="text-[#64748b] font-mono text-[9px] uppercase tracking-wider mb-1">
-                  Token
-                </p>
-                <p className="font-mono text-sm text-white font-bold">
+                <p className="text-muted font-mono text-[9px] mb-1">Token</p>
+                <p className="font-mono text-sm text-foreground font-bold">
                   {rental.paymentToken.symbol}
                 </p>
               </div>
 
               {/* Price per Epoch */}
               <div className="col-span-1">
-                <p className="text-[#64748b] font-mono text-[9px] uppercase tracking-wider mb-1">
-                  Price / Epoch
-                </p>
-                <p className="font-mono text-sm text-[#00ff9d] font-bold">
+                <p className="text-muted font-mono text-[9px] mb-1">Price / Epoch</p>
+                <p className="font-mono text-sm text-accent-2 font-bold">
                   {formatNumber(String(rental.price), 'en-US', 2)}
                 </p>
               </div>
@@ -192,73 +184,61 @@ export const RentLockPreviewModal: React.FC<RentLockPreviewModalProps> = ({
           </div>
 
           {/* Epoch Calculation */}
-          <div className="border border-[#2962ff]/30 bg-[#2962ff]/5 p-4">
-            <h4 className="text-[#2962ff] font-mono text-[10px] uppercase tracking-widest mb-3 flex items-center gap-2 font-bold">
-              <ClockIcon size={12} className="text-[#2962ff]" />
+          <div className="border border-accent/30 bg-accent/5 p-4">
+            <h4 className="text-accent text-[11px] font-semibold mb-3 flex items-center gap-2 font-bold">
+              <ClockIcon size={12} className="text-accent" />
               Rental Period
             </h4>
             <div className="grid grid-cols-3 gap-4">
               <div>
-                <p className="text-[#64748b] font-mono text-[9px] uppercase tracking-wider mb-1">
-                  Current
-                </p>
-                <p className="font-mono text-sm text-white font-bold">Epoch #{currentEpoch}</p>
+                <p className="text-muted font-mono text-[9px] mb-1">Current</p>
+                <p className="font-mono text-sm text-foreground font-bold">Epoch #{currentEpoch}</p>
               </div>
               <div className="flex items-center justify-center">
-                <ArrowRightIcon size={16} className="text-[#2962ff]" />
+                <ArrowRightIcon size={16} className="text-accent" />
               </div>
               <div>
-                <p className="text-[#64748b] font-mono text-[9px] uppercase tracking-wider mb-1">
-                  Expires
-                </p>
-                <p className="font-mono text-sm text-white font-bold">Epoch #{expiryEpoch}</p>
+                <p className="text-muted font-mono text-[9px] mb-1">Expires</p>
+                <p className="font-mono text-sm text-foreground font-bold">Epoch #{expiryEpoch}</p>
               </div>
             </div>
-            <div className="mt-4 pt-3 border-t border-[#2962ff]/20">
+            <div className="mt-4 pt-3 border-t border-accent/20">
               <div className="flex items-center justify-between">
-                <span className="text-[#64748b] font-mono text-[10px] uppercase tracking-wider">
-                  Epochs Remaining
-                </span>
-                <span className="font-mono text-lg text-[#2962ff] font-bold">
-                  {epochsRemaining}
-                </span>
+                <span className="text-muted font-mono text-[10px]">Epochs Remaining</span>
+                <span className="font-mono text-lg text-accent font-bold">{epochsRemaining}</span>
               </div>
             </div>
           </div>
 
           {/* Total Payment Calculation */}
-          <div className="border-2 border-[#00ff9d]/40 bg-[#00ff9d]/10 p-4">
-            <h4 className="text-[#00ff9d] font-mono text-[10px] uppercase tracking-widest mb-3 font-bold">
+          <div className="border-2 border-accent-2/40 bg-accent-2/10 p-4">
+            <h4 className="text-accent-2 text-[11px] font-semibold mb-3 font-bold">
               Total Payment
             </h4>
             <div className="flex items-center justify-between mb-3">
-              <p className="text-[#64748b] font-mono text-xs">
+              <p className="text-muted font-mono text-xs">
                 {epochsRemaining} {epochsRemaining === 1 ? 'epoch' : 'epochs'} ×{' '}
                 {formatNumber(String(rental.price), 'en-US', 2)} {rental.paymentToken.symbol}
               </p>
             </div>
-            <div className="flex items-baseline justify-between pt-3 border-t border-[#00ff9d]/20">
-              <span className="text-[#64748b] font-mono text-sm uppercase tracking-wider">
-                Total Due
-              </span>
+            <div className="flex items-baseline justify-between pt-3 border-t border-accent-2/20">
+              <span className="text-muted font-mono text-sm">Total Due</span>
               <div className="text-right">
-                <p className="font-mono text-2xl text-[#00ff9d] font-bold">
+                <p className="font-mono text-2xl text-accent-2 font-bold">
                   {formatNumber(totalAmountToPay.toString(), 'en-US', 2)}
                 </p>
-                <p className="font-mono text-xs text-[#64748b] mt-1">
-                  {rental.paymentToken.symbol}
-                </p>
+                <p className="font-mono text-xs text-muted mt-1">{rental.paymentToken.symbol}</p>
               </div>
             </div>
           </div>
 
           {/* Warning */}
           {epochsRemaining === 0 && (
-            <div className="border border-[#ff4757]/40 bg-[#ff4757]/10 p-4 flex items-start gap-3">
-              <AlertCircleIcon size={16} className="text-[#ff4757] mt-0.5 shrink-0" />
+            <div className="border border-alert/40 bg-alert/10 p-4 flex items-start gap-3">
+              <AlertCircleIcon size={16} className="text-alert mt-0.5 shrink-0" />
               <div>
-                <p className="text-[#ff4757] font-mono text-xs font-bold mb-1">Rental Expired</p>
-                <p className="text-[#ff4757] font-mono text-[10px] leading-relaxed">
+                <p className="text-alert font-mono text-xs font-bold mb-1">Rental Expired</p>
+                <p className="text-alert font-mono text-[10px] leading-relaxed">
                   This rental has expired or is about to expire. You will not be able to rent this
                   lock.
                 </p>
@@ -267,7 +247,7 @@ export const RentLockPreviewModal: React.FC<RentLockPreviewModalProps> = ({
           )}
 
           {/* Action Buttons */}
-          <div className="flex gap-3 pt-2 sticky bottom-0 bg-black pb-1">
+          <div className="flex gap-3 pt-2 sticky bottom-0 bg-surface pb-1">
             <SecondaryButton onClick={() => onOpenChange(false)} className="flex-1 py-3">
               Cancel
             </SecondaryButton>

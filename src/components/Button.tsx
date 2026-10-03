@@ -1,35 +1,41 @@
 import { splitString } from '@/utils/strings';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { Plug2Icon, TerminalSquareIcon } from 'lucide-react';
+import { WalletIcon } from 'lucide-react';
 import { ButtonHTMLAttributes } from 'react';
+
+type ButtonSize = 'sm' | 'md' | 'lg';
+
+const SIZE_CLASS: Record<ButtonSize, string> = {
+  sm: 'h-8 rounded-lg px-2.5 text-xs gap-1.5',
+  md: 'h-10 rounded-xl px-3.5 text-sm gap-2',
+  lg: 'h-11 rounded-xl px-4 text-sm gap-2',
+};
 
 interface CustomButtonProperties extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
+  size?: ButtonSize;
 }
 
 interface ConnectButtonProperties extends ButtonHTMLAttributes<HTMLButtonElement> {
   hasIcon?: boolean;
+  size?: ButtonSize;
 }
 
 export const PrimaryButton: React.FC<CustomButtonProperties> = ({
   children,
-  className,
+  className = '',
+  size = 'md',
   ...props
 }) => (
   <button
     className={`
-      relative overflow-hidden rounded-lg
-      bg-[#2962ff]/10 text-[#2962ff] font-mono text-xs font-bold uppercase tracking-widest
-      flex justify-center items-center gap-2
-      px-6 py-3 border border-[#2962ff]/50
-      transition-all duration-300
-      before:absolute before:inset-0 before:bg-gradient-to-r before:from-[#2962ff] before:to-[#9d4edd]
-      before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300
-      hover:text-white hover:border-transparent
-      hover:shadow-[0_0_25px_rgba(41,98,255,0.5),0_0_60px_rgba(41,98,255,0.2)]
-      active:translate-y-px active:shadow-none
+      inline-flex items-center justify-center font-semibold
+      bg-accent text-accent-ink border border-accent/30
+      transition-colors duration-150
+      hover:brightness-110
+      active:brightness-95
       disabled:opacity-40 disabled:pointer-events-none
-      [&>*]:relative [&>*]:z-10
+      ${SIZE_CLASS[size]}
       ${className}
     `}
     {...props}
@@ -40,19 +46,19 @@ export const PrimaryButton: React.FC<CustomButtonProperties> = ({
 
 export const SecondaryButton: React.FC<CustomButtonProperties> = ({
   children,
-  className,
+  className = '',
+  size = 'md',
   ...props
 }) => (
   <button
     className={`
-      bg-[#131525]/80 backdrop-blur-sm text-[#94a3b8] font-mono text-xs font-bold uppercase tracking-widest
-      flex justify-center items-center gap-2 rounded-lg
-      px-6 py-3 border border-white/10
-      transition-all duration-200
-      hover:text-white hover:border-[#2962ff]/40 hover:bg-[#2962ff]/8
-      hover:shadow-[0_0_20px_rgba(41,98,255,0.15),inset_0_0_0_1px_rgba(41,98,255,0.1)]
-      active:translate-y-px
+      inline-flex items-center justify-center font-medium
+      bg-raised/70 text-muted border border-white/[0.08]
+      transition-colors duration-150
+      hover:text-foreground hover:border-white/15 hover:bg-white/[0.04]
+      active:brightness-95
       disabled:opacity-40 disabled:pointer-events-none
+      ${SIZE_CLASS[size]}
       ${className}
     `}
     {...props}
@@ -61,7 +67,12 @@ export const SecondaryButton: React.FC<CustomButtonProperties> = ({
   </button>
 );
 
-export const WalletConnectButton: React.FC<ConnectButtonProperties> = ({ hasIcon, ...props }) => (
+export const WalletConnectButton: React.FC<ConnectButtonProperties> = ({
+  hasIcon,
+  className = '',
+  size = 'sm',
+  ...props
+}) => (
   <ConnectButton.Custom>
     {({
       account,
@@ -81,24 +92,28 @@ export const WalletConnectButton: React.FC<ConnectButtonProperties> = ({ hasIcon
 
       if (!isConnected)
         return (
-          <PrimaryButton onClick={openConnectModal} className="group" {...props}>
-            {hasIcon && <TerminalSquareIcon size={14} />}
-            <span>CONNECT_SYS</span>
+          <PrimaryButton onClick={openConnectModal} size={size} className={className} {...props}>
+            {hasIcon && <WalletIcon size={size === 'sm' ? 13 : 14} />}
+            <span>Connect</span>
           </PrimaryButton>
         );
 
       if (chain.unsupported)
         return (
-          <SecondaryButton onClick={openChainModal} {...props}>
-            <span className="text-[#ff4757]">ERR_NETWORK</span>
+          <SecondaryButton onClick={openChainModal} size={size} className={className} {...props}>
+            <span className="text-alert">Wrong network</span>
           </SecondaryButton>
         );
 
       return (
-        <SecondaryButton onClick={openAccountModal} {...props}>
-          {/* Pulsing connected indicator */}
-          <span className="w-1.5 h-1.5 rounded-full bg-[#00ff9d] shadow-[0_0_6px_rgba(0,255,157,0.8)] animate-pulse shrink-0" />
-          <span className="font-mono text-xs text-[#2962ff]">[{splitString(account.address)}]</span>
+        <SecondaryButton
+          onClick={openAccountModal}
+          size={size}
+          className={`text-foreground ${className}`}
+          {...props}
+        >
+          <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-success" />
+          <span className="font-mono text-[11px]">{splitString(account.address)}</span>
         </SecondaryButton>
       );
     }}

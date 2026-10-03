@@ -64,44 +64,42 @@ export const ReapRentalPreviewModal: React.FC<ReapRentalPreviewModalProps> = ({
         <div className="flex flex-col gap-5 w-full max-h-[80vh] overflow-y-auto px-2 py-1">
           {/* Subtitle */}
           <div className="flex items-center gap-2">
-            <CoinsIcon size={14} className="text-[#2962ff]" />
-            <p className="text-[#64748b] font-mono text-[10px]">
+            <CoinsIcon size={14} className="text-accent" />
+            <p className="text-muted font-mono text-[10px]">
               Review rental reward details before claiming
             </p>
           </div>
 
           {/* Lock Details */}
-          <div className="border border-white/10 bg-[#131525]/50 backdrop-blur-sm rounded-xl ">
-            <h4 className="text-[#64748b] font-mono text-[10px] uppercase tracking-widest mb-3 flex items-center gap-2">
-              <KeyRoundIcon size={12} className="text-[#64748b]" />
+          <div className="border border-white/10 bg-surface/50 backdrop-blur-sm rounded-xl ">
+            <h4 className="text-muted text-[11px] font-semibold mb-3 flex items-center gap-2">
+              <KeyRoundIcon size={12} className="text-muted" />
               Lock Information
             </h4>
             <div className="grid grid-cols-2 gap-3">
               {/* Lock ID */}
               <div className="col-span-1">
-                <p className="text-[#64748b] font-mono text-[9px] uppercase tracking-wider mb-1">
-                  Lock ID
+                <p className="text-muted font-mono text-[9px] mb-1">Lock ID</p>
+                <p className="font-mono text-sm text-foreground font-bold">
+                  #{String(rental.lock.id)}
                 </p>
-                <p className="font-mono text-sm text-white font-bold">#{String(rental.lock.id)}</p>
               </div>
 
               {/* Amount Locked */}
               <div className="col-span-1">
-                <p className="text-[#64748b] font-mono text-[9px] uppercase tracking-wider mb-1">
-                  Amount Locked
-                </p>
-                <p className="font-mono text-sm text-white font-bold">
+                <p className="text-muted font-mono text-[9px] mb-1">Amount Locked</p>
+                <p className="font-mono text-sm text-foreground font-bold">
                   {formatNumber(String(rental.lock.position), 'en-US', 2)} MGN
                 </p>
               </div>
 
               {/* Seller Address */}
               <div className="col-span-2">
-                <p className="text-[#64748b] font-mono text-[9px] uppercase tracking-wider mb-1 flex items-center gap-1">
+                <p className="text-muted font-mono text-[9px] mb-1 flex items-center gap-1">
                   <UserIcon size={9} />
                   Owner Address
                 </p>
-                <p className="font-mono text-sm text-white font-bold break-all">
+                <p className="font-mono text-sm text-foreground font-bold break-all">
                   {splitString(String(rental.seller.address))}
                 </p>
               </div>
@@ -109,49 +107,41 @@ export const ReapRentalPreviewModal: React.FC<ReapRentalPreviewModalProps> = ({
           </div>
 
           {/* Epoch Calculation */}
-          <div className="border border-[#2962ff]/30 bg-[#2962ff]/5 p-4">
-            <h4 className="text-[#2962ff] font-mono text-[10px] uppercase tracking-widest mb-3 flex items-center gap-2 font-bold">
-              <ClockIcon size={12} className="text-[#2962ff]" />
+          <div className="border border-accent/30 bg-accent/5 p-4">
+            <h4 className="text-accent text-[11px] font-semibold mb-3 flex items-center gap-2 font-bold">
+              <ClockIcon size={12} className="text-accent" />
               Rental Period
             </h4>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="text-[#64748b] font-mono text-[9px] uppercase tracking-wider mb-1">
-                  Current
-                </p>
-                <p className="font-mono text-sm text-white font-bold">Epoch #{currentEpoch}</p>
+                <p className="text-muted font-mono text-[9px] mb-1">Current</p>
+                <p className="font-mono text-sm text-foreground font-bold">Epoch #{currentEpoch}</p>
               </div>
               <div>
-                <p className="text-[#64748b] font-mono text-[9px] uppercase tracking-wider mb-1">
-                  Expires
-                </p>
-                <p className="font-mono text-sm text-white font-bold">Epoch #{expiryEpoch}</p>
+                <p className="text-muted font-mono text-[9px] mb-1">Expires</p>
+                <p className="font-mono text-sm text-foreground font-bold">Epoch #{expiryEpoch}</p>
               </div>
             </div>
           </div>
 
           {/* Reward Details */}
-          <div className="border-2 border-[#00ff9d]/40 bg-[#00ff9d]/10 p-4">
-            <h4 className="text-[#00ff9d] font-mono text-[10px] uppercase tracking-widest mb-3 font-bold">
+          <div className="border-2 border-accent-2/40 bg-accent-2/10 p-4">
+            <h4 className="text-accent-2 text-[11px] font-semibold mb-3 font-bold">
               Reward Overview
             </h4>
-            <div className="flex items-baseline justify-between pt-2 border-t border-[#00ff9d]/20 mt-2">
-              <span className="text-[#64748b] font-mono text-sm uppercase tracking-wider">
-                Price Paid
-              </span>
+            <div className="flex items-baseline justify-between pt-2 border-t border-accent-2/20 mt-2">
+              <span className="text-muted font-mono text-sm">Price Paid</span>
               <div className="text-right">
-                <p className="font-mono text-2xl text-[#00ff9d] font-bold">
+                <p className="font-mono text-2xl text-accent-2 font-bold">
                   {formatNumber(String(rental.price), 'en-US', 2)}
                 </p>
-                <p className="font-mono text-xs text-[#64748b] mt-1">
-                  {rental.paymentToken.symbol}
-                </p>
+                <p className="font-mono text-xs text-muted mt-1">{rental.paymentToken.symbol}</p>
               </div>
             </div>
           </div>
 
           {/* Action Buttons */}
-          <div className="flex gap-3 pt-2 sticky bottom-0 bg-black pb-1">
+          <div className="flex gap-3 pt-2 sticky bottom-0 bg-surface pb-1">
             <SecondaryButton onClick={() => onOpenChange(false)} className="flex-1 py-3">
               Cancel
             </SecondaryButton>

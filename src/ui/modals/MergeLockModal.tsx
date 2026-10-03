@@ -63,21 +63,21 @@ export const MergeLockModal: React.FC<MergeLockModalProps> = ({
         <div className="flex flex-col gap-6 p-5">
           {/* Source lock */}
           <div className="flex flex-col gap-1.5">
-            <span className="text-[#64748b] font-mono text-[10px] uppercase tracking-widest">
+            <span className="text-muted text-[11px] font-semibold">
               Source Lock (will be burned)
             </span>
-            <div className="flex items-center justify-between border border-[#ff4757]/20 bg-[#ff4757]/5 px-3 py-2.5">
+            <div className="flex items-center justify-between border border-alert/20 bg-alert/5 px-3 py-2.5">
               <div className="flex items-center gap-2">
-                <LockIcon size={12} className="text-[#ff4757]" />
-                <span className="font-bold font-mono text-xs text-white">
+                <LockIcon size={12} className="text-alert" />
+                <span className="font-bold font-mono text-xs text-foreground">
                   Lock {sourceLock?.id ?? '—'}
                 </span>
               </div>
               <div className="flex flex-col items-end gap-0.5">
-                <span className="text-white font-mono text-xs">
+                <span className="text-foreground font-mono text-xs">
                   {sourceLock ? formatNumber(sourceLock.position as string) : '—'}
                 </span>
-                <span className="text-[#2962ff] font-mono text-[10px]">
+                <span className="text-accent font-mono text-[10px]">
                   {sourceLock ? formatNumber(sourceLock.totalVoteWeightGiven as string) : '—'}
                 </span>
               </div>
@@ -86,36 +86,34 @@ export const MergeLockModal: React.FC<MergeLockModalProps> = ({
 
           {/* Target lock dropdown */}
           <div className="flex flex-col gap-2">
-            <label className="text-[#64748b] font-mono text-[10px] uppercase tracking-widest">
-              Merge Into
-            </label>
+            <label className="text-muted text-[11px] font-semibold">Merge Into</label>
             <DropdownMenu.Root>
               <DropdownMenu.Trigger asChild>
-                <button className="flex items-center justify-between border border-white/10 px-3 py-2.5 w-full text-left font-mono text-xs hover:border-[#2962ff]/50 transition-colors cursor-pointer">
+                <button className="flex items-center justify-between border border-white/10 px-3 py-2.5 w-full text-left font-mono text-xs hover:border-accent/50 transition-colors cursor-pointer">
                   <div className="flex items-center gap-2">
-                    <LockIcon size={12} className="text-[#2962ff]" />
+                    <LockIcon size={12} className="text-accent" />
                     {targetLock ? (
-                      <span className="text-white">
+                      <span className="text-foreground">
                         Lock {targetLock.id}{' '}
-                        <span className="text-[#2962ff]">
+                        <span className="text-accent">
                           — {formatNumber(targetLock.totalVoteWeightGiven as string)}
                         </span>
                       </span>
                     ) : (
-                      <span className="text-[#64748b]">Select a lock…</span>
+                      <span className="text-muted">Select a lock…</span>
                     )}
                   </div>
-                  <ChevronDownIcon size={12} className="text-[#64748b]" />
+                  <ChevronDownIcon size={12} className="text-muted" />
                 </button>
               </DropdownMenu.Trigger>
 
               <DropdownMenu.Portal>
                 <DropdownMenu.Content
-                  className="border border-[#2962ff]/30 bg-black px-2 py-2 space-y-1 z-50 font-mono text-xs shadow-xl w-(--radix-popper-anchor-width)"
+                  className="z-50 w-(--radix-popper-anchor-width) space-y-1 rounded-2xl border border-white/[0.08] bg-surface/95 px-1.5 py-2 text-xs shadow-xl backdrop-blur-xl"
                   sideOffset={4}
                 >
                   {mergeableLocks.length === 0 ? (
-                    <p className="text-[#64748b] px-3 py-2">No other locks available</p>
+                    <p className="text-muted px-3 py-2">No other locks available</p>
                   ) : (
                     mergeableLocks.map((lock) => (
                       <DropdownMenu.Item
@@ -123,13 +121,13 @@ export const MergeLockModal: React.FC<MergeLockModalProps> = ({
                         onClick={() => setTargetId(lock.id)}
                         className={`flex items-center justify-between gap-3 px-3 py-2.5 cursor-pointer outline-none transition-colors ${
                           targetId === lock.id
-                            ? 'bg-[#2962ff]/10 text-[#2962ff]'
-                            : 'text-[#94a3b8] hover:bg-white/5 hover:text-white'
+                            ? 'bg-accent/10 text-accent'
+                            : 'text-muted hover:bg-white/5 hover:text-foreground'
                         }`}
                       >
                         <div className="flex flex-col gap-0.5">
                           <span className="font-bold">Lock {lock.id}</span>
-                          <span className="text-[#64748b] text-[10px]">
+                          <span className="text-muted text-[10px]">
                             {formatNumber(lock.position as string)} · Expires{' '}
                             {new Date(parseInt(lock.unlockTime as string) * 1000).toLocaleString(
                               'en-US',
@@ -143,7 +141,7 @@ export const MergeLockModal: React.FC<MergeLockModalProps> = ({
                             )}
                           </span>
                         </div>
-                        <span className="text-[#00ff9d] font-bold whitespace-nowrap">
+                        <span className="text-accent-2 font-bold whitespace-nowrap">
                           {formatNumber(lock.totalVoteWeightGiven as string)}
                         </span>
                       </DropdownMenu.Item>
@@ -156,26 +154,24 @@ export const MergeLockModal: React.FC<MergeLockModalProps> = ({
 
           {/* Result preview */}
           {targetLock && sourceLock && (
-            <div className="border border-[#00ff9d]/20 bg-[#00ff9d]/5 px-3 py-2.5 flex flex-col gap-1">
-              <span className="text-[#64748b] font-mono text-[10px] uppercase tracking-widest mb-0.5">
-                After Merge
-              </span>
+            <div className="flex flex-col gap-1 rounded-2xl border border-accent-2/20 bg-accent-2/5 px-3 py-2.5">
+              <span className="text-muted text-[11px] font-semibold mb-0.5">After Merge</span>
               <div className="flex justify-between font-mono text-xs">
-                <span className="text-[#64748b]">Combined Voting Power</span>
-                <span className="text-[#00ff9d] font-bold">
+                <span className="text-muted">Combined Voting Power</span>
+                <span className="text-accent-2 font-bold">
                   ~{formatNumber(targetLock.totalVoteWeightGiven as string)}
                 </span>
               </div>
               <div className="flex justify-between font-mono text-xs">
-                <span className="text-[#64748b]">Surviving Lock</span>
-                <span className="text-white font-bold">Lock {targetLock.id}</span>
+                <span className="text-muted">Surviving Lock</span>
+                <span className="text-foreground font-bold">Lock {targetLock.id}</span>
               </div>
             </div>
           )}
 
           {/* Warning */}
-          <div className="border border-[#ffaf52]/20 bg-[#ffaf52]/5 px-3 py-2.5">
-            <p className="text-[#ffaf52] font-mono text-[10px] leading-relaxed">
+          <div className="rounded-2xl border border-warning/20 bg-warning/5 px-3 py-2.5">
+            <p className="text-warning font-mono text-[10px] leading-relaxed">
               ⚠ The source lock (Lock {sourceLock?.id ?? '—'}) will be permanently burned after
               merging. Its MGN and voting power will be transferred to the target lock.
             </p>
@@ -183,7 +179,7 @@ export const MergeLockModal: React.FC<MergeLockModalProps> = ({
 
           <PrimaryButton
             disabled={!isValid || mergeLock.isLoading}
-            className="w-full py-3 gap-2 font-mono text-xs uppercase tracking-widest disabled:opacity-40 disabled:cursor-not-allowed"
+            className="w-full py-3 gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
             onClick={mergeLock.execute}
           >
             <GitMergeIcon size={14} />

@@ -44,14 +44,14 @@ const CustomTooltip = ({
   if (!active || !payload?.length) return null;
   return (
     <div
-      className="bg-[#131525]/90 backdrop-blur-md px-3 py-2.5 text-xs font-mono rounded-lg"
+      className="rounded-2xl border border-white/[0.08] bg-surface/95 px-3 py-2.5 text-xs font-mono backdrop-blur-md"
       style={{
-        border: `1px solid ${color}40`,
-        boxShadow: `0 8px 32px rgba(0,0,0,0.5), 0 0 15px ${color}20, inset 0 0 8px ${color}05`,
+        borderColor: `${color}55`,
+        boxShadow: '0 16px 40px rgba(0,0,0,0.35)',
       }}
     >
-      <p className="text-[#64748b] mb-1 text-[10px] uppercase tracking-widest">{label}</p>
-      <p className="font-bold" style={{ color, textShadow: `0 0 8px ${color}80` }}>
+      <p className="text-muted mb-1 text-[11px] font-semibold">{label}</p>
+      <p className="font-bold" style={{ color }}>
         {formatValue(payload[0].value)}
       </p>
     </div>
@@ -61,7 +61,7 @@ const CustomTooltip = ({
 export const TimeSeriesChart: React.FC<TimeSeriesChartProps> = ({
   data,
   dataKey = 'value',
-  color = '#2962ff',
+  color = '#2660f5',
   formatValue = (v) => formatNumber(v, 'en-US', 2, true),
   height = 200,
 }) => {
@@ -78,10 +78,10 @@ export const TimeSeriesChart: React.FC<TimeSeriesChartProps> = ({
           <button
             key={tf}
             onClick={() => setTimeframe(tf as Timeframe)}
-            className={`px-2.5 py-1 text-[10px] font-mono font-bold uppercase tracking-widest transition-all duration-200 border rounded-md ${
+            className={`px-2.5 py-1 text-[11px] font-semibold transition-colors duration-200 border rounded-lg ${
               timeframe === tf
                 ? `border-[${color}] text-[${color}] bg-[${color}]/10 shadow-[0_0_10px_${color}40]`
-                : 'border-white/10 text-[#64748b] hover:border-white/25 hover:text-[#f8fafc]'
+                : 'border-white/10 text-muted hover:border-white/25 hover:text-foreground'
             }`}
             style={
               timeframe === tf
@@ -89,7 +89,7 @@ export const TimeSeriesChart: React.FC<TimeSeriesChartProps> = ({
                     borderColor: color,
                     color: color,
                     backgroundColor: `${color}1A`,
-                    boxShadow: `0 0 10px ${color}40`,
+                    boxShadow: 'none',
                   }
                 : {}
             }
@@ -118,13 +118,13 @@ export const TimeSeriesChart: React.FC<TimeSeriesChartProps> = ({
           <CartesianGrid stroke="rgba(255,255,255,0.035)" vertical={false} strokeDasharray="4 0" />
           <XAxis
             dataKey="date"
-            tick={{ fill: '#475569', fontSize: 10, fontFamily: 'monospace' }}
+            tick={{ fill: '#6a7194', fontSize: 10, fontFamily: 'monospace' }}
             axisLine={false}
             tickLine={false}
             interval="preserveStartEnd"
           />
           <YAxis
-            tick={{ fill: '#475569', fontSize: 10, fontFamily: 'monospace' }}
+            tick={{ fill: '#6a7194', fontSize: 10, fontFamily: 'monospace' }}
             axisLine={false}
             tickLine={false}
             tickFormatter={(v) => formatNumber(v, 'en-US', 1, true)}

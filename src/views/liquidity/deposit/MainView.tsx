@@ -57,7 +57,7 @@ export const MainView: React.FC = () => {
       <div className="w-full max-w-lg flex justify-start mb-2">
         <button
           onClick={() => router.push('/liquidity')}
-          className="flex items-center gap-2 text-[#94a3b8] hover:text-[#00ff9d] transition-colors group font-mono text-sm uppercase font-bold tracking-widest"
+          className="flex items-center gap-2 text-sm font-semibold text-muted transition-colors hover:text-accent group"
         >
           <ArrowLeftIcon size={16} className="group-hover:-translate-x-1 transition-transform" />
           <span>Back to Pools</span>
@@ -69,12 +69,10 @@ export const MainView: React.FC = () => {
           <div className="w-full flex flex-col items-center">
             {/* Header */}
             <div className="w-full flex justify-between items-center mb-6">
-              <h2 className="text-white font-bold text-xl tracking-wide uppercase">
-                Add Liquidity
-              </h2>
+              <h2 className="text-xl font-bold tracking-tight text-foreground">Add liquidity</h2>
               <button
                 onClick={() => setShowSettings(!showSettings)}
-                className="text-[#64748b] hover:text-[#2962ff] transition-colors p-2"
+                className="text-muted hover:text-accent transition-colors p-2"
               >
                 <SettingsIcon size={20} />
               </button>
@@ -82,12 +80,10 @@ export const MainView: React.FC = () => {
 
             {/* Settings Panel (Inline) */}
             {showSettings && (
-              <div className="w-full bg-[#131525]/80 backdrop-blur-md border border-white/10 p-4 mb-6 flex flex-col gap-4 rounded-xl">
+              <div className="mb-6 flex w-full flex-col gap-4 rounded-2xl border border-white/[0.06] bg-background/50 p-4 backdrop-blur-md">
                 <div className="flex flex-col gap-2">
                   <div className="flex items-center gap-1.5">
-                    <span className="text-[#94a3b8] text-xs uppercase tracking-widest">
-                      Slippage Tolerance
-                    </span>
+                    <span className="text-muted text-xs font-semibold">Slippage Tolerance</span>
                   </div>
                   <div className="flex flex-wrap items-center gap-2">
                     {['0.1', '0.25', '0.5', '1.0'].map((val) => (
@@ -97,8 +93,8 @@ export const MainView: React.FC = () => {
                         className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all duration-200 font-sans ${
                           slippage === parseFloat(val) &&
                           !['0.1', '0.25', '0.5', '1.0'].includes(slippage.toString()) === false
-                            ? 'bg-[#2962ff] text-white shadow-[0_0_12px_rgba(41,98,255,0.4)]'
-                            : 'bg-white/5 text-[#94a3b8] hover:bg-white/10 hover:text-white border border-transparent'
+                            ? 'bg-accent text-accent-ink'
+                            : 'bg-white/5 text-muted hover:bg-white/10 hover:text-foreground border border-transparent'
                         }`}
                       >
                         {val}%
@@ -107,7 +103,7 @@ export const MainView: React.FC = () => {
                     <div
                       className={`flex items-center border px-2 py-1 gap-1 flex-1 min-w-20 rounded-lg ${
                         !['0.1', '0.25', '0.5', '1.0'].includes(slippage.toString())
-                          ? 'border-[#2962ff]'
+                          ? 'border-accent'
                           : 'border-white/10'
                       }`}
                     >
@@ -116,7 +112,7 @@ export const MainView: React.FC = () => {
                         min="0.01"
                         max="50"
                         step="0.1"
-                        className="bg-transparent text-white text-xs w-full outline-none placeholder:text-[#64748b]"
+                        className="bg-transparent text-foreground text-xs w-full outline-none placeholder:text-muted"
                         placeholder="Custom"
                         value={
                           ['0.1', '0.25', '0.5', '1.0'].includes(slippage.toString())
@@ -125,20 +121,18 @@ export const MainView: React.FC = () => {
                         }
                         onChange={(e) => setSlippage(parseFloat(e.target.value) || 0)}
                       />
-                      <span className="text-[#64748b] text-xs">%</span>
+                      <span className="text-muted text-xs">%</span>
                     </div>
                   </div>
                 </div>
                 <div className="flex flex-col gap-2">
                   <div className="flex justify-between items-center">
-                    <span className="text-[#94a3b8] text-xs uppercase tracking-widest">
-                      TX Deadline (Mins)
-                    </span>
+                    <span className="text-muted text-xs font-semibold">TX Deadline (Mins)</span>
                     <input
                       type="number"
                       value={deadline}
                       onChange={(e) => setDeadline(parseInt(e.target.value) || 0)}
-                      className="bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-white text-xs font-mono w-20 outline-none focus:border-[#2962ff] transition-colors text-right"
+                      className="bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-foreground text-xs font-mono w-20 outline-none focus:border-accent transition-colors text-right"
                     />
                   </div>
                 </div>
@@ -146,13 +140,13 @@ export const MainView: React.FC = () => {
             )}
 
             {/* Mode Tabs */}
-            <div className="w-full flex bg-[#131525]/50 backdrop-blur-sm border border-white/10 p-1 rounded-xl mb-2">
+            <div className="mb-2 flex w-full rounded-2xl border border-white/[0.06] bg-background/50 p-1">
               <button
                 onClick={() => setActiveTab('STANDARD')}
                 className={`flex-1 py-2 text-sm font-bold tracking-wide transition-all duration-200 rounded-lg ${
                   activeTab === 'STANDARD'
-                    ? 'bg-[#2962ff] text-white shadow-[0_0_15px_rgba(41,98,255,0.3)]'
-                    : 'text-[#94a3b8] hover:text-white hover:bg-white/5'
+                    ? 'bg-accent text-accent-ink'
+                    : 'text-muted hover:text-foreground hover:bg-white/5'
                 }`}
               >
                 Standard
@@ -161,8 +155,8 @@ export const MainView: React.FC = () => {
                 onClick={() => setActiveTab('CONCENTRATED')}
                 className={`flex-1 py-2 text-sm font-bold tracking-wide transition-all duration-200 rounded-lg ${
                   activeTab === 'CONCENTRATED'
-                    ? 'bg-[#2962ff] text-white shadow-[0_0_15px_rgba(41,98,255,0.3)]'
-                    : 'text-[#94a3b8] hover:text-white hover:bg-white/5'
+                    ? 'bg-accent text-accent-ink'
+                    : 'text-muted hover:text-foreground hover:bg-white/5'
                 }`}
               >
                 Concentrated

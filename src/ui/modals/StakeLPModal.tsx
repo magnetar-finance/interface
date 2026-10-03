@@ -136,38 +136,36 @@ export const StakeLPModal: React.FC<StakeLPModalProps> = ({
           {/* Pool info */}
           {poolName && (
             <div className="flex justify-between items-center">
-              <span className="text-[#64748b] font-mono text-[10px] uppercase tracking-widest">
-                Pool
-              </span>
-              <span className="text-white font-bold font-mono text-xs">{poolName}</span>
+              <span className="text-muted text-[11px] font-semibold">Pool</span>
+              <span className="text-foreground font-bold font-mono text-xs">{poolName}</span>
             </div>
           )}
 
           {/* LP amount input */}
           <div className="flex flex-col gap-2">
             <div className="flex justify-between items-center">
-              <label className="text-[#64748b] font-mono text-[10px] uppercase tracking-widest">
+              <label className="text-muted text-[11px] font-semibold">
                 {isCL ? 'Token ID' : 'Amount'} to Stake
               </label>
-              <span className="text-[#64748b] font-mono text-[10px]">
+              <span className="text-muted font-mono text-[10px]">
                 Balance:{' '}
-                <span className="text-white">
+                <span className="text-foreground">
                   {formatNumber(formatEther(isCL ? clBalance : lpBalance), 'en-US', 3)}
                 </span>
               </span>
             </div>
 
-            <div className="flex items-center gap-2 border border-white/10 focus-within:border-[#2962ff]/60 transition-colors">
+            <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-background/50 px-3 py-2 transition-colors focus-within:border-accent/50">
               <input
                 type="number"
                 min="0"
                 value={isCL ? tokenId.toString() : amount}
                 onChange={(e) => setAmount(e.target.value)}
                 placeholder="0.00"
-                className="bg-transparent px-3 py-3 font-mono text-sm text-white placeholder:text-[#64748b] outline-none flex-1 min-w-0"
+                className="bg-transparent px-3 py-3 font-mono text-sm text-foreground placeholder:text-muted outline-none flex-1 min-w-0"
                 readOnly={isCL}
               />
-              <span className="text-[#64748b] font-mono text-xs px-3 shrink-0">LP</span>
+              <span className="text-muted font-mono text-xs px-3 shrink-0">LP</span>
             </div>
 
             {/* Quick percent buttons */}
@@ -179,7 +177,7 @@ export const StakeLPModal: React.FC<StakeLPModalProps> = ({
                     onClick={() =>
                       setAmount(String((pct * parseFloat(formatEther(lpBalance))) / 100))
                     } // Placeholder — replace with real balance math
-                    className="flex-1 border border-white/10 py-1 font-mono text-[10px] text-[#94a3b8] hover:border-[#2962ff]/50 hover:text-[#2962ff] transition-colors"
+                    className="flex-1 border border-white/10 py-1 font-mono text-[10px] text-muted hover:border-accent/50 hover:text-accent transition-colors"
                   >
                     {pct === 100 ? 'MAX' : `${pct}%`}
                   </button>
@@ -190,9 +188,9 @@ export const StakeLPModal: React.FC<StakeLPModalProps> = ({
 
           {/* Info row */}
           {isValid && (
-            <div className="flex justify-between items-center border border-[#00ff9d]/20 bg-[#00ff9d]/5 px-3 py-2.5">
-              <span className="text-[#64748b] font-mono text-xs">You will stake</span>
-              <span className="text-[#00ff9d] font-bold font-mono text-xs">
+            <div className="flex justify-between items-center border border-accent-2/20 bg-accent-2/5 px-3 py-2.5">
+              <span className="text-muted font-mono text-xs">You will stake</span>
+              <span className="text-accent-2 font-bold font-mono text-xs">
                 {parsedAmount.toLocaleString('en-US', { maximumFractionDigits: 6 })} LP
               </span>
             </div>
@@ -202,7 +200,7 @@ export const StakeLPModal: React.FC<StakeLPModalProps> = ({
             disabled={
               !isValid || gaugeApproval.isLoading || gaugeApprovalCL.isLoading || stakeLP.isLoading
             }
-            className="w-full py-3 gap-2 font-mono text-xs uppercase tracking-widest disabled:opacity-40 disabled:cursor-not-allowed"
+            className="w-full py-3 gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
             onClick={initiateTransaction}
           >
             <ShieldPlusIcon size={14} />

@@ -79,14 +79,12 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
   const isCustom = !SLIPPAGE_PRESETS.includes(slippage);
 
   return (
-    <div className="bg-[#131525]/80 backdrop-blur-md border border-white/10 rounded-xl p-4 flex flex-col gap-4">
+    <div className="bg-background/50 border border-white/[0.06] rounded-2xl p-4 flex flex-col gap-4">
       {/* Slippage */}
       <div className="flex flex-col gap-2">
         <div className="flex items-center gap-1.5">
-          <span className="text-[#94a3b8] text-xs uppercase tracking-widest">
-            Slippage Tolerance
-          </span>
-          <InfoIcon size={12} color="#64748b" />
+          <span className="text-muted text-xs font-semibold">Slippage Tolerance</span>
+          <InfoIcon size={12} className="text-muted" />
         </div>
         <div className="flex flex-wrap items-center gap-2">
           {SLIPPAGE_PRESETS.map((preset) => (
@@ -96,8 +94,8 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
               className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all duration-200 font-sans
                 ${
                   slippage === preset && !isCustom
-                    ? 'bg-[#2962ff] text-white shadow-[0_0_12px_rgba(41,98,255,0.4)]'
-                    : 'bg-white/5 text-[#94a3b8] hover:bg-white/10 hover:text-white'
+                    ? 'bg-accent text-accent-ink'
+                    : 'bg-white/5 text-muted hover:bg-white/10 hover:text-foreground'
                 }`}
             >
               {preset}%
@@ -105,7 +103,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
           ))}
           <div
             className={`flex items-center border px-2 py-1 gap-1 flex-1 min-w-20 rounded-lg
-              ${isCustom ? 'border-[#2962ff]' : 'border-white/10'}`}
+              ${isCustom ? 'border-accent' : 'border-white/10'}`}
           >
             <input
               type="number"
@@ -118,19 +116,19 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
                 onCustomSlippageChange(e.target.value);
                 if (e.target.value) onSlippageSelect(e.target.value);
               }}
-              className="bg-transparent text-white text-xs w-full outline-none placeholder:text-[#64748b]"
+              className="bg-transparent text-foreground text-xs w-full outline-none placeholder:text-muted"
             />
-            <span className="text-[#64748b] text-xs">%</span>
+            <span className="text-muted text-xs">%</span>
           </div>
         </div>
         {parseFloat(slippage) > 5 && (
-          <span className="text-[#ffaf52] text-xs">
+          <span className="text-warning text-xs">
             ⚠ High slippage — your trade may be frontrun
           </span>
         )}
       </div>
       <div className="flex flex-col gap-2">
-        <span className="text-[#94a3b8] text-xs uppercase tracking-widest">Router</span>
+        <span className="text-muted text-xs font-semibold">Router</span>
         <div className="flex gap-2 w-full">
           {Object.keys(RouterType).map((router_type) => {
             const isSelected = routerType === RouterType[router_type as keyof typeof RouterType];
@@ -143,8 +141,8 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
                 }
                 className={`flex-1 py-2 px-1 border rounded-lg text-[10px] sm:text-xs font-sans font-bold transition-all duration-200 ${
                   isSelected
-                    ? 'bg-[#00ff9d]/10 text-[#00ff9d] border-[#00ff9d]/50 shadow-[0_0_10px_rgba(0,255,157,0.2)]'
-                    : 'bg-[#131525]/50 border-white/10 text-[#64748b] hover:border-[#00ff9d]/30 hover:text-[#00ff9d]'
+                    ? 'bg-accent-2/10 text-accent-2 border-accent-2/50'
+                    : 'bg-surface/50 border-white/10 text-muted hover:border-accent-2/30 hover:text-accent-2'
                 }`}
               >
                 {router_type}
@@ -156,7 +154,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
 
       {/* Deadline */}
       <div className="flex flex-col gap-2">
-        <span className="text-[#94a3b8] text-xs uppercase tracking-widest">Tx Deadline</span>
+        <span className="text-muted text-xs font-semibold">Tx Deadline</span>
         <div className="flex items-center gap-2">
           <div className="flex items-center border border-white/10 px-2 py-1 gap-1 w-24 rounded-lg">
             <input
@@ -165,10 +163,10 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
               max="180"
               value={deadline}
               onChange={(e) => onDeadlineChange(e.target.value)}
-              className="bg-transparent text-white text-xs w-full outline-none"
+              className="bg-transparent text-foreground text-xs w-full outline-none"
             />
           </div>
-          <span className="text-[#64748b] text-xs">minutes</span>
+          <span className="text-muted text-xs">minutes</span>
         </div>
       </div>
     </div>
@@ -200,19 +198,17 @@ const TokenInputRow: React.FC<TokenInputRowProps> = ({
   onMaxClick,
   onTokenClick,
 }) => (
-  <div className="flex flex-col gap-2 bg-[#131525]/60 backdrop-blur-sm border border-white/10 rounded-xl px-4 py-4 w-full transition-all duration-200 hover:border-[#2962ff]/20">
+  <div className="flex flex-col gap-3 rounded-2xl border border-white/[0.06] bg-background/55 px-4 py-4 w-full transition-colors duration-200 hover:border-accent/20 focus-within:border-accent/35">
     <div className="flex justify-between items-center">
-      <span className="text-[#64748b] text-xs uppercase tracking-widest font-sans font-bold">
-        {label}
-      </span>
+      <span className="text-muted text-xs font-semibold">{label}</span>
       <div className="flex items-center gap-1.5">
-        <span className="text-[#64748b] text-xs">Balance: {formatNumber(balance, 'en-US', 3)}</span>
+        <span className="text-muted text-xs">Balance: {formatNumber(balance, 'en-US', 3)}</span>
         {!readOnly && onMaxClick && (
           <button
             onClick={onMaxClick}
-            className="text-[#2962ff] text-xs font-bold hover:text-white transition-colors px-1.5 py-0.5 rounded bg-[#2962ff]/10 hover:bg-[#2962ff]/20"
+            className="text-accent text-[11px] font-bold hover:text-foreground transition-colors px-1.5 py-0.5 rounded-lg bg-accent/10 hover:bg-accent/20"
           >
-            MAX
+            Max
           </button>
         )}
       </div>
@@ -222,11 +218,11 @@ const TokenInputRow: React.FC<TokenInputRowProps> = ({
       {/* Token Selector */}
       <button
         onClick={onTokenClick}
-        className={`flex items-center gap-2 px-3 py-2 border rounded-xl shrink-0 transition-all duration-200
+        className={`flex items-center gap-2 px-3 py-2 border rounded-full shrink-0 transition-all duration-200
           ${
             token
-              ? 'border-white/10 hover:border-[#2962ff]/50 bg-white/5 hover:bg-[#2962ff]/5'
-              : 'border-[#2962ff] bg-[#2962ff]/10 animate-pulse'
+              ? 'border-white/10 hover:border-accent/40 bg-raised hover:bg-accent/10'
+              : 'border-accent bg-accent/10'
           }`}
       >
         {token ? (
@@ -240,16 +236,16 @@ const TokenInputRow: React.FC<TokenInputRowProps> = ({
                 className="rounded-full w-5 h-5"
               />
             ) : (
-              <div className="w-5 h-5 rounded-full bg-[#2962ff]/20 flex items-center justify-center">
-                <span className="text-[#2962ff] text-xs">{token.symbol.slice(0, 1)}</span>
+              <div className="w-5 h-5 rounded-full bg-accent/20 flex items-center justify-center">
+                <span className="text-accent text-xs">{token.symbol.slice(0, 1)}</span>
               </div>
             )}
-            <span className="text-white text-sm font-semibold">{token.symbol}</span>
+            <span className="text-foreground text-sm font-semibold">{token.symbol}</span>
           </>
         ) : (
-          <span className="text-[#2962ff] text-sm font-semibold">Select</span>
+          <span className="text-accent text-sm font-semibold">Select</span>
         )}
-        <ChevronDownIcon size={14} color="#64748b" />
+        <ChevronDownIcon size={14} className="text-muted" />
       </button>
 
       {/* Amount Input */}
@@ -261,14 +257,14 @@ const TokenInputRow: React.FC<TokenInputRowProps> = ({
         value={amount}
         readOnly={readOnly}
         onChange={(e) => onAmountChange?.(e.target.value)}
-        className={`bg-transparent text-right text-2xl md:text-3xl font-bold text-white
-          outline-none flex-1 min-w-0 placeholder:text-[#374151]
+        className={`bg-transparent text-right font-mono text-2xl font-medium text-foreground
+          outline-none flex-1 min-w-0 placeholder:text-dim
           ${readOnly ? 'cursor-default' : ''}`}
       />
     </div>
 
     <div className="flex justify-end">
-      <span className="text-[#64748b] text-xs">{usdValue ? `≈ $${usdValue}` : '—'}</span>
+      <span className="text-muted text-xs">{usdValue ? `≈ $${usdValue}` : '—'}</span>
     </div>
   </div>
 );
@@ -306,23 +302,23 @@ const PriceInfoRow: React.FC<PriceInfoRowProps> = ({
   const minAmountOut = parseFloat(amountOut) - (parseFloat(amountOut) * parseFloat(slippage)) / 100;
 
   return (
-    <div className="w-full bg-[#131525]/40 backdrop-blur-sm border border-white/10 rounded-xl px-4 py-3 transition-all duration-200 hover:border-[#2962ff]/15">
+    <div className="w-full rounded-2xl border border-white/[0.06] bg-background/40 px-4 py-3 transition-colors hover:border-accent/20">
       {/* Summary row */}
       <button
         onClick={() => setExpanded((v) => !v)}
         className="w-full flex justify-between items-center"
       >
         <div className="flex items-center gap-1.5">
-          <ZapIcon size={12} color="#00ff9d" />
-          <span className="text-[#94a3b8] text-xs">
-            1 {tokenIn.symbol} = <span className="text-white font-semibold">{exchangeRate}</span>{' '}
-            {tokenOut.symbol}
+          <ZapIcon size={12} className="text-accent-2" />
+          <span className="text-muted text-xs">
+            1 {tokenIn.symbol} ={' '}
+            <span className="text-foreground font-semibold">{exchangeRate}</span> {tokenOut.symbol}
           </span>
         </div>
         {expanded ? (
-          <ChevronUpIcon size={14} color="#64748b" />
+          <ChevronUpIcon size={14} className="text-muted" />
         ) : (
-          <ChevronDownIcon size={14} color="#64748b" />
+          <ChevronDownIcon size={14} className="text-muted" />
         )}
       </button>
 
@@ -330,24 +326,24 @@ const PriceInfoRow: React.FC<PriceInfoRowProps> = ({
       {expanded && (
         <div className="mt-3 flex flex-col gap-2 border-t border-white/5 pt-3">
           <div className="flex justify-between items-center">
-            <span className="text-[#64748b] text-xs">Price Impact</span>
-            <span className="text-[#00ff9d] text-xs font-semibold">{priceImpact}%</span>
+            <span className="text-muted text-xs">Price Impact</span>
+            <span className="text-accent-2 text-xs font-semibold">{priceImpact}%</span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-[#64748b] text-xs">Min. Received ({slippage}% slippage)</span>
-            <span className="text-white text-xs font-semibold">
+            <span className="text-muted text-xs">Min. Received ({slippage}% slippage)</span>
+            <span className="text-foreground text-xs font-semibold">
               {minAmountOut.toFixed(3)} {tokenOut.symbol}
             </span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-[#64748b] text-xs">Fee (1%)</span>
-            <span className="text-white text-xs font-semibold">
+            <span className="text-muted text-xs">Fee (1%)</span>
+            <span className="text-foreground text-xs font-semibold">
               {fee} {tokenIn.symbol}
             </span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-[#64748b] text-xs">Route</span>
-            <div className="text-[#94a3b8] text-xs font-semibold flex gap-1">
+            <span className="text-muted text-xs">Route</span>
+            <div className="text-muted text-xs font-semibold flex gap-1">
               {route.map((r, index) => {
                 const token = assetsDictionary[r.toLowerCase()];
                 return (
@@ -663,12 +659,14 @@ export const MainView: React.FC = () => {
           <FancyCard>
             <div className="flex flex-col gap-4 w-full">
               {/* Card Header */}
-              <div className="flex justify-between items-center pb-2 border-b border-white/10">
-                <h4 className="text-white font-semibold text-base tracking-wide">Swap Tokens</h4>
+              <div className="flex justify-between items-center pb-1">
+                <h4 className="text-foreground font-semibold text-base tracking-tight">Swap</h4>
                 <button
                   onClick={() => setShowSettings((v) => !v)}
-                  className={`transition-colors p-1 ${
-                    showSettings ? 'text-[#2962ff]' : 'text-[#64748b] hover:text-white'
+                  className={`transition-colors p-1.5 rounded-xl ${
+                    showSettings
+                      ? 'text-accent bg-accent/10'
+                      : 'text-muted hover:text-foreground hover:bg-white/5'
                   }`}
                   title="Settings"
                 >
@@ -692,7 +690,7 @@ export const MainView: React.FC = () => {
 
               {/* Token In */}
               <TokenInputRow
-                label="You Pay"
+                label="Sell"
                 token={tokenIn}
                 amount={amountIn}
                 usdValue={usdValueIn}
@@ -707,18 +705,18 @@ export const MainView: React.FC = () => {
                 <button
                   onClick={handleSwapDirection}
                   title="Flip tokens"
-                  className="group bg-[#131525] border border-white/10 p-2.5 rounded-xl hover:border-[#2962ff]/50 hover:bg-[#2962ff]/10 transition-all duration-200 shadow-sm"
+                  className="group z-10 bg-surface border border-white/10 p-2.5 rounded-xl hover:border-accent/40 hover:bg-accent/10 transition-all duration-200 shadow-sm"
                 >
                   <ArrowDownUpIcon
                     size={16}
-                    className="text-[#64748b] group-hover:text-[#2962ff] transition-colors"
+                    className="text-muted group-hover:text-accent transition-colors"
                   />
                 </button>
               </div>
 
               {/* Token Out */}
               <TokenInputRow
-                label="You Receive"
+                label="Buy"
                 token={tokenOut}
                 amount={amountOut}
                 usdValue={usdValueOut}
@@ -742,7 +740,8 @@ export const MainView: React.FC = () => {
               <div className="pt-1">
                 {isConnected ? (
                   <PrimaryButton
-                    className="w-full py-4 text-sm"
+                    className="w-full"
+                    size="lg"
                     disabled={
                       actionDisabled ||
                       autoSwap.isLoading ||
@@ -767,7 +766,7 @@ export const MainView: React.FC = () => {
                       unwrapETH.isLoading) && <Spinner size="sm" className="ml-2" />}
                   </PrimaryButton>
                 ) : (
-                  <WalletConnectButton className="w-full py-4 text-sm" hasIcon />
+                  <WalletConnectButton className="w-full" size="lg" hasIcon />
                 )}
               </div>
             </div>
@@ -777,14 +776,14 @@ export const MainView: React.FC = () => {
         {/* Info Strip */}
         <div className="w-full max-w-lg flex flex-wrap justify-between items-center px-1 gap-y-2">
           <div className="flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#2962ff] animate-pulse block" />
-            <span className="text-[#64748b] text-xs">
-              Slippage: <span className="text-white">{slippage}%</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse block" />
+            <span className="text-muted text-xs">
+              Slippage: <span className="text-foreground">{slippage}%</span>
             </span>
           </div>
           <div className="flex flex-wrap items-center gap-3">
-            <span className="text-[#64748b] text-xs">
-              Deadline: <span className="text-white">{deadline}m</span>
+            <span className="text-muted text-xs">
+              Deadline: <span className="text-foreground">{deadline}m</span>
             </span>
             <SecondaryButton
               className="text-xs px-2 py-1"

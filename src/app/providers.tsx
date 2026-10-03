@@ -36,7 +36,15 @@ export const Providers: React.FC<{ children: React.ReactNode }> = ({ children })
   return (
     <WagmiProvider config={wagmiConfig}>
       <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider theme={darkTheme()} modalSize="compact">
+        <RainbowKitProvider
+          theme={darkTheme({
+            accentColor: '#2660f5',
+            accentColorForeground: '#ffffff',
+            borderRadius: 'large',
+            overlayBlur: 'small',
+          })}
+          modalSize="compact"
+        >
           <GithubAssetsProvider>{children}</GithubAssetsProvider>
         </RainbowKitProvider>
       </QueryClientProvider>

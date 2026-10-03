@@ -143,50 +143,48 @@ export const LockRentOutModal: React.FC<LockRentOutModalProps> = ({ open, onOpen
         <div className="flex flex-col gap-5 p-5">
           {/* ── 1. Select Lock ─────────────────────────────────────────────── */}
           <div className="flex flex-col gap-2">
-            <label className="text-[#64748b] font-mono text-[10px] uppercase tracking-widest">
-              Select Lock
-            </label>
+            <label className="text-muted text-[11px] font-semibold">Select Lock</label>
             <DropdownMenu.Root>
               <DropdownMenu.Trigger asChild>
-                <button className="w-full flex items-center justify-between border border-white/10 bg-transparent px-3 py-3 font-mono text-xs text-white hover:border-[#2962ff]/50 focus:border-[#2962ff]/60 transition-colors outline-none cursor-pointer">
+                <button className="w-full flex items-center justify-between border border-white/10 bg-transparent px-3 py-3 font-mono text-xs text-foreground hover:border-accent/50 focus:border-accent/60 transition-colors outline-none cursor-pointer">
                   {selectedLock ? (
                     <span className="flex items-center gap-2">
-                      <KeyRoundIcon size={12} className="text-[#2962ff]" />
+                      <KeyRoundIcon size={12} className="text-accent" />
                       Lock {selectedLock.lockId as string}
-                      <span className="text-[#64748b]">
+                      <span className="text-muted">
                         · {formatNumber(formatEther(lockVP), 'en-US', 2)} veMGN
                       </span>
                     </span>
                   ) : (
-                    <span className="text-[#64748b]">Choose a lock…</span>
+                    <span className="text-muted">Choose a lock…</span>
                   )}
-                  <ChevronDownIcon size={14} className="text-[#64748b]" />
+                  <ChevronDownIcon size={14} className="text-muted" />
                 </button>
               </DropdownMenu.Trigger>
 
               <DropdownMenu.Portal>
                 <DropdownMenu.Content
-                  className="border border-[#2962ff]/30 bg-black py-1 z-50 font-mono text-xs shadow-xl w-(--radix-dropdown-menu-trigger-width) max-h-52 overflow-y-auto"
+                  className="z-50 max-h-52 w-(--radix-dropdown-menu-trigger-width) overflow-y-auto rounded-2xl border border-white/[0.08] bg-surface/95 py-1 text-xs shadow-xl backdrop-blur-xl"
                   sideOffset={4}
                 >
                   {locks.length === 0 ? (
-                    <div className="px-3 py-4 text-[#64748b] text-center">No locks found</div>
+                    <div className="px-3 py-4 text-muted text-center">No locks found</div>
                   ) : (
                     locks.map((lock) => (
                       <DropdownMenu.Item
                         key={lock.id}
                         onClick={() => setSelectedLockId(lock.id)}
-                        className="flex items-center justify-between gap-2 px-3 py-2.5 cursor-pointer text-[#94a3b8] hover:bg-white/5 hover:text-white focus:bg-white/5 focus:text-white outline-none"
+                        className="flex items-center justify-between gap-2 px-3 py-2.5 cursor-pointer text-muted hover:bg-white/5 hover:text-foreground focus:bg-white/5 focus:text-foreground outline-none"
                       >
                         <span className="flex items-center gap-2">
-                          <KeyRoundIcon size={11} className="text-[#2962ff]" />
+                          <KeyRoundIcon size={11} className="text-accent" />
                           Lock {lock.lockId as string}
-                          <span className="text-[#64748b]">
+                          <span className="text-muted">
                             {formatNumber(lock.totalVoteWeightGiven as string, 'en-US', 2)} veMGN
                           </span>
                         </span>
                         {lock.id === selectedLockId && (
-                          <CheckIcon size={12} className="text-[#2962ff]" />
+                          <CheckIcon size={12} className="text-accent" />
                         )}
                       </DropdownMenu.Item>
                     ))
@@ -199,13 +197,11 @@ export const LockRentOutModal: React.FC<LockRentOutModalProps> = ({ open, onOpen
           {/* ── 2. Commission Slider ───────────────────────────────────────── */}
           <div className="flex flex-col gap-3">
             <div className="flex items-center justify-between">
-              <label className="text-[#64748b] font-mono text-[10px] uppercase tracking-widest">
-                Reward Commission
-              </label>
-              <span className="flex items-center gap-1 font-mono text-xs font-bold text-[#ffaf52]">
+              <label className="text-muted text-[11px] font-semibold">Reward Commission</label>
+              <span className="flex items-center gap-1 font-mono text-xs font-bold text-warning">
                 <PercentIcon size={10} />
                 {commissionPct}%
-                <span className="text-[#64748b] font-normal">({commissionBps} bps)</span>
+                <span className="text-muted font-normal">({commissionBps} bps)</span>
               </span>
             </div>
 
@@ -224,24 +220,24 @@ export const LockRentOutModal: React.FC<LockRentOutModalProps> = ({ open, onOpen
                   [&::-webkit-slider-thumb]:w-4
                   [&::-webkit-slider-thumb]:h-4
                   [&::-webkit-slider-thumb]:rounded-none
-                  [&::-webkit-slider-thumb]:bg-[#ffaf52]
+                  [&::-webkit-slider-thumb]:bg-warning
                   [&::-webkit-slider-thumb]:border
-                  [&::-webkit-slider-thumb]:border-[#ffaf52]/80
+                  [&::-webkit-slider-thumb]:border-warning/80
                   [&::-webkit-slider-thumb]:shadow-[0_0_8px_rgba(255,175,82,0.5)]
                   [&::-webkit-slider-thumb]:cursor-grab
                   [&::-moz-range-thumb]:w-4
                   [&::-moz-range-thumb]:h-4
                   [&::-moz-range-thumb]:rounded-none
-                  [&::-moz-range-thumb]:bg-[#ffaf52]
+                  [&::-moz-range-thumb]:bg-warning
                   [&::-moz-range-thumb]:border
-                  [&::-moz-range-thumb]:border-[#ffaf52]/80
+                  [&::-moz-range-thumb]:border-warning/80
                   [&::-moz-range-thumb]:cursor-grab"
                 style={{
-                  background: `linear-gradient(to right, #ffaf52 ${commissionBps}%, rgba(255,255,255,0.1) ${commissionBps}%)`,
+                  background: `linear-gradient(to right, #d97706 ${commissionBps}%, rgba(255,255,255,0.1) ${commissionBps}%)`,
                 }}
               />
               {/* Scale ticks */}
-              <div className="flex justify-between font-mono text-[9px] text-[#64748b] px-0.5">
+              <div className="flex justify-between font-mono text-[9px] text-muted px-0.5">
                 <span>0%</span>
                 <span>0.25%</span>
                 <span>0.50%</span>
@@ -250,33 +246,31 @@ export const LockRentOutModal: React.FC<LockRentOutModalProps> = ({ open, onOpen
               </div>
             </div>
 
-            <p className="text-[#64748b] font-mono text-[10px]">
+            <p className="text-muted font-mono text-[10px]">
               Renter gets{' '}
-              <span className="text-white font-bold">
+              <span className="text-foreground font-bold">
                 {(100 - parseFloat(commissionPct)).toFixed(2)}%
               </span>{' '}
               of epoch rewards; you receive{' '}
-              <span className="text-[#ffaf52] font-bold">{commissionPct}%</span> as commission.
+              <span className="text-warning font-bold">{commissionPct}%</span> as commission.
             </p>
           </div>
 
           {/* ── 3. Duration ─────────────────────────────────────────────────── */}
           <div className="flex flex-col gap-2">
-            <label className="text-[#64748b] font-mono text-[10px] uppercase tracking-widest">
-              Rent Duration (days)
-            </label>
+            <label className="text-muted text-[11px] font-semibold">Rent Duration (days)</label>
 
-            <div className="flex items-center gap-2 border border-white/10 focus-within:border-[#2962ff]/60 transition-colors">
-              <ClockIcon size={13} className="text-[#64748b] ml-3 shrink-0" />
+            <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-background/50 px-3 py-2 transition-colors focus-within:border-accent/50">
+              <ClockIcon size={13} className="text-muted ml-3 shrink-0" />
               <input
                 type="number"
                 min={7}
                 value={durationDays}
                 onChange={(e) => setDurationDays(e.target.value)}
                 placeholder="e.g. 28"
-                className="bg-transparent px-2 py-3 font-mono text-sm text-white placeholder:text-[#64748b] outline-none flex-1 min-w-0"
+                className="bg-transparent px-2 py-3 font-mono text-sm text-foreground placeholder:text-muted outline-none flex-1 min-w-0"
               />
-              <span className="text-[#64748b] font-mono text-xs px-3 shrink-0">days</span>
+              <span className="text-muted font-mono text-xs px-3 shrink-0">days</span>
             </div>
 
             {/* Duration presets */}
@@ -287,8 +281,8 @@ export const LockRentOutModal: React.FC<LockRentOutModalProps> = ({ open, onOpen
                   onClick={() => setDurationDays(String(p.days))}
                   className={`flex-1 border py-1.5 font-mono text-[10px] transition-colors ${
                     parsedDays === p.days
-                      ? 'border-[#2962ff] text-[#2962ff] bg-[#2962ff]/10'
-                      : 'border-white/10 text-[#94a3b8] hover:border-[#2962ff]/50 hover:text-[#2962ff]'
+                      ? 'border-accent text-accent bg-accent/10'
+                      : 'border-white/10 text-muted hover:border-accent/50 hover:text-accent'
                   }`}
                 >
                   {p.label}
@@ -297,34 +291,30 @@ export const LockRentOutModal: React.FC<LockRentOutModalProps> = ({ open, onOpen
             </div>
 
             {parsedDays > 0 && parsedDays < 7 && (
-              <p className="text-[#ff4757] font-mono text-[10px]">
-                Minimum rental duration is 7 days.
-              </p>
+              <p className="text-alert font-mono text-[10px]">Minimum rental duration is 7 days.</p>
             )}
             {endDate && parsedDays >= 7 && (
-              <p className="text-[#64748b] font-mono text-[10px]">
-                Listing expires <span className="text-white font-bold">{endDate}</span>
+              <p className="text-muted font-mono text-[10px]">
+                Listing expires <span className="text-foreground font-bold">{endDate}</span>
               </p>
             )}
           </div>
 
           {/* ── 4. Price per Epoch ───────────────────────────────────────────── */}
           <div className="flex flex-col gap-2">
-            <label className="text-[#64748b] font-mono text-[10px] uppercase tracking-widest">
-              Price per Epoch
-            </label>
-            <div className="flex items-center gap-2 border border-white/10 focus-within:border-[#2962ff]/60 transition-colors">
-              <CoinsIcon size={13} className="text-[#64748b] ml-3 shrink-0" />
+            <label className="text-muted text-[11px] font-semibold">Price per Epoch</label>
+            <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-background/50 px-3 py-2 transition-colors focus-within:border-accent/50">
+              <CoinsIcon size={13} className="text-muted ml-3 shrink-0" />
               <input
                 type="number"
                 min={0}
                 value={pricePerEpoch}
                 onChange={(e) => setPricePerEpoch(e.target.value)}
                 placeholder="0.00"
-                className="bg-transparent px-2 py-3 font-mono text-sm text-white placeholder:text-[#64748b] outline-none flex-1 min-w-0"
+                className="bg-transparent px-2 py-3 font-mono text-sm text-foreground placeholder:text-muted outline-none flex-1 min-w-0"
               />
               {paymentToken && (
-                <span className="text-[#64748b] font-mono text-xs px-3 shrink-0">
+                <span className="text-muted font-mono text-xs px-3 shrink-0">
                   {paymentToken.symbol}
                 </span>
               )}
@@ -333,12 +323,10 @@ export const LockRentOutModal: React.FC<LockRentOutModalProps> = ({ open, onOpen
 
           {/* ── 5. Payment Token ─────────────────────────────────────────────── */}
           <div className="flex flex-col gap-2">
-            <label className="text-[#64748b] font-mono text-[10px] uppercase tracking-widest">
-              Payment Token
-            </label>
+            <label className="text-muted text-[11px] font-semibold">Payment Token</label>
             <button
               onClick={() => setTokenModalOpen(true)}
-              className="w-full flex items-center justify-between border border-white/10 bg-transparent px-3 py-3 hover:border-[#2962ff]/50 transition-colors cursor-pointer outline-none"
+              className="w-full flex items-center justify-between border border-white/10 bg-transparent px-3 py-3 hover:border-accent/50 transition-colors cursor-pointer outline-none"
             >
               {paymentToken ? (
                 <span className="flex items-center gap-2">
@@ -353,21 +341,21 @@ export const LockRentOutModal: React.FC<LockRentOutModalProps> = ({ open, onOpen
                   ) : (
                     <div className="w-4.5 h-4.5 rounded-full bg-white/10" />
                   )}
-                  <span className="font-mono text-xs font-bold text-white">
+                  <span className="font-mono text-xs font-bold text-foreground">
                     {paymentToken.symbol}
                   </span>
-                  <span className="font-mono text-[10px] text-[#64748b]">{paymentToken.name}</span>
+                  <span className="font-mono text-[10px] text-muted">{paymentToken.name}</span>
                 </span>
               ) : (
-                <span className="font-mono text-xs text-[#64748b]">Select a token…</span>
+                <span className="font-mono text-xs text-muted">Select a token…</span>
               )}
-              <ChevronDownIcon size={14} className="text-[#64748b]" />
+              <ChevronDownIcon size={14} className="text-muted" />
             </button>
           </div>
 
           {/* ── Summary Preview ──────────────────────────────────────────────── */}
           {isValid && selectedLock && (
-            <div className="border border-[#2962ff]/20 bg-[#2962ff]/5 px-4 py-3 flex flex-col gap-2">
+            <div className="flex flex-col gap-2 rounded-2xl border border-accent/20 bg-accent/5 px-4 py-3">
               {[
                 {
                   label: 'Lock',
@@ -393,8 +381,8 @@ export const LockRentOutModal: React.FC<LockRentOutModalProps> = ({ open, onOpen
                 },
               ].map((row) => (
                 <div key={row.label} className="flex justify-between items-center">
-                  <span className="text-[#64748b] font-mono text-xs">{row.label}</span>
-                  <span className="text-white font-bold font-mono text-xs">{row.value}</span>
+                  <span className="text-muted font-mono text-xs">{row.label}</span>
+                  <span className="text-foreground font-bold font-mono text-xs">{row.value}</span>
                 </div>
               ))}
             </div>
@@ -403,7 +391,7 @@ export const LockRentOutModal: React.FC<LockRentOutModalProps> = ({ open, onOpen
           {/* ── CTA ──────────────────────────────────────────────────────────── */}
           <PrimaryButton
             disabled={!isValid || createRental.isLoading || marketPlaceApproval.isLoading}
-            className="w-full py-3 gap-2 font-mono text-xs uppercase tracking-widest disabled:opacity-40 disabled:cursor-not-allowed"
+            className="w-full py-3 gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
             onClick={initiateTransaction}
           >
             {!marketPlaceAllowed ? (

@@ -27,13 +27,13 @@ import { formatNumber } from '@/utils';
 const PoolBadge: React.FC<{ type: PoolType; className?: string }> = ({ type, className = '' }) => {
   const color =
     type === 'STABLE'
-      ? 'bg-[#00ff9d]/10 text-[#00ff9d]'
+      ? 'bg-accent-2/10 text-accent-2'
       : type === 'VOLATILE'
-      ? 'bg-[#ffaf52]/10 text-[#ffaf52]'
-      : 'bg-[#2962ff]/10 text-[#2962ff]';
+      ? 'bg-warning/10 text-warning'
+      : 'bg-accent/10 text-accent';
   return (
     <span
-      className={`px-1.5 py-0.5 text-[10px] uppercase font-bold tracking-widest whitespace-nowrap ${color} ${className}`}
+      className={`whitespace-nowrap rounded-full px-2 py-0.5 text-[10px] font-semibold ${color} ${className}`}
     >
       {type.toLowerCase()}
     </span>
@@ -130,10 +130,8 @@ export const MainView: React.FC = () => {
         <div className="flex flex-col gap-6 w-full">
           {/* Header */}
           <div className="flex flex-col gap-1">
-            <h3 className="text-white font-bold font-mono text-sm uppercase tracking-widest">
-              Add Incentive
-            </h3>
-            <p className="text-[#64748b] font-mono text-xs leading-relaxed">
+            <h3 className="text-foreground font-bold font-mono text-sm">Add Incentive</h3>
+            <p className="text-muted font-mono text-xs leading-relaxed">
               Incentivize a gauge pool by adding tokens. This attracts veMGN voters to direct more
               MAG emissions toward your pool.
             </p>
@@ -143,17 +141,15 @@ export const MainView: React.FC = () => {
           <div className="flex flex-col gap-5">
             {/* Pool Selector */}
             <div className="flex flex-col gap-2">
-              <label className="text-[#64748b] font-mono text-[10px] uppercase tracking-widest">
-                Target Pool
-              </label>
+              <label className="text-muted text-[11px] font-semibold">Target Pool</label>
               <DropdownMenu.Root>
                 <DropdownMenu.Trigger asChild>
                   <button
                     disabled={poolsLoading}
-                    className="flex justify-between items-center w-full px-4 py-3 bg-[#131525]/60 backdrop-blur-sm border border-white/10 rounded-xl hover:border-[#2962ff]/50 transition-colors cursor-pointer outline-none font-mono text-xs"
+                    className="flex w-full cursor-pointer items-center justify-between rounded-2xl border border-white/[0.08] bg-background/50 px-4 py-3 text-sm outline-none transition-colors hover:border-accent/40"
                   >
                     {!selectedPool ? (
-                      <span className="text-[#94a3b8]">
+                      <span className="text-muted">
                         {poolsLoading ? 'Loading pools...' : 'Select a pool...'}
                       </span>
                     ) : (
@@ -182,11 +178,11 @@ export const MainView: React.FC = () => {
                             <div className="w-4 h-4 rounded-full bg-white/20" />
                           )}
                         </div>
-                        <span className="text-white font-bold">{selectedPool.name}</span>
+                        <span className="text-foreground font-bold">{selectedPool.name}</span>
                         <PoolBadge type={selectedPool.poolType} />
                       </div>
                     )}
-                    <ChevronDownIcon size={14} className="text-[#64748b]" />
+                    <ChevronDownIcon size={14} className="text-muted" />
                   </button>
                 </DropdownMenu.Trigger>
 
@@ -194,7 +190,7 @@ export const MainView: React.FC = () => {
                   <DropdownMenu.Content
                     align="start"
                     sideOffset={4}
-                    className="w-(--radix-popper-anchor-width) max-h-64 overflow-y-auto bg-[#131525]/50 backdrop-blur-sm border border-[#2962ff]/20 rounded-xl py-1 shadow-xl z-50 font-mono text-xs"
+                    className="z-50 max-h-64 w-(--radix-popper-anchor-width) overflow-y-auto rounded-2xl border border-white/[0.08] bg-surface/95 py-1.5 text-xs shadow-[0_16px_50px_rgba(0,0,0,0.4)] backdrop-blur-xl"
                   >
                     {viablePools.map((pool) => {
                       const t0 = assetsDictionary[(pool.token0.address as string).toLowerCase()];
@@ -229,7 +225,7 @@ export const MainView: React.FC = () => {
                               <div className="w-4 h-4 rounded-full bg-white/20" />
                             )}
                           </div>
-                          <span className="font-bold text-white uppercase">{pool.name}</span>
+                          <span className="font-bold text-foreground uppercase">{pool.name}</span>
                           <PoolBadge type={pool.poolType} className="ml-auto" />
                         </DropdownMenu.Item>
                       );
@@ -242,19 +238,17 @@ export const MainView: React.FC = () => {
             {/* Token & Amount */}
             <div className="flex flex-col gap-2">
               <div className="flex justify-between items-center">
-                <label className="text-[#64748b] font-mono text-[10px] uppercase tracking-widest">
-                  Incentive Amount
-                </label>
+                <label className="text-muted text-[11px] font-semibold">Incentive Amount</label>
                 {/* Balance mocked for now, would use GetBalance on selectedToken */}
-                <span className="text-[#64748b] font-mono text-[10px]">
+                <span className="text-muted font-mono text-[10px]">
                   Balance:{' '}
-                  <span className="text-white">
+                  <span className="text-foreground">
                     {formatNumber(formatUnits(balance, selectedToken?.decimals || 18))}
                   </span>
                 </span>
               </div>
 
-              <div className="flex items-center gap-2 bg-[#131525]/60 backdrop-blur-sm border border-white/10 rounded-xl p-2 focus-within:border-[#2962ff] focus-within:shadow-[0_0_15px_rgba(41,98,255,0.2)] transition-all duration-300 h-14">
+              <div className="flex h-14 items-center gap-2 rounded-2xl border border-white/[0.08] bg-background/50 p-2 transition-colors focus-within:border-accent/40">
                 <button
                   onClick={() => setIsTokenModalOpen(true)}
                   className="flex items-center gap-2 px-3 py-1.5 hover:bg-white/5 transition-colors rounded-sm"
@@ -274,14 +268,16 @@ export const MainView: React.FC = () => {
                           <span className="text-blue-600 text-[8px] font-bold">Tk</span>
                         </div>
                       )}
-                      <span className="text-white font-bold font-mono text-sm">
+                      <span className="text-foreground font-bold font-mono text-sm">
                         {selectedToken.symbol}
                       </span>
                     </>
                   ) : (
-                    <span className="text-white font-bold font-mono text-sm">Select Token</span>
+                    <span className="text-foreground font-bold font-mono text-sm">
+                      Select Token
+                    </span>
                   )}
-                  <ChevronDownIcon size={14} className="text-[#94a3b8]" />
+                  <ChevronDownIcon size={14} className="text-muted" />
                 </button>
                 <div className="w-px h-6 bg-white/10" />
                 <input
@@ -291,7 +287,7 @@ export const MainView: React.FC = () => {
                   placeholder="0.00"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
-                  className="bg-transparent px-3 flex-1 min-w-0 outline-none text-white font-mono text-lg text-right"
+                  className="bg-transparent px-3 flex-1 min-w-0 outline-none text-foreground font-mono text-lg text-right"
                 />
               </div>
 
@@ -308,7 +304,7 @@ export const MainView: React.FC = () => {
                         ),
                       )
                     }
-                    className="flex-1 py-1 border border-white/10 text-[#94a3b8] hover:text-[#2962ff] hover:border-[#2962ff]/50 transition-colors font-mono text-[10px]"
+                    className="flex-1 py-1 border border-white/10 text-muted hover:text-accent hover:border-accent/50 transition-colors font-mono text-[10px]"
                   >
                     {pct === 100 ? 'MAX' : `${pct}%`}
                   </button>
@@ -318,7 +314,7 @@ export const MainView: React.FC = () => {
 
             {/* Action */}
             <PrimaryButton
-              className="w-full mt-2 py-3.5 gap-2 uppercase tracking-widest font-mono text-xs disabled:opacity-40"
+              className="mt-2 w-full gap-2 py-3.5 text-sm disabled:opacity-40"
               disabled={!isValid}
               onClick={initiateTransaction}
             >

@@ -12,7 +12,6 @@ export const Pagination: React.FC<PaginationProps> = ({
   totalPages = 10,
   onPageChange,
 }) => {
-  // Build visible page numbers (max 5 shown)
   const getPages = () => {
     if (totalPages <= 5) return Array.from({ length: totalPages }, (_, i) => i + 1);
     if (currentPage <= 3) return [1, 2, 3, 4, 5];
@@ -23,34 +22,26 @@ export const Pagination: React.FC<PaginationProps> = ({
 
   const pages = getPages();
 
+  const btn =
+    'w-8 h-8 flex justify-center items-center border border-white/10 text-muted rounded-xl text-xs transition-colors duration-150 disabled:opacity-25 disabled:cursor-not-allowed hover:border-accent/40 hover:text-accent hover:bg-accent/10';
+
   return (
     <div className="flex items-center gap-1 font-mono">
-      {/* Prev */}
       <button
         disabled={currentPage === 1}
         onClick={() => onPageChange?.(currentPage - 1)}
-        className="w-7 h-7 flex justify-center items-center border border-white/10 text-[#64748b] rounded-md
-          disabled:opacity-25 disabled:cursor-not-allowed
-          hover:border-[#2962ff]/50 hover:text-[#2962ff] hover:bg-[#2962ff]/5 hover:shadow-[0_0_8px_rgba(41,98,255,0.15)]
-          transition-all duration-150 active:scale-90"
+        className={btn}
       >
         <ChevronLeft size={12} />
       </button>
 
-      {/* Page numbers */}
       {pages[0] > 1 && (
         <>
-          <button
-            onClick={() => onPageChange?.(1)}
-            className="w-7 h-7 flex justify-center items-center text-[10px] border border-white/10 rounded-md
-              text-[#64748b] hover:border-[#2962ff]/50 hover:text-[#2962ff] hover:bg-[#2962ff]/5 hover:shadow-[0_0_8px_rgba(41,98,255,0.15)] transition-all duration-150"
-          >
+          <button onClick={() => onPageChange?.(1)} className={btn}>
             1
           </button>
           {pages[0] > 2 && (
-            <span className="w-7 h-7 flex items-center justify-center text-[#334155] text-[10px]">
-              …
-            </span>
+            <span className="flex h-8 w-8 items-center justify-center text-xs text-dim">…</span>
           )}
         </>
       )}
@@ -59,10 +50,8 @@ export const Pagination: React.FC<PaginationProps> = ({
         <button
           key={p}
           onClick={() => onPageChange?.(p)}
-          className={`w-7 h-7 flex justify-center items-center text-[10px] border rounded-md transition-all duration-150 ${
-            p === currentPage
-              ? 'border-[#2962ff] text-[#2962ff] bg-[#2962ff]/10 shadow-[0_0_12px_rgba(41,98,255,0.3)] font-bold'
-              : 'border-white/10 text-[#64748b] hover:border-[#2962ff]/50 hover:text-[#2962ff] hover:bg-[#2962ff]/5 hover:shadow-[0_0_8px_rgba(41,98,255,0.15)]'
+          className={`${btn} ${
+            p === currentPage ? 'border-accent/50 bg-accent/15 text-accent font-bold' : ''
           }`}
         >
           {p}
@@ -72,28 +61,18 @@ export const Pagination: React.FC<PaginationProps> = ({
       {pages[pages.length - 1] < totalPages && (
         <>
           {pages[pages.length - 1] < totalPages - 1 && (
-            <span className="w-7 h-7 flex items-center justify-center text-[#334155] text-[10px]">
-              …
-            </span>
+            <span className="flex h-8 w-8 items-center justify-center text-xs text-dim">…</span>
           )}
-          <button
-            onClick={() => onPageChange?.(totalPages)}
-            className="w-7 h-7 flex justify-center items-center text-[10px] border border-white/10 rounded-md
-              text-[#64748b] hover:border-[#2962ff]/50 hover:text-[#2962ff] hover:bg-[#2962ff]/5 hover:shadow-[0_0_8px_rgba(41,98,255,0.15)] transition-all duration-150"
-          >
+          <button onClick={() => onPageChange?.(totalPages)} className={btn}>
             {totalPages}
           </button>
         </>
       )}
 
-      {/* Next */}
       <button
         disabled={currentPage === totalPages}
         onClick={() => onPageChange?.(currentPage + 1)}
-        className="w-7 h-7 flex justify-center items-center border border-white/10 text-[#64748b] rounded-md
-          disabled:opacity-25 disabled:cursor-not-allowed
-          hover:border-[#2962ff]/50 hover:text-[#2962ff] hover:bg-[#2962ff]/5 hover:shadow-[0_0_8px_rgba(41,98,255,0.15)]
-          transition-all duration-150 active:scale-90"
+        className={btn}
       >
         <ChevronRight size={12} />
       </button>

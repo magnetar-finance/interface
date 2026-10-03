@@ -70,22 +70,20 @@ export const AdjustUnlockTimeModal: React.FC<AdjustUnlockTimeModalProps> = ({
           {/* Lock info */}
           <div className="grid grid-cols-2 gap-2">
             <div className="border border-white/5 bg-white/3 px-3 py-2.5 flex flex-col gap-0.5">
-              <span className="text-[#64748b] font-mono text-[10px] uppercase tracking-widest">
-                Lock
-              </span>
-              <span className="text-white font-bold font-mono text-xs">{tokenId ?? '—'}</span>
+              <span className="text-muted text-[11px] font-semibold">Lock</span>
+              <span className="text-foreground font-bold font-mono text-xs">{tokenId ?? '—'}</span>
             </div>
             <div className="border border-white/5 bg-white/3 px-3 py-2.5 flex flex-col gap-0.5">
-              <span className="text-[#64748b] font-mono text-[10px] uppercase tracking-widest">
-                Current Expiry
+              <span className="text-muted text-[11px] font-semibold">Current Expiry</span>
+              <span className="text-foreground font-bold font-mono text-xs">
+                {currentExpiry ?? '—'}
               </span>
-              <span className="text-white font-bold font-mono text-xs">{currentExpiry ?? '—'}</span>
             </div>
           </div>
 
           {/* Duration picker */}
           <div className="flex flex-col gap-2">
-            <label className="text-[#64748b] font-mono text-[10px] uppercase tracking-widest">
+            <label className="text-muted text-[11px] font-semibold">
               New Lock Duration (from today)
             </label>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -95,8 +93,8 @@ export const AdjustUnlockTimeModal: React.FC<AdjustUnlockTimeModalProps> = ({
                   onClick={() => setSelectedWeeks(opt.weeks)}
                   className={`border px-3 py-2.5 font-mono text-xs text-left transition-colors ${
                     selectedWeeks === opt.weeks
-                      ? 'border-[#2962ff] text-[#2962ff] bg-[#2962ff]/10'
-                      : 'border-white/10 text-[#94a3b8] hover:border-white/30 hover:text-white'
+                      ? 'border-accent text-accent bg-accent/10'
+                      : 'border-white/10 text-muted hover:border-white/30 hover:text-foreground'
                   }`}
                 >
                   {opt.label}
@@ -107,15 +105,15 @@ export const AdjustUnlockTimeModal: React.FC<AdjustUnlockTimeModalProps> = ({
 
           {/* New expiry preview */}
           {newExpiry && (
-            <div className="flex justify-between items-center border border-[#2962ff]/20 bg-[#2962ff]/5 px-3 py-2.5">
-              <span className="text-[#64748b] font-mono text-xs">New Unlock Date</span>
-              <span className="text-[#2962ff] font-bold font-mono text-xs">{newExpiry}</span>
+            <div className="flex items-center justify-between rounded-2xl border border-accent/20 bg-accent/5 px-3 py-2.5">
+              <span className="text-muted font-mono text-xs">New Unlock Date</span>
+              <span className="text-accent font-bold font-mono text-xs">{newExpiry}</span>
             </div>
           )}
 
           <PrimaryButton
             disabled={!selectedWeeks || adjustLockTime.isLoading}
-            className="w-full py-3 gap-2 font-mono text-xs uppercase tracking-widest disabled:opacity-40 disabled:cursor-not-allowed"
+            className="w-full py-3 gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
             onClick={adjustLockTime.execute}
           >
             <ClockIcon size={14} />

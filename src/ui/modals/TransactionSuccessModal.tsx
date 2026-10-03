@@ -27,13 +27,13 @@ export const TransactionSuccessModal: React.FC<TransactionSuccessModalProps> = (
       </div>
 
       <div className="flex flex-col gap-2 w-full">
-        <p className="text-white text-lg font-bold font-sans">{message}</p>
+        <p className="text-foreground text-lg font-bold font-sans">{message}</p>
         {txHash && (
           <a
             href={explorerUrl ? `${explorerUrl}/tx/${txHash}` : '#'}
             target={explorerUrl ? '_blank' : undefined}
             rel={explorerUrl ? 'noopener noreferrer' : undefined}
-            className="text-[#2962ff] hover:underline text-sm font-medium"
+            className="text-accent hover:underline text-sm font-medium"
           >
             View on Explorer
           </a>

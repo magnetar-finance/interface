@@ -10,7 +10,7 @@ import { useAccount } from 'wagmi';
 export default function Home() {
   const { isConnected } = useAccount();
   return (
-    <main className="w-full flex justify-center items-center">
+    <main className="w-full">
       {isConnected ? (
         <div className="flex flex-col justify-center items-start gap-5 md:gap-12 w-full">
           <PageHeader

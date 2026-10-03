@@ -190,7 +190,7 @@ export const StandardDepositView: React.FC<{
         {/* Plus Divider */}
         <div className="w-full flex justify-center -my-3 z-10">
           <div className="bg-transparent border border-transparent p-1">
-            <div className="bg-[#131525]/60 backdrop-blur-sm rounded-xl border border-[#2962ff]/50 p-1 flex justify-center items-center text-[#2962ff] shadow-[0_0_15px_rgba(41,98,255,0.2)]">
+            <div className="bg-surface/60 backdrop-blur-sm rounded-xl border border-accent/50 p-1 flex justify-center items-center text-accent">
               <PlusIcon size={16} />
             </div>
           </div>
@@ -219,7 +219,7 @@ export const StandardDepositView: React.FC<{
                 approvalB.isLoading) &&
               isConnected
             }
-            className="w-full py-4 text-base tracking-widest font-bold"
+            className="w-full"
             onClick={initiateTransaction}
           >
             {buttonText}{' '}
@@ -228,7 +228,7 @@ export const StandardDepositView: React.FC<{
             )}
           </PrimaryButton>
         ) : (
-          <WalletConnectButton className="w-full py-4 tracking-widest font-bold" />
+          <WalletConnectButton className="w-full" size="lg" />
         )}
       </div>
 

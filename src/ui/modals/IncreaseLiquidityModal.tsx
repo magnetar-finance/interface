@@ -141,16 +141,16 @@ export const IncreaseLiquidityModal: React.FC<IncreaseLiquidityModalProps> = ({
       <Modal open={open} onOpenChange={onOpenChange} title="Increase Liquidity">
         <div className="flex flex-col p-5 gap-6">
           <div className="flex justify-between items-center w-full">
-            <span className="text-[#94a3b8] font-semibold text-sm">Pool</span>
-            <span className="text-white font-bold text-sm tracking-wide">{poolName}</span>
+            <span className="text-muted font-semibold text-sm">Pool</span>
+            <span className="text-foreground font-bold text-sm tracking-wide">{poolName}</span>
           </div>
 
           {/* Amount Input Section */}
           <div className="flex flex-col gap-4">
-            <span className="text-[#94a3b8] text-sm font-semibold">Amounts</span>
+            <span className="text-muted text-sm font-semibold">Amounts</span>
 
             <div className="flex flex-col gap-2">
-              <div className="flex justify-between items-center bg-[#131525]/60 backdrop-blur-sm border border-white/10 rounded-xl p-3 h-15">
+              <div className="flex justify-between items-center bg-surface/60 backdrop-blur-sm border border-white/10 rounded-xl p-3 h-15">
                 <div className="flex items-center gap-2 max-w-30 w-30">
                   {token0?.logoURI ? (
                     <Image
@@ -165,7 +165,7 @@ export const IncreaseLiquidityModal: React.FC<IncreaseLiquidityModalProps> = ({
                       <span className="text-blue-600 text-[10px] font-bold">T0</span>
                     </div>
                   )}
-                  <span className="text-white font-bold text-sm">
+                  <span className="text-foreground font-bold text-sm">
                     {token0?.symbol || position?.pool?.token0?.symbol || 'Token 0'}
                   </span>
                 </div>
@@ -174,11 +174,11 @@ export const IncreaseLiquidityModal: React.FC<IncreaseLiquidityModalProps> = ({
                   value={amount0}
                   onChange={(e) => setAmount0(e.target.value)}
                   placeholder="0.0"
-                  className="bg-transparent text-white font-mono text-xl outline-none text-right flex-1 min-w-0"
+                  className="bg-transparent text-foreground font-mono text-xl outline-none text-right flex-1 min-w-0"
                 />
               </div>
 
-              <div className="flex justify-between items-center bg-[#131525]/60 backdrop-blur-sm border border-white/10 rounded-xl p-3 h-15">
+              <div className="flex justify-between items-center bg-surface/60 backdrop-blur-sm border border-white/10 rounded-xl p-3 h-15">
                 <div className="flex items-center gap-2 max-w-30 w-30">
                   {token1?.logoURI ? (
                     <Image
@@ -193,7 +193,7 @@ export const IncreaseLiquidityModal: React.FC<IncreaseLiquidityModalProps> = ({
                       <span className="text-amber-600 text-[10px] font-bold">T1</span>
                     </div>
                   )}
-                  <span className="text-white font-bold text-sm">
+                  <span className="text-foreground font-bold text-sm">
                     {token1?.symbol || position?.pool?.token1?.symbol || 'Token 1'}
                   </span>
                 </div>
@@ -202,7 +202,7 @@ export const IncreaseLiquidityModal: React.FC<IncreaseLiquidityModalProps> = ({
                   value={amount1}
                   onChange={(e) => setAmount1(e.target.value)}
                   placeholder="0.0"
-                  className="bg-transparent text-white font-mono text-xl outline-none text-right flex-1 min-w-0"
+                  className="bg-transparent text-foreground font-mono text-xl outline-none text-right flex-1 min-w-0"
                 />
               </div>
             </div>
@@ -211,7 +211,7 @@ export const IncreaseLiquidityModal: React.FC<IncreaseLiquidityModalProps> = ({
           {/* Action Button */}
           <PrimaryButton
             disabled={isInvalid}
-            className="w-full py-4 uppercase tracking-widest font-bold disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full py-3 font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
             onClick={initiateTransaction}
           >
             {buttonText}{' '}

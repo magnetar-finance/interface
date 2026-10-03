@@ -4,7 +4,7 @@ import { Suspense } from 'react';
 
 export default function Page() {
   return (
-    <main className="w-full flex justify-center items-center mt-10 md:mt-14">
+    <main className="flex w-full justify-center">
       <Suspense
         fallback={<div className="w-full h-96 flex justify-center items-center">Loading...</div>}
       >

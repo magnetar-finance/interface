@@ -90,7 +90,7 @@ const LockActionMenu: React.FC<{
     <DropdownMenu.Root>
       <DropdownMenu.Trigger asChild>
         <button
-          className="p-1.5 border border-white/10 text-[#94a3b8] hover:border-[#2962ff]/50 hover:text-white hover:bg-[#2962ff]/5 transition-all duration-200 cursor-pointer rounded-lg"
+          className="p-1.5 border border-white/10 text-muted hover:border-accent/50 hover:text-foreground hover:bg-accent/5 transition-all duration-200 cursor-pointer rounded-lg"
           aria-label="Lock actions"
         >
           <MoreHorizontalIcon size={14} />
@@ -99,7 +99,7 @@ const LockActionMenu: React.FC<{
 
       <DropdownMenu.Portal>
         <DropdownMenu.Content
-          className="bg-[#131525]/90 backdrop-blur-xl border border-[#2962ff]/15 rounded-xl py-1.5 z-50 font-sans text-xs shadow-[0_8px_32px_rgba(0,0,0,0.5),0_0_15px_rgba(41,98,255,0.08)] min-w-45"
+          className="bg-surface/90 backdrop-blur-xl border border-white/[0.08] rounded-2xl py-1.5 z-50 font-sans text-xs shadow-[0_16px_50px_rgba(0,0,0,0.4)] min-w-45"
           sideOffset={4}
           align="end"
         >
@@ -109,8 +109,8 @@ const LockActionMenu: React.FC<{
               onClick={action.onClick}
               className={`flex items-center gap-2.5 px-3 py-2.5 cursor-pointer transition-all duration-150 outline-none rounded-lg mx-1 ${
                 action.danger
-                  ? 'text-[#ff4757] hover:bg-[#ff4757]/10 focus:bg-[#ff4757]/10'
-                  : 'text-[#94a3b8] hover:bg-white/5 hover:text-white focus:bg-white/5 focus:text-white'
+                  ? 'text-alert hover:bg-alert/10 focus:bg-alert/10'
+                  : 'text-muted hover:bg-white/5 hover:text-foreground focus:bg-white/5 focus:text-foreground'
               }`}
             >
               <span className="opacity-70">{action.icon}</span>
@@ -133,9 +133,9 @@ const StatusBadge: React.FC<{ unlockTime: Lock['unlockTime'] }> = ({ unlockTime 
   const now = useMemo(() => Math.floor(date.getTime() / 1000), [date]);
   const style = useMemo(() => {
     if (expiry > now && expiry - now <= WEEK_IN_SECS)
-      return 'bg-[#ffaf52]/10 text-[#ffaf52] border-[#ffaf52]/30';
-    if (now < expiry) return 'bg-[#00ff9d]/10 text-[#00ff9d] border-[#00ff9d]/30';
-    return 'bg-white/5 text-[#64748b] border-white/10';
+      return 'bg-warning/10 text-warning border-warning/30';
+    if (now < expiry) return 'bg-accent-2/10 text-accent-2 border-accent-2/30';
+    return 'bg-white/5 text-muted border-white/10';
   }, [expiry, now]);
 
   const status = useMemo(() => {
@@ -145,9 +145,7 @@ const StatusBadge: React.FC<{ unlockTime: Lock['unlockTime'] }> = ({ unlockTime 
   }, [expiry, now]);
 
   return (
-    <span
-      className={`text-[10px] font-mono font-bold uppercase tracking-widest px-1.5 py-0.5 border ${style}`}
-    >
+    <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 border ${style}`}>
       {status}
     </span>
   );
@@ -213,26 +211,24 @@ const MyLocksTab: React.FC = () => {
       {/* Summary stats row */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {[
-          { label: 'Total Locks', value: allLocks.length.toString(), color: 'text-white' },
-          { label: 'Total Locked', value: totalLocked, color: 'text-white' },
+          { label: 'Total Locks', value: allLocks.length.toString(), color: 'text-foreground' },
+          { label: 'Total Locked', value: totalLocked, color: 'text-foreground' },
           {
             label: 'Total Voting Power Used',
             value: totalVotingPower.toFixed(4),
-            color: 'text-[#2962ff]',
+            color: 'text-accent',
           },
           {
             label: 'Active Locks',
             value: allLocks.filter((l) => parseInt(l.unlockTime as string) > now).length.toString(),
-            color: 'text-[#00ff9d]',
+            color: 'text-accent-2',
           },
         ].map((stat) => (
           <div
             key={stat.label}
             className="border border-white/5 bg-white/3 px-4 py-3 flex flex-col gap-1"
           >
-            <span className="text-[#64748b] text-[10px] font-mono uppercase tracking-widest">
-              {stat.label}
-            </span>
+            <span className="text-muted text-[10px] font-mono">{stat.label}</span>
             <span className={`font-bold font-mono text-sm ${stat.color}`}>{stat.value}</span>
           </div>
         ))}
@@ -242,9 +238,7 @@ const MyLocksTab: React.FC = () => {
       <FancyCard>
         <div className="flex flex-col gap-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-white font-bold font-mono text-xs uppercase tracking-widest">
-              Your Locks
-            </h3>
+            <h3 className="text-foreground font-bold">Your Locks</h3>
             <PrimaryButton
               className="text-xs font-mono gap-2 py-2 px-4"
               onClick={() => setActiveModal('createLock')}
@@ -269,25 +263,27 @@ const MyLocksTab: React.FC = () => {
                 {/* Lock ID */}
                 <td className="py-3 pr-4">
                   <div className="flex items-center gap-2">
-                    <div className="border border-[#2962ff]/30 bg-[#2962ff]/5 p-1.5">
-                      <LockIcon size={12} className="text-[#2962ff]" />
+                    <div className="border border-accent/30 bg-accent/5 p-1.5">
+                      <LockIcon size={12} className="text-accent" />
                     </div>
-                    <span className="font-bold font-mono text-white text-xs">Lock {lock.id}</span>
+                    <span className="font-bold font-mono text-foreground text-xs">
+                      Lock {lock.id}
+                    </span>
                   </div>
                 </td>
 
                 {/* Amount */}
-                <td className="py-3 pr-4 text-right font-mono text-xs text-white font-bold">
+                <td className="py-3 pr-4 text-right font-mono text-xs text-foreground font-bold">
                   {formatNumber(lock.position as string, 'en-US', 3)}
                 </td>
 
                 {/* Voting Power */}
-                <td className="py-3 pr-4 text-right font-mono text-xs font-bold text-[#2962ff]">
+                <td className="py-3 pr-4 text-right font-mono text-xs font-bold text-accent">
                   {formatNumber(lock.totalVoteWeightGiven as string, 'en-US', 3)}
                 </td>
 
                 {/* Expires */}
-                <td className="py-3 pr-4 text-right font-mono text-xs text-[#64748b]">
+                <td className="py-3 pr-4 text-right font-mono text-xs text-muted">
                   {new Date(parseInt(lock.unlockTime as string) * 1000).toLocaleString('en-US', {
                     minute: '2-digit',
                     hour: '2-digit',
@@ -311,13 +307,13 @@ const MyLocksTab: React.FC = () => {
             renderEmpty={() => (
               <div className="w-full flex flex-col items-center justify-center gap-6 py-16">
                 <div className="border-2 border-dashed border-white/10 p-6">
-                  <LockIcon size={48} className="text-[#64748b]" />
+                  <LockIcon size={48} className="text-muted" />
                 </div>
                 <div className="text-center space-y-2">
-                  <h4 className="text-white font-bold text-base uppercase tracking-widest font-mono">
+                  <h4 className="text-base font-bold tracking-tight text-foreground">
                     No Locks Found
                   </h4>
-                  <p className="text-[#64748b] font-mono text-xs">
+                  <p className="text-muted font-mono text-xs">
                     Lock MGN tokens to earn veMGN voting power.
                   </p>
                 </div>
@@ -398,22 +394,20 @@ const RentStatusBadge: React.FC<{ status: RentalStatus }> = ({ status }) => {
   const config = {
     AVAILABLE: {
       label: 'Available',
-      style: 'bg-[#00ff9d]/10 text-[#00ff9d] border-[#00ff9d]/30',
+      style: 'bg-accent-2/10 text-accent-2 border-accent-2/30',
     },
     RENTED_OUT: {
       label: 'Rented Out',
-      style: 'bg-[#2962ff]/10 text-[#2962ff] border-[#2962ff]/30',
+      style: 'bg-accent/10 text-accent border-accent/30',
     },
     EXPIRED: {
       label: 'Expired',
-      style: 'bg-white/5 text-[#64748b] border-white/10',
+      style: 'bg-white/5 text-muted border-white/10',
     },
   }[status];
 
   return (
-    <span
-      className={`text-[10px] font-mono font-bold uppercase tracking-widest px-1.5 py-0.5 border ${config.style}`}
-    >
+    <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 border ${config.style}`}>
       {config.label}
     </span>
   );
@@ -429,25 +423,23 @@ const CloseOutDialog: React.FC<{
     {/* Backdrop */}
     <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onCancel} />
     {/* Dialog */}
-    <div className="relative border border-[#ff4757]/30 bg-[#131525]/50 backdrop-blur-sm rounded-xl  w-full max-w-sm mx-4 flex flex-col gap-5 shadow-[0_0_40px_rgba(255,71,87,0.15)]">
+    <div className="relative border border-alert/30 bg-surface/50 backdrop-blur-sm rounded-xl  w-full max-w-sm mx-4 flex flex-col gap-5">
       {/* Header */}
       <div className="flex items-start gap-3">
-        <div className="border border-[#ff4757]/30 bg-[#ff4757]/5 p-2 shrink-0">
-          <AlertTriangleIcon size={16} className="text-[#ff4757]" />
+        <div className="border border-alert/30 bg-alert/5 p-2 shrink-0">
+          <AlertTriangleIcon size={16} className="text-alert" />
         </div>
         <div>
-          <h4 className="text-white font-bold font-mono text-sm uppercase tracking-widest">
-            Close Out Rental
-          </h4>
-          <p className="text-[#64748b] font-mono text-[10px] mt-1">
+          <h4 className="text-sm font-bold tracking-tight text-foreground">Close Out Rental</h4>
+          <p className="text-muted font-mono text-[10px] mt-1">
             Lock {String(lock.lockId)} · {formatNumber(String(lock.position), 'en-US', 2)} MGN
           </p>
         </div>
       </div>
 
       {/* Warning */}
-      <div className="border border-[#ffaf52]/20 bg-[#ffaf52]/5 px-3 py-2.5">
-        <p className="text-[#ffaf52] font-mono text-[10px] leading-relaxed">
+      <div className="border border-warning/20 bg-warning/5 px-3 py-2.5">
+        <p className="text-warning font-mono text-[10px] leading-relaxed">
           ⚠ Closing this rental will delist the lock and terminate any active rent agreement.
           Earned fees accumulated to date will still be claimable.
         </p>
@@ -468,10 +460,8 @@ const CloseOutDialog: React.FC<{
           { label: 'Type', value: lock.lockType },
         ].map((row) => (
           <div key={row.label} className="border border-white/5 bg-white/3 px-3 py-2">
-            <p className="text-[#64748b] font-mono text-[10px] uppercase tracking-widest">
-              {row.label}
-            </p>
-            <p className="text-white font-bold font-mono text-xs mt-0.5">{row.value}</p>
+            <p className="text-muted text-[11px] font-semibold">{row.label}</p>
+            <p className="text-foreground font-bold font-mono text-xs mt-0.5">{row.value}</p>
           </div>
         ))}
       </div>
@@ -483,7 +473,7 @@ const CloseOutDialog: React.FC<{
         </SecondaryButton>
         <button
           onClick={onConfirm}
-          className="flex-1 py-2.5 bg-[#ff4757]/10 text-[#ff4757] border border-[#ff4757]/50 font-mono text-xs font-bold uppercase tracking-widest hover:bg-[#ff4757] hover:text-white hover:shadow-[0_0_15px_rgba(255,71,87,0.4)] transition-all duration-100 cursor-pointer"
+          className="flex-1 py-2.5 bg-alert/10 text-alert border border-alert/50 font-mono text-xs font-bold hover:bg-alert hover:text-foreground transition-all duration-100 cursor-pointer"
         >
           Confirm Close Out
         </button>
@@ -553,26 +543,24 @@ const RentedOutTab: React.FC = () => {
           </>
         ) : (
           [
-            { label: 'Listed Locks', value: stats.total.toString(), color: 'text-white' },
+            { label: 'Listed Locks', value: stats.total.toString(), color: 'text-foreground' },
             {
               label: 'Rented Out',
               value: stats.activelyRented.toString(),
-              color: 'text-[#2962ff]',
+              color: 'text-accent',
             },
-            { label: 'Available', value: stats.available.toString(), color: 'text-[#00ff9d]' },
+            { label: 'Available', value: stats.available.toString(), color: 'text-accent-2' },
             {
               label: 'Total Reaped',
               value: formatNumber(stats.totalReaped.toString(), 'en-US', 2),
-              color: 'text-[#ffaf52]',
+              color: 'text-warning',
             },
           ].map((stat) => (
             <div
               key={stat.label}
               className="border border-white/5 bg-white/3 px-4 py-3 flex flex-col gap-1"
             >
-              <span className="text-[#64748b] text-[10px] font-mono uppercase tracking-widest">
-                {stat.label}
-              </span>
+              <span className="text-muted text-[10px] font-mono">{stat.label}</span>
               <span className={`font-bold font-mono text-sm ${stat.color}`}>{stat.value}</span>
             </div>
           ))
@@ -583,9 +571,7 @@ const RentedOutTab: React.FC = () => {
       <FancyCard>
         <div className="flex flex-col gap-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-white font-bold font-mono text-xs uppercase tracking-widest">
-              Rented Out Locks
-            </h3>
+            <h3 className="text-foreground font-bold">Rented Out Locks</h3>
             <PrimaryButton
               className="text-xs font-mono gap-2 py-2 px-4"
               onClick={() => setListModalOpen(true)}
@@ -623,15 +609,15 @@ const RentedOutTab: React.FC = () => {
                   {/* Lock ID */}
                   <td className="py-3 pr-4">
                     <div className="flex items-center gap-2">
-                      <div className="border border-[#2962ff]/30 bg-[#2962ff]/5 p-1.5">
-                        <KeyRoundIcon size={12} className="text-[#2962ff]" />
+                      <div className="border border-accent/30 bg-accent/5 p-1.5">
+                        <KeyRoundIcon size={12} className="text-accent" />
                       </div>
                       <div className="flex flex-col">
-                        <span className="font-bold font-mono text-white text-xs">
+                        <span className="font-bold font-mono text-foreground text-xs">
                           Lock {rental.lock.id}
                         </span>
                         {rental.buyer && (
-                          <span className="font-mono text-[10px] text-[#64748b]">
+                          <span className="font-mono text-[10px] text-muted">
                             → {splitString(rental.buyer.id)}
                           </span>
                         )}
@@ -640,20 +626,20 @@ const RentedOutTab: React.FC = () => {
                   </td>
 
                   {/* Amount Locked */}
-                  <td className="py-3 pr-4 text-right font-mono text-xs text-white font-bold">
+                  <td className="py-3 pr-4 text-right font-mono text-xs text-foreground font-bold">
                     {formatNumber(String(rental.lock.position), 'en-US', 2)}
-                    <span className="text-[#64748b] font-normal ml-1">MGN</span>
+                    <span className="text-muted font-normal ml-1">MGN</span>
                   </td>
 
                   {/* Rent Expiry */}
                   <td className="py-3 pr-4 text-right">
                     <div className="flex items-center justify-end gap-1.5">
-                      <ClockIcon size={11} className="text-[#64748b]" />
-                      <span className="font-mono text-xs text-white font-bold">
+                      <ClockIcon size={11} className="text-muted" />
+                      <span className="font-mono text-xs text-foreground font-bold">
                         {new Date(Number(rental.runsUntil) * 1000).toLocaleDateString()}
                       </span>
                     </div>
-                    <p className="text-[10px] font-mono text-[#64748b] text-right mt-0.5">
+                    <p className="text-[10px] font-mono text-muted text-right mt-0.5">
                       Epoch #{timestampToEpoch(Number(rental.runsUntil))}
                     </p>
                   </td>
@@ -661,22 +647,22 @@ const RentedOutTab: React.FC = () => {
                   {/* Escrow */}
                   <td className="py-3 pr-4 text-right">
                     <div className="flex items-center justify-end gap-1">
-                      <span className="font-mono text-xs font-bold text-[#ffaf52]">
+                      <span className="font-mono text-xs font-bold text-warning">
                         {splitString(rental.escrow as string)}
                       </span>
                     </div>
-                    <p className="text-[10px] font-mono text-[#64748b] text-right mt-0.5">Escrow</p>
+                    <p className="text-[10px] font-mono text-muted text-right mt-0.5">Escrow</p>
                   </td>
 
                   {/* Price */}
                   <td className="py-3 pr-4 text-right">
                     <div className="flex items-center justify-end gap-1">
-                      <CoinsIcon size={11} className="text-[#00ff9d]" />
-                      <span className="font-mono text-xs font-bold text-[#00ff9d]">
+                      <CoinsIcon size={11} className="text-accent-2" />
+                      <span className="font-mono text-xs font-bold text-accent-2">
                         {formatNumber(String(rental.price), 'en-US', 2)}
                       </span>
                     </div>
-                    <p className="text-[10px] font-mono text-[#64748b] text-right mt-0.5">
+                    <p className="text-[10px] font-mono text-muted text-right mt-0.5">
                       {rental.paymentToken.symbol}
                     </p>
                   </td>
@@ -694,7 +680,7 @@ const RentedOutTab: React.FC = () => {
                       title={
                         rental.status === 'EXPIRED' ? 'Already expired' : 'Close out this rental'
                       }
-                      className="flex items-center gap-1.5 px-2.5 py-1.5 border border-[#ff4757]/40 text-[#ff4757] bg-[#ff4757]/5 font-mono text-[10px] font-bold uppercase tracking-widest hover:bg-[#ff4757]/20 hover:border-[#ff4757] transition-colors cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-[#ff4757]/5 disabled:hover:border-[#ff4757]/40"
+                      className="flex items-center gap-1.5 px-2.5 py-1.5 border border-alert/40 text-alert bg-alert/5 font-mono text-[11px] font-semibold hover:bg-alert/20 hover:border-alert transition-colors cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-alert/5 disabled:hover:border-alert/40"
                     >
                       <XCircleIcon size={11} />
                       Close Out
@@ -708,13 +694,13 @@ const RentedOutTab: React.FC = () => {
               renderEmpty={() => (
                 <div className="w-full flex flex-col items-center justify-center gap-6 py-16">
                   <div className="border-2 border-dashed border-white/10 p-6">
-                    <KeyRoundIcon size={48} className="text-[#64748b]" />
+                    <KeyRoundIcon size={48} className="text-muted" />
                   </div>
                   <div className="text-center space-y-2">
-                    <h4 className="text-white font-bold text-base uppercase tracking-widest font-mono">
+                    <h4 className="text-base font-bold tracking-tight text-foreground">
                       No Locks Listed
                     </h4>
-                    <p className="text-[#64748b] font-mono text-xs">
+                    <p className="text-muted font-mono text-xs">
                       You haven&apos;t listed any locks for rent yet.
                     </p>
                   </div>
@@ -842,26 +828,24 @@ const RentALockTab: React.FC = () => {
             {
               label: 'Available Listings',
               value: availableListings.length.toString(),
-              color: 'text-white',
+              color: 'text-foreground',
             },
             {
               label: 'Total MGN Locked',
               value: `${formatNumber(totalLocked.toString(), 'en-US', 2)} MGN`,
-              color: 'text-[#2962ff]',
+              color: 'text-accent',
             },
             {
               label: 'Avg. Price',
               value: formatNumber(avgPrice.toString(), 'en-US', 2),
-              color: 'text-[#ffaf52]',
+              color: 'text-warning',
             },
           ].map((stat) => (
             <div
               key={stat.label}
               className="border border-white/5 bg-white/3 px-4 py-3 flex flex-col gap-1"
             >
-              <span className="text-[#64748b] text-[10px] font-mono uppercase tracking-widest">
-                {stat.label}
-              </span>
+              <span className="text-muted text-[10px] font-mono">{stat.label}</span>
               <span className={`font-bold font-mono text-sm ${stat.color}`}>{stat.value}</span>
             </div>
           ))
@@ -873,14 +857,12 @@ const RentALockTab: React.FC = () => {
         <div className="flex flex-col gap-4">
           {/* Toolbar */}
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-            <h3 className="text-white font-bold font-mono text-xs uppercase tracking-widest">
-              Available Locks
-            </h3>
+            <h3 className="text-foreground font-bold">Available Locks</h3>
             {/* Search */}
-            <div className="border border-white/10 flex items-center gap-2 px-3 py-2 bg-transparent w-full sm:w-auto sm:min-w-52 focus-within:border-[#2962ff] focus-within:shadow-[0_0_15px_rgba(41,98,255,0.2)] transition-all duration-300">
-              <SearchIcon size={13} className="text-[#64748b] shrink-0" />
+            <div className="flex w-full items-center gap-2 rounded-2xl border border-white/[0.08] bg-surface/60 px-3 py-2 transition-colors focus-within:border-accent/40 sm:w-auto sm:min-w-52">
+              <SearchIcon size={13} className="text-muted shrink-0" />
               <input
-                className="bg-transparent text-xs font-mono text-white placeholder:text-[#64748b] outline-none w-full"
+                className="w-full bg-transparent text-sm text-foreground outline-none placeholder:text-muted"
                 placeholder="Search lock, owner, token…"
                 value={search}
                 onChange={(e) => {
@@ -921,14 +903,14 @@ const RentALockTab: React.FC = () => {
                   {/* Lock + owner */}
                   <td className="py-3 pr-4">
                     <div className="flex items-center gap-2">
-                      <div className="border border-[#2962ff]/30 bg-[#2962ff]/5 p-1.5">
-                        <KeyRoundIcon size={12} className="text-[#2962ff]" />
+                      <div className="border border-accent/30 bg-accent/5 p-1.5">
+                        <KeyRoundIcon size={12} className="text-accent" />
                       </div>
                       <div className="flex flex-col">
-                        <span className="font-bold font-mono text-white text-xs">
+                        <span className="font-bold font-mono text-foreground text-xs">
                           Lock {String(rental.lock.lockId)}
                         </span>
-                        <span className="font-mono text-[10px] text-[#64748b]">
+                        <span className="font-mono text-[10px] text-muted">
                           {splitString(String(rental.seller.address))}
                         </span>
                       </div>
@@ -936,15 +918,15 @@ const RentALockTab: React.FC = () => {
                   </td>
 
                   {/* Amount Locked */}
-                  <td className="py-3 pr-4 text-right font-mono text-xs text-white font-bold">
+                  <td className="py-3 pr-4 text-right font-mono text-xs text-foreground font-bold">
                     {formatNumber(String(rental.lock.position), 'en-US', 0)}
-                    <span className="text-[#64748b] font-normal ml-1">MGN</span>
+                    <span className="text-muted font-normal ml-1">MGN</span>
                   </td>
 
                   {/* Escrow */}
                   <td className="py-3 pr-4 text-right">
                     <div className="flex items-center justify-end gap-1.5">
-                      <span className="font-mono text-xs text-white font-bold">
+                      <span className="font-mono text-xs text-foreground font-bold">
                         {splitString(rental.escrow as string)}
                       </span>
                     </div>
@@ -953,8 +935,8 @@ const RentALockTab: React.FC = () => {
                   {/* Price */}
                   <td className="py-3 pr-4 text-right">
                     <div className="flex items-center justify-end gap-1">
-                      <CoinsIcon size={11} className="text-[#00ff9d]" />
-                      <span className="font-mono text-xs font-bold text-[#00ff9d]">
+                      <CoinsIcon size={11} className="text-accent-2" />
+                      <span className="font-mono text-xs font-bold text-accent-2">
                         {formatNumber(String(rental.price), 'en-US', 2)}
                       </span>
                     </div>
@@ -962,7 +944,7 @@ const RentALockTab: React.FC = () => {
 
                   {/* Payment Token */}
                   <td className="py-3 pr-4 text-right">
-                    <span className="font-mono text-xs text-[#64748b]">
+                    <span className="font-mono text-xs text-muted">
                       {rental.paymentToken.symbol}
                     </span>
                   </td>
@@ -970,10 +952,10 @@ const RentALockTab: React.FC = () => {
                   {/* Runs Until */}
                   <td className="py-3 pr-4 text-right">
                     <div className="flex flex-col items-end">
-                      <span className="font-mono text-xs text-white font-bold">
+                      <span className="font-mono text-xs text-foreground font-bold">
                         {new Date(Number(rental.runsUntil) * 1000).toLocaleDateString()}
                       </span>
-                      <span className="font-mono text-[10px] text-[#64748b]">
+                      <span className="font-mono text-[10px] text-muted">
                         Epoch #{timestampToEpoch(Number(rental.runsUntil))}
                       </span>
                     </div>
@@ -997,13 +979,13 @@ const RentALockTab: React.FC = () => {
               renderEmpty={() => (
                 <div className="w-full flex flex-col items-center justify-center gap-6 py-16">
                   <div className="border-2 border-dashed border-white/10 p-6">
-                    <BuildingIcon size={48} className="text-[#64748b]" />
+                    <BuildingIcon size={48} className="text-muted" />
                   </div>
                   <div className="text-center space-y-2">
-                    <h4 className="text-white font-bold text-base uppercase tracking-widest font-mono">
+                    <h4 className="text-base font-bold tracking-tight text-foreground">
                       No Listings Found
                     </h4>
-                    <p className="text-[#64748b] font-mono text-xs">
+                    <p className="text-muted font-mono text-xs">
                       No locks match your search, or none are currently available.
                     </p>
                   </div>
@@ -1077,26 +1059,24 @@ const MyRentedLocksTab: React.FC = () => {
           </>
         ) : (
           [
-            { label: 'Total Rented', value: stats.total.toString(), color: 'text-white' },
+            { label: 'Total Rented', value: stats.total.toString(), color: 'text-foreground' },
             {
               label: 'Active Rentals',
               value: stats.active.toString(),
-              color: 'text-[#2962ff]',
+              color: 'text-accent',
             },
-            { label: 'Expired', value: stats.expired.toString(), color: 'text-[#64748b]' },
+            { label: 'Expired', value: stats.expired.toString(), color: 'text-muted' },
             {
               label: 'Total Spent',
               value: formatNumber(stats.totalSpent.toString(), 'en-US', 2),
-              color: 'text-[#ffaf52]',
+              color: 'text-warning',
             },
           ].map((stat) => (
             <div
               key={stat.label}
               className="border border-white/5 bg-white/3 px-4 py-3 flex flex-col gap-1"
             >
-              <span className="text-[#64748b] text-[10px] font-mono uppercase tracking-widest">
-                {stat.label}
-              </span>
+              <span className="text-muted text-[10px] font-mono">{stat.label}</span>
               <span className={`font-bold font-mono text-sm ${stat.color}`}>{stat.value}</span>
             </div>
           ))
@@ -1107,9 +1087,7 @@ const MyRentedLocksTab: React.FC = () => {
       <FancyCard>
         <div className="flex flex-col gap-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-white font-bold font-mono text-xs uppercase tracking-widest">
-              My Rented Locks
-            </h3>
+            <h3 className="text-foreground font-bold">My Rented Locks</h3>
           </div>
 
           {isLoadingAccount ? (
@@ -1140,14 +1118,14 @@ const MyRentedLocksTab: React.FC = () => {
                   {/* Lock ID */}
                   <td className="py-3 pr-4">
                     <div className="flex items-center gap-2">
-                      <div className="border border-[#2962ff]/30 bg-[#2962ff]/5 p-1.5">
-                        <KeyRoundIcon size={12} className="text-[#2962ff]" />
+                      <div className="border border-accent/30 bg-accent/5 p-1.5">
+                        <KeyRoundIcon size={12} className="text-accent" />
                       </div>
                       <div className="flex flex-col">
-                        <span className="font-bold font-mono text-white text-xs">
+                        <span className="font-bold font-mono text-foreground text-xs">
                           Lock {rental.lock.id}
                         </span>
-                        <span className="font-mono text-[10px] text-[#64748b]">
+                        <span className="font-mono text-[10px] text-muted">
                           {formatNumber(String(rental.lock.position), 'en-US', 2)} MGN
                         </span>
                       </div>
@@ -1155,20 +1133,20 @@ const MyRentedLocksTab: React.FC = () => {
                   </td>
 
                   {/* Amount Locked */}
-                  <td className="py-3 pr-4 text-right font-mono text-xs text-white font-bold">
+                  <td className="py-3 pr-4 text-right font-mono text-xs text-foreground font-bold">
                     {formatNumber(String(rental.lock.position), 'en-US', 2)}
-                    <span className="text-[#64748b] font-normal ml-1">MGN</span>
+                    <span className="text-muted font-normal ml-1">MGN</span>
                   </td>
 
                   {/* Rent Expiry */}
                   <td className="py-3 pr-4 text-right">
                     <div className="flex items-center justify-end gap-1.5">
-                      <ClockIcon size={11} className="text-[#64748b]" />
-                      <span className="font-mono text-xs text-white font-bold">
+                      <ClockIcon size={11} className="text-muted" />
+                      <span className="font-mono text-xs text-foreground font-bold">
                         {new Date(Number(rental.runsUntil) * 1000).toLocaleDateString()}
                       </span>
                     </div>
-                    <p className="text-[10px] font-mono text-[#64748b] text-right mt-0.5">
+                    <p className="text-[10px] font-mono text-muted text-right mt-0.5">
                       Epoch #{timestampToEpoch(Number(rental.runsUntil))}
                     </p>
                   </td>
@@ -1176,19 +1154,19 @@ const MyRentedLocksTab: React.FC = () => {
                   {/* Price Paid */}
                   <td className="py-3 pr-4 text-right">
                     <div className="flex items-center justify-end gap-1">
-                      <CoinsIcon size={11} className="text-[#ffaf52]" />
-                      <span className="font-mono text-xs font-bold text-[#ffaf52]">
+                      <CoinsIcon size={11} className="text-warning" />
+                      <span className="font-mono text-xs font-bold text-warning">
                         {formatNumber(String(rental.price), 'en-US', 2)}
                       </span>
                     </div>
-                    <p className="text-[10px] font-mono text-[#64748b] text-right mt-0.5">
+                    <p className="text-[10px] font-mono text-muted text-right mt-0.5">
                       {rental.paymentToken.symbol}
                     </p>
                   </td>
 
                   {/* Owner */}
                   <td className="py-3 pr-4 text-right">
-                    <span className="font-mono text-xs text-[#64748b]">
+                    <span className="font-mono text-xs text-muted">
                       {splitString(String(rental.seller.address))}
                     </span>
                   </td>
@@ -1218,13 +1196,13 @@ const MyRentedLocksTab: React.FC = () => {
               renderEmpty={() => (
                 <div className="w-full flex flex-col items-center justify-center gap-6 py-16">
                   <div className="border-2 border-dashed border-white/10 p-6">
-                    <KeyRoundIcon size={48} className="text-[#64748b]" />
+                    <KeyRoundIcon size={48} className="text-muted" />
                   </div>
                   <div className="text-center space-y-2">
-                    <h4 className="text-white font-bold text-base uppercase tracking-widest font-mono">
+                    <h4 className="text-base font-bold tracking-tight text-foreground">
                       No Rented Locks
                     </h4>
-                    <p className="text-[#64748b] font-mono text-xs">
+                    <p className="text-muted font-mono text-xs">
                       You haven&apos;t rented any locks yet.
                     </p>
                   </div>
@@ -1266,29 +1244,27 @@ const ComingSoonPanel: React.FC<{
     <div className="flex flex-col items-center justify-center gap-8 py-20">
       {/* Icon */}
       <div className="relative">
-        <div className="absolute inset-0 bg-[#2962ff]/10 blur-2xl rounded-full scale-150" />
-        <div className="relative border border-[#2962ff]/30 bg-[#131525]/50 backdrop-blur-sm rounded-xl ">
+        <div className="absolute inset-0 bg-accent/10 blur-2xl rounded-full scale-150" />
+        <div className="relative border border-accent/30 bg-surface/50 backdrop-blur-sm rounded-xl ">
           {icon}
         </div>
       </div>
 
       {/* Text */}
       <div className="text-center space-y-3 max-w-md">
-        <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 border border-[#ffaf52]/40 text-[#ffaf52] bg-[#ffaf52]/5 text-[10px] font-mono font-bold uppercase tracking-widest mb-2">
+        <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 border border-warning/40 text-warning bg-warning/5 text-[11px] font-semibold mb-2">
           Coming Soon
         </div>
-        <h3 className="text-white font-bold text-xl uppercase tracking-widest font-mono">
-          {title}
-        </h3>
-        <p className="text-[#64748b] font-mono text-sm leading-relaxed">{description}</p>
+        <h3 className="text-xl font-bold tracking-tight text-foreground">{title}</h3>
+        <p className="text-muted font-mono text-sm leading-relaxed">{description}</p>
       </div>
 
       {/* Feature list */}
       {features && features.length > 0 && (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full max-w-sm">
           {features.map((f) => (
-            <div key={f} className="flex items-center gap-2 text-xs font-mono text-[#64748b]">
-              <span className="w-1 h-1 rounded-full bg-[#2962ff]/60 shrink-0" />
+            <div key={f} className="flex items-center gap-2 text-xs font-mono text-muted">
+              <span className="w-1 h-1 rounded-full bg-accent/60 shrink-0" />
               {f}
             </div>
           ))}
@@ -1296,12 +1272,12 @@ const ComingSoonPanel: React.FC<{
       )}
 
       {/* Terminal cursor */}
-      <div className="border border-[#2962ff]/20 bg-black px-6 py-4 font-mono text-xs text-left w-full max-w-sm">
-        <p className="text-[#64748b]">&gt; module.load(&apos;ve-rentals&apos;)</p>
-        <p className="text-[#ffaf52] mt-1">&gt; STATUS: INITIALIZING...</p>
-        <div className="flex items-center gap-2 mt-3 text-[#2962ff]">
+      <div className="w-full max-w-sm rounded-2xl border border-accent/20 bg-background px-6 py-4 text-left font-mono text-xs">
+        <p className="text-muted">&gt; module.load(&apos;ve-rentals&apos;)</p>
+        <p className="text-warning mt-1">&gt; STATUS: INITIALIZING...</p>
+        <div className="flex items-center gap-2 mt-3 text-accent">
           <span className="opacity-70">&gt;</span>
-          <span className="animate-pulse inline-block w-2 h-[1em] bg-[#2962ff]" />
+          <span className="animate-pulse inline-block w-2 h-[1em] bg-accent" />
         </div>
       </div>
     </div>
