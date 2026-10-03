@@ -141,8 +141,8 @@ export const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
       <Modal open={open} onOpenChange={onOpenChange} title="Remove Liquidity">
         <div className="flex flex-col p-5 gap-6">
           <div className="flex justify-between items-center w-full">
-            <span className="text-[#94a3b8] font-semibold text-sm">Pool</span>
-            <span className="text-white font-bold text-sm tracking-wide">
+            <span className="text-muted font-semibold text-sm">Pool</span>
+            <span className="text-foreground font-bold text-sm tracking-wide">
               {liquidityPosition.pool.name}
             </span>
           </div>
@@ -150,7 +150,7 @@ export const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
           {/* Percentage Section */}
           <div className="flex flex-col gap-4 bg-white/5 border border-white/5 p-4">
             <div className="flex justify-between items-center w-full">
-              <span className="text-[#94a3b8] text-sm font-semibold">Amount to Remove</span>
+              <span className="text-muted text-sm font-semibold">Amount to Remove</span>
               <span className="text-[#00e0ff] text-xl font-bold">{percentage}%</span>
             </div>
 
@@ -160,7 +160,7 @@ export const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
               max="100"
               value={percentage}
               onChange={(e) => setPercentage(Number(e.target.value))}
-              className="w-full h-2 bg-black rounded-lg appearance-none cursor-pointer accent-[#00e0ff]"
+              className="w-full h-2 bg-raised rounded-lg appearance-none cursor-pointer accent-accent"
             />
 
             <div className="flex w-full gap-2 mt-2">
@@ -168,7 +168,7 @@ export const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
                 <button
                   key={val}
                   onClick={() => handlePercentageClick(val)}
-                  className="flex-1 py-1.5 border border-white/10 text-xs font-mono text-[#94a3b8] hover:bg-white/10 hover:text-white transition-colors uppercase tracking-wider"
+                  className="flex-1 py-1.5 border border-white/10 text-xs font-mono text-muted hover:bg-white/10 hover:text-foreground transition-colors"
                 >
                   {val === 100 ? 'Max' : `${val}%`}
                 </button>
@@ -178,10 +178,10 @@ export const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
 
           {/* Expected Receive Section */}
           <div className="flex flex-col gap-4">
-            <span className="text-[#94a3b8] text-sm font-semibold">You will receive</span>
+            <span className="text-muted text-sm font-semibold">You will receive</span>
 
             <div className="flex flex-col gap-2">
-              <div className="flex justify-between items-center bg-[#131525]/60 backdrop-blur-sm border border-white/10 rounded-xl p-3">
+              <div className="flex justify-between items-center bg-surface/60 backdrop-blur-sm border border-white/10 rounded-xl p-3">
                 <div className="flex items-center gap-2">
                   {getAssetInfo(liquidityPosition.pool.token0.address as string)?.logoURI ? (
                     <Image
@@ -196,17 +196,17 @@ export const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
                       <span className="text-blue-600 text-[10px] font-bold">T0</span>
                     </div>
                   )}
-                  <span className="text-white font-bold text-sm">
+                  <span className="text-foreground font-bold text-sm">
                     {getAssetInfo(liquidityPosition.pool.token0.address as string)?.symbol ||
                       'Token 0'}
                   </span>
                 </div>
-                <span className="text-white font-mono text-sm">
+                <span className="text-foreground font-mono text-sm">
                   {receiveToken0.toLocaleString('en-US', { maximumFractionDigits: 4 })}
                 </span>
               </div>
 
-              <div className="flex justify-between items-center bg-[#131525]/60 backdrop-blur-sm border border-white/10 rounded-xl p-3">
+              <div className="flex justify-between items-center bg-surface/60 backdrop-blur-sm border border-white/10 rounded-xl p-3">
                 <div className="flex items-center gap-2">
                   {getAssetInfo(liquidityPosition.pool.token1.address as string)?.logoURI ? (
                     <Image
@@ -221,12 +221,12 @@ export const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
                       <span className="text-amber-600 text-[10px] font-bold">T1</span>
                     </div>
                   )}
-                  <span className="text-white font-bold text-sm">
+                  <span className="text-foreground font-bold text-sm">
                     {getAssetInfo(liquidityPosition.pool.token1.address as string)?.symbol ||
                       'Token 1'}
                   </span>
                 </div>
-                <span className="text-white font-mono text-sm">
+                <span className="text-foreground font-mono text-sm">
                   {receiveToken1.toLocaleString('en-US', { maximumFractionDigits: 4 })}
                 </span>
               </div>
@@ -236,7 +236,7 @@ export const RemoveLiquidityModal: React.FC<RemoveLiquidityModalProps> = ({
           {/* Action Button */}
           <PrimaryButton
             disabled={percentage === 0}
-            className="w-full py-4 uppercase tracking-widest font-bold"
+            className="w-full py-3 font-semibold"
             onClick={initiateTransaction}
           >
             {percentage === 0

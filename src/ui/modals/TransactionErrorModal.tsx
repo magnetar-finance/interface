@@ -27,9 +27,9 @@ export const TransactionErrorModal: React.FC<TransactionErrorModalProps> = ({
       </div>
 
       <div className="flex flex-col gap-2 w-full">
-        <p className="text-white text-lg font-bold font-sans">{message}</p>
+        <p className="text-foreground text-lg font-bold font-sans">{message}</p>
         {error && (
-          <p className="text-white/50 text-xs mt-2 bg-white/[0.03] p-3 rounded-xl break-all">
+          <p className="text-foreground/50 text-xs mt-2 bg-white/[0.03] p-3 rounded-xl break-all">
             {error}
           </p>
         )}

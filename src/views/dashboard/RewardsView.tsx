@@ -37,13 +37,13 @@ const SectionHeader: React.FC<{
 }> = ({ icon, title, subtitle, count, isLoading }) => (
   <div className="w-full flex justify-between items-center gap-6">
     <div className="flex items-center gap-3">
-      <div className="border border-[#2962ff]/30 bg-[#2962ff]/5 p-1.5 rounded-lg">{icon}</div>
+      <div className="rounded-xl border border-accent/25 bg-accent/10 p-1.5">{icon}</div>
       <div className="flex flex-col gap-0.5">
-        <h4 className="text-white font-bold text-base md:text-lg font-sans">{title}</h4>
-        <p className="text-[#64748b] text-[10px] font-mono uppercase tracking-widest">{subtitle}</p>
+        <h4 className="text-foreground font-bold text-base md:text-lg font-sans">{title}</h4>
+        <p className="text-muted text-[10px] font-mono">{subtitle}</p>
       </div>
     </div>
-    <span className="text-[#94a3b8] font-mono text-sm">{isLoading ? '-' : count}</span>
+    <span className="text-muted font-mono text-sm">{isLoading ? '-' : count}</span>
   </div>
 );
 
@@ -55,10 +55,10 @@ const AssetRewardInfo: React.FC<{
   const earned = useGetRewardEarnings(reward, asset.address, tokenId);
   return (
     <>
-      <span className="font-bold text-[#00ff9d]">
+      <span className="font-bold text-accent-2">
         {formatNumber(formatUnits(earned, asset.decimals))}
       </span>
-      <span className="text-[#64748b]">{asset.symbol}</span>
+      <span className="text-muted">{asset.symbol}</span>
     </>
   );
 };
@@ -79,7 +79,7 @@ const RewardsColumn: React.FC<{
             {asset ? (
               <AssetRewardInfo key={index} reward={reward} asset={asset} tokenId={tokenId} />
             ) : (
-              <span className="text-[#64748b]">Unknown Asset</span>
+              <span className="text-muted">Unknown Asset</span>
             )}
           </div>
         );
@@ -164,13 +164,13 @@ const RenderedRewardsRow: React.FC<{ lock: Lock; isFees?: boolean }> = ({
     <>
       <td className="py-3 pr-4 align-top">
         <div className="flex items-center gap-2">
-          <div className="border border-[#2962ff]/30 bg-[#2962ff]/5 p-1.5">
-            <LockIcon size={12} className="text-[#2962ff]" />
+          <div className="border border-accent/30 bg-accent/5 p-1.5">
+            <LockIcon size={12} className="text-accent" />
           </div>
-          <span className="font-bold font-mono text-white text-xs">Lock {lock.id}</span>
+          <span className="font-bold font-mono text-foreground text-xs">Lock {lock.id}</span>
         </div>
       </td>
-      <td className="py-3 pr-4 font-mono text-xs text-white align-top">
+      <td className="py-3 pr-4 font-mono text-xs text-foreground align-top">
         <div className="flex flex-col items-start gap-4">
           {poolNames.map((name, index) => (
             <div key={index} className="flex flex-col justify-center min-h-[40px]">
@@ -200,7 +200,7 @@ const RenderedRewardsRow: React.FC<{ lock: Lock; isFees?: boolean }> = ({
         <div className="w-full flex justify-end">
           <button
             onClick={initiateTransaction}
-            className="text-xs font-mono uppercase inline-flex justify-center items-center gap-1 tracking-widest border border-[#ffaf52]/50 text-[#ffaf52] px-3 py-1.5 hover:bg-[#ffaf52]/10 transition-colors cursor-pointer"
+            className="inline-flex cursor-pointer items-center justify-center gap-1 rounded-xl border border-warning/40 px-3 py-1.5 text-xs font-semibold text-warning transition-colors hover:bg-warning/10"
           >
             {isFees ? 'Claim Fees' : 'Claim Bribes'}
             {(claimBribes.isLoading || claimFees.isLoading) && (
@@ -255,7 +255,7 @@ const BribesRewardsTable: React.FC<{ locks: Lock[]; isLoading: boolean }> = ({
     <FancyCard>
       <div className="flex flex-col gap-4 py-3">
         <SectionHeader
-          icon={<CoinsIcon size={14} className="text-[#2962ff]" />}
+          icon={<CoinsIcon size={14} className="text-accent" />}
           title="Bribe Rewards"
           subtitle="Per lock · Earned from voting incentives"
           count={`${locks.length} locks`}
@@ -280,8 +280,8 @@ const BribesRewardsTable: React.FC<{ locks: Lock[]; isLoading: boolean }> = ({
             renderRow={(lock) => <RenderedRewardsRow key={lock.id} lock={lock} />}
             renderEmpty={() => (
               <div className="w-full flex flex-col items-center justify-center gap-4 py-12">
-                <GiftIcon size={40} color="#64748b" />
-                <p className="text-[#64748b] font-mono text-xs text-center">
+                <GiftIcon size={40} className="text-muted" />
+                <p className="text-muted font-mono text-xs text-center">
                   No locks found. Create a lock and vote to earn bribe rewards.
                 </p>
               </div>
@@ -320,7 +320,7 @@ const FeesRewardsTable: React.FC<{ locks: Lock[]; isLoading: boolean }> = ({
     <FancyCard>
       <div className="flex flex-col gap-4 py-3">
         <SectionHeader
-          icon={<CoinsIcon size={14} className="text-[#00ff9d]" />}
+          icon={<CoinsIcon size={14} className="text-accent-2" />}
           title="Fee Rewards"
           subtitle="Per lock · Earned from protocol trading fees"
           count={`${locks.length} locks`}
@@ -345,8 +345,8 @@ const FeesRewardsTable: React.FC<{ locks: Lock[]; isLoading: boolean }> = ({
             renderRow={(lock) => <RenderedRewardsRow key={lock.id} lock={lock} isFees />}
             renderEmpty={() => (
               <div className="w-full flex flex-col items-center justify-center gap-4 py-12">
-                <GiftIcon size={40} color="#64748b" />
-                <p className="text-[#64748b] font-mono text-xs text-center">
+                <GiftIcon size={40} className="text-muted" />
+                <p className="text-muted font-mono text-xs text-center">
                   No locks found. Create a lock and vote to earn fee rewards.
                 </p>
               </div>
@@ -375,8 +375,8 @@ const RenderGaugeEarningsColumn: React.FC<{ position: LiquidityPosition }> = ({ 
   const earnings = useCheckEarnings(gauge, REFETCH_INTERVALS);
   return (
     <div className="flex items-center justify-end gap-1.5">
-      <span className="font-bold text-[#00ff9d]">{formatNumber(formatUnits(earnings, 18))}</span>
-      <span className="text-[#64748b]">MGN</span>
+      <span className="font-bold text-accent-2">{formatNumber(formatUnits(earnings, 18))}</span>
+      <span className="text-muted">MGN</span>
     </div>
   );
 };
@@ -421,7 +421,7 @@ const GaugeRewardsTable: React.FC<{ positions: LiquidityPosition[]; isLoading: b
     <FancyCard>
       <div className="flex flex-col gap-4 py-3">
         <SectionHeader
-          icon={<DropletIcon size={14} className="text-[#2962ff]" />}
+          icon={<DropletIcon size={14} className="text-accent" />}
           title="Gauge Rewards"
           subtitle="Per position · Earned from staked liquidity"
           count={`${positions.length} positions`}
@@ -458,10 +458,10 @@ const GaugeRewardsTable: React.FC<{ positions: LiquidityPosition[]; isLoading: b
                             alt={item.pool.token0.symbol}
                             width={24}
                             height={24}
-                            className="w-6 h-6 rounded-full border border-black bg-amber-100"
+                            className="w-6 h-6 rounded-full border border-surface bg-amber-100"
                           />
                         ) : (
-                          <div className="w-6 h-6 rounded-full border border-black bg-amber-100" />
+                          <div className="w-6 h-6 rounded-full border border-surface bg-amber-100" />
                         )}
                         {token1Info ? (
                           <Image
@@ -469,17 +469,17 @@ const GaugeRewardsTable: React.FC<{ positions: LiquidityPosition[]; isLoading: b
                             alt={item.pool.token1.symbol}
                             width={24}
                             height={24}
-                            className="w-6 h-6 rounded-full border border-black bg-blue-100"
+                            className="w-6 h-6 rounded-full border border-surface bg-blue-100"
                           />
                         ) : (
-                          <div className="w-6 h-6 rounded-full border border-black bg-blue-100" />
+                          <div className="w-6 h-6 rounded-full border border-surface bg-blue-100" />
                         )}
                       </div>
                       <div className="flex flex-col gap-0 justify-start items-start">
-                        <h3 className="font-bold text-white uppercase whitespace-nowrap">
+                        <h3 className="font-bold text-foreground uppercase whitespace-nowrap">
                           {item.pool.name}
                         </h3>
-                        <p className="text-[#64748b] uppercase text-[10px] tracking-widest hidden sm:block">
+                        <p className="text-muted text-[10px] font-semibold tracking-wide hidden sm:block">
                           {item.pool.poolType}
                         </p>
                       </div>
@@ -487,7 +487,7 @@ const GaugeRewardsTable: React.FC<{ positions: LiquidityPosition[]; isLoading: b
                   </td>
 
                   {/* Reward Rate */}
-                  <td className="py-3 pr-4 text-[#00ff9d] font-bold font-mono text-xs text-right">
+                  <td className="py-3 pr-4 text-accent-2 font-bold font-mono text-xs text-right">
                     {formatNumber((item.pool.gauge?.rewardRate as string) || '0', 'en-US', 2)}%
                   </td>
 
@@ -503,7 +503,7 @@ const GaugeRewardsTable: React.FC<{ positions: LiquidityPosition[]; isLoading: b
                           setSelectedGauge(item.pool.gauge?.address as Address);
                           claimGaugeRewards.execute();
                         }}
-                        className="text-xs font-mono uppercase inline-flex items-center gap-1 tracking-widest border border-[#2962ff]/50 text-[#2962ff] px-3 py-1.5 hover:bg-[#2962ff]/10 transition-colors cursor-pointer"
+                        className="inline-flex cursor-pointer items-center gap-1 rounded-xl border border-accent/40 px-3 py-1.5 text-xs font-semibold text-accent transition-colors hover:bg-accent/10"
                       >
                         Claim
                         {claimGaugeRewards.isLoading &&
@@ -518,8 +518,8 @@ const GaugeRewardsTable: React.FC<{ positions: LiquidityPosition[]; isLoading: b
             }}
             renderEmpty={() => (
               <div className="w-full flex flex-col items-center justify-center gap-4 py-12">
-                <DropletIcon size={40} color="#64748b" />
-                <p className="text-[#64748b] font-mono text-xs text-center">
+                <DropletIcon size={40} className="text-muted" />
+                <p className="text-muted font-mono text-xs text-center">
                   No staked positions found. Stake your LP tokens in a gauge to earn rewards.
                 </p>
               </div>

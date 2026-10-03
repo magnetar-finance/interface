@@ -90,16 +90,16 @@ export const IncreaseLockAmountModal: React.FC<IncreaseLockAmountModalProps> = (
           {/* Current stats */}
           <div className="grid grid-cols-2 gap-2">
             <div className="border border-white/5 bg-white/3 px-3 py-2.5 flex flex-col gap-0.5">
-              <span className="text-[#64748b] font-mono text-[10px] uppercase tracking-widest">
+              <span className="text-muted text-[11px] font-semibold">
                 Currently Locked ({tokenId})
               </span>
-              <span className="text-white font-bold font-mono text-xs">{currentAmount ?? '—'}</span>
+              <span className="text-foreground font-bold font-mono text-xs">
+                {currentAmount ?? '—'}
+              </span>
             </div>
             <div className="border border-white/5 bg-white/3 px-3 py-2.5 flex flex-col gap-0.5">
-              <span className="text-[#64748b] font-mono text-[10px] uppercase tracking-widest">
-                Voting Power Used
-              </span>
-              <span className="text-[#2962ff] font-bold font-mono text-xs">
+              <span className="text-muted text-[11px] font-semibold">Voting Power Used</span>
+              <span className="text-accent font-bold font-mono text-xs">
                 {currentVotingPower ?? '—'}
               </span>
             </div>
@@ -108,25 +108,25 @@ export const IncreaseLockAmountModal: React.FC<IncreaseLockAmountModalProps> = (
           {/* Amount input */}
           <div className="flex flex-col gap-2">
             <div className="flex justify-between items-center">
-              <label className="text-[#64748b] font-mono text-[10px] uppercase tracking-widest">
-                Amount to Add
-              </label>
-              <span className="text-[#64748b] font-mono text-[10px]">
+              <label className="text-muted text-[11px] font-semibold">Amount to Add</label>
+              <span className="text-muted font-mono text-[10px]">
                 Balance:{' '}
-                <span className="text-white">{formatNumber(formatEther(balance), 'en-US', 3)}</span>
+                <span className="text-foreground">
+                  {formatNumber(formatEther(balance), 'en-US', 3)}
+                </span>
               </span>
             </div>
 
-            <div className="flex items-center gap-2 border border-white/10 focus-within:border-[#2962ff]/60 transition-colors">
+            <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-background/50 px-3 py-2 transition-colors focus-within:border-accent/50">
               <input
                 type="number"
                 min="0"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 placeholder="0.00"
-                className="bg-transparent px-3 py-3 font-mono text-sm text-white placeholder:text-[#64748b] outline-none flex-1 min-w-0"
+                className="bg-transparent px-3 py-3 font-mono text-sm text-foreground placeholder:text-muted outline-none flex-1 min-w-0"
               />
-              <span className="text-[#64748b] font-mono text-xs px-3 shrink-0">MGN</span>
+              <span className="text-muted font-mono text-xs px-3 shrink-0">MGN</span>
             </div>
 
             {/* Quick percent buttons */}
@@ -135,7 +135,7 @@ export const IncreaseLockAmountModal: React.FC<IncreaseLockAmountModalProps> = (
                 <button
                   key={pct}
                   onClick={() => setAmount(String((pct * parseFloat(formatEther(balance))) / 100))}
-                  className="flex-1 border border-white/10 py-1 font-mono text-[10px] text-[#94a3b8] hover:border-[#2962ff]/50 hover:text-[#2962ff] transition-colors"
+                  className="flex-1 border border-white/10 py-1 font-mono text-[10px] text-muted hover:border-accent/50 hover:text-accent transition-colors"
                 >
                   {pct}%
                 </button>
@@ -150,7 +150,7 @@ export const IncreaseLockAmountModal: React.FC<IncreaseLockAmountModalProps> = (
               escrowApproval.isLoading ||
               balance < amountBI
             }
-            className="w-full py-3 gap-2 font-mono text-xs uppercase tracking-widest disabled:opacity-40 disabled:cursor-not-allowed"
+            className="w-full py-3 gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
             onClick={initiateTransaction}
           >
             <TrendingUpIcon size={14} />

@@ -24,7 +24,7 @@ export const RangeDistributionChart: React.FC<RangeDistributionChartProps> = ({
   data,
   chartMinIndex,
   chartMaxIndex,
-  activeColor = '#2962ff',
+  activeColor = '#2660f5',
   currentPriceTick,
   onMinIndexChange,
   onMaxIndexChange,
@@ -217,8 +217,8 @@ export const RangeDistributionChart: React.FC<RangeDistributionChartProps> = ({
               fontSize: '8px',
               letterSpacing: '0.05em',
               color: activeColor,
-              background: 'rgba(41,98,255,0.12)',
-              border: '1px solid rgba(41,98,255,0.4)',
+              background: 'rgba(224, 163, 106,0.12)',
+              border: '1px solid rgba(224, 163, 106,0.4)',
               padding: '1px 5px',
               borderRadius: '2px',
               lineHeight: '1.4',
@@ -341,7 +341,7 @@ const HandleBar: React.FC<HandleBarProps> = ({
           width: 10,
           height: 22,
           flexShrink: 0,
-          background: isActive ? color : '#131525',
+          background: isActive ? color : '#11162b',
           border: `1px solid ${isActive ? color : `${color}88`}`,
           boxShadow: isActive
             ? `0 0 0 1px ${glowFaint}, 0 0 12px ${glowStrong}, inset 0 0 4px ${color}44`

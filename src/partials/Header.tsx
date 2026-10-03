@@ -2,99 +2,129 @@
 
 import { SecondaryButton, WalletConnectButton } from '@/components/Button';
 import { CHAINS_INFORMATION } from '@/constants';
-import { ChevronDown, CheckSquareIcon } from 'lucide-react';
+import { NAV_ITEMS, isNavActive } from '@/partials/nav';
+import { CheckSquareIcon, ChevronDown } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { DropdownMenu } from 'radix-ui';
 import React, { useMemo, useState } from 'react';
-import { useChainId, useSwitchChain } from 'wagmi';
+import { formatUnits } from 'viem';
+import { useBlockNumber, useChainId, useEstimateGas, useSwitchChain } from 'wagmi';
+
+const DesktopNav: React.FC = () => {
+  const pathname = usePathname();
+
+  return (
+    <nav className="hidden lg:flex items-center gap-0.5">
+      {NAV_ITEMS.map((item) => {
+        const active = isNavActive(pathname, item.href);
+        return (
+          <Link
+            key={item.href}
+            href={item.href}
+            className={`
+              rounded-lg px-2.5 py-1.5 text-[13px] font-medium tracking-tight
+              transition-colors duration-150
+              ${active ? 'text-accent' : 'text-muted hover:text-foreground'}
+            `}
+          >
+            {item.label}
+          </Link>
+        );
+      })}
+    </nav>
+  );
+};
 
 export const Header: React.FC = () => {
   const chainId = useChainId();
   const selectedChainInformation = useMemo(() => CHAINS_INFORMATION[chainId], [chainId]);
   const [, setShowChainSwitch] = useState(false);
   const switchChain = useSwitchChain();
+  const { data: gas = BigInt(0) } = useEstimateGas({ query: { refetchInterval: 60000 } });
+  const { data: blockNumber = BigInt(0) } = useBlockNumber({ query: { refetchInterval: 60000 } });
 
   return (
-    <div className="flex justify-between items-center w-full pb-4 border-b border-[#2962ff]/15 mb-4 shadow-[0_1px_20px_rgba(41,98,255,0.06)]">
-      <div className="flex items-center gap-3">
-        <div className="md:hidden shrink-0 border border-[#2962ff]/50 p-1.5 bg-gradient-to-br from-[#2962ff]/20 to-[#9d4edd]/10 rounded-xl shadow-[0_0_15px_rgba(41,98,255,0.25)]">
-          <Image
-            src="/assets/images/magnetar.png"
-            alt="logo"
-            width={24}
-            height={24}
-            className="hue-rotate-[-45deg] saturate-150 brightness-110"
-          />
+    <header className="sticky top-0 z-50 w-full border-b border-white/[0.06] bg-background/75 backdrop-blur-xl">
+      <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-3 px-4 md:px-6">
+        <div className="flex min-w-0 items-center gap-5">
+          <Link href="/" className="flex shrink-0 items-center gap-2">
+            <Image src="/assets/images/magnetar.png" alt="Magnetar" width={22} height={22} />
+            <span className="text-sm font-semibold tracking-tight text-foreground">Magnetar</span>
+          </Link>
+          <DesktopNav />
         </div>
-      </div>
 
-      <div className="flex items-center gap-2 md:gap-3">
-        <DropdownMenu.Root onOpenChange={setShowChainSwitch}>
-          <DropdownMenu.Trigger asChild>
-            <SecondaryButton className="px-3 md:px-4 py-2 border border-[#2962ff]/25 text-[#2962ff] hover:bg-[#2962ff]/10 hover:border-[#2962ff]/50">
-              <div className="flex items-center gap-2">
-                <div className="relative">
-                  <Image
-                    src={selectedChainInformation.img}
-                    height={18}
-                    width={18}
-                    alt={selectedChainInformation.symbol}
-                    className="rounded-full border border-[#2962ff]/40 shadow-[0_0_10px_rgba(41,98,255,0.3)]"
-                  />
-                  <span className="absolute -bottom-0.5 -right-0.5 w-1.5 h-1.5 rounded-full bg-[#00ff9d] shadow-[0_0_5px_rgba(0,255,157,0.8)] border border-[#131525]" />
-                </div>
-                <span className="hidden md:inline font-mono tracking-widest text-xs uppercase">
-                  [{selectedChainInformation.name}]
-                </span>
-              </div>
-              <ChevronDown size={13} className="ml-1 opacity-60" />
-            </SecondaryButton>
-          </DropdownMenu.Trigger>
-          <DropdownMenu.Portal>
-            <DropdownMenu.Content
-              className="bg-[#131525]/95 backdrop-blur-xl border border-[#2962ff]/20 p-1.5 w-[220px] z-50 rounded-xl
-                shadow-[0_16px_60px_rgba(0,0,0,0.6),0_0_30px_rgba(41,98,255,0.1)]
-                data-[state=open]:animate-dropdown-enter data-[state=closed]:animate-dropdown-exit"
-            >
-              {/* Dropdown top accent */}
-              <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-[#2962ff]/60 via-[#9d4edd]/30 to-transparent rounded-t-xl" />
-              {Object.entries(CHAINS_INFORMATION).map(([key, value]) => (
-                <DropdownMenu.Item
-                  key={key}
-                  disabled={value.chainId === chainId}
-                  onClick={() => switchChain.switchChain({ chainId: value.chainId })}
-                  className={`
-                    w-full flex justify-between items-center rounded-lg
-                    px-3 py-2.5 font-sans text-xs font-bold uppercase tracking-widest cursor-pointer border border-transparent
-                    transition-all duration-200 outline-none relative
-                    ${
-                      value.chainId === chainId
-                        ? 'bg-[#2962ff]/10 text-[#2962ff] border-[#2962ff]/25 shadow-[inset_2px_0_0_#2962ff]'
-                        : 'text-[#94a3b8] hover:bg-[#2962ff]/5 hover:border-[#2962ff]/15 hover:text-white hover:shadow-[inset_2px_0_0_rgba(41,98,255,0.4)]'
-                    }
-                  `}
-                >
-                  <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5">
+          <div className="mr-1 hidden items-center gap-2 font-mono text-[11px] text-dim xl:flex">
+            <span>{Number(formatUnits(gas, 9)).toFixed(1)} gwei</span>
+            <span className="text-white/15">·</span>
+            <span>#{blockNumber.toString()}</span>
+          </div>
+
+          <DropdownMenu.Root onOpenChange={setShowChainSwitch}>
+            <DropdownMenu.Trigger asChild>
+              <SecondaryButton size="sm" className="px-2 text-foreground">
+                <div className="flex items-center gap-2">
+                  <div className="relative">
                     <Image
-                      src={value.img}
+                      src={selectedChainInformation.img}
                       height={18}
                       width={18}
-                      alt={value.symbol}
-                      className="rounded-full border border-white/10"
+                      alt={selectedChainInformation.symbol}
+                      className="rounded-full"
                     />
-                    <span>{value.name}</span>
+                    <span className="absolute -bottom-0.5 -right-0.5 h-1.5 w-1.5 rounded-full border border-surface bg-success" />
                   </div>
-                  {value.chainId === chainId && (
-                    <CheckSquareIcon size={13} className="text-[#2962ff]" />
-                  )}
-                </DropdownMenu.Item>
-              ))}
-            </DropdownMenu.Content>
-          </DropdownMenu.Portal>
-        </DropdownMenu.Root>
+                  <span className="hidden sm:inline text-xs font-medium">
+                    {selectedChainInformation.symbol}
+                  </span>
+                </div>
+                <ChevronDown size={13} className="opacity-50" />
+              </SecondaryButton>
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Portal>
+              <DropdownMenu.Content
+                className="z-50 mt-2 w-[220px] rounded-2xl border border-white/[0.08] bg-surface/95 p-1.5 backdrop-blur-xl
+                  shadow-[0_16px_60px_rgba(0,0,0,0.45)]
+                  data-[state=open]:animate-dropdown-enter data-[state=closed]:animate-dropdown-exit"
+              >
+                {Object.entries(CHAINS_INFORMATION).map(([key, value]) => (
+                  <DropdownMenu.Item
+                    key={key}
+                    disabled={value.chainId === chainId}
+                    onClick={() => switchChain.switchChain({ chainId: value.chainId })}
+                    className={`
+                      flex w-full cursor-pointer items-center justify-between rounded-xl
+                      px-3 py-2.5 text-xs font-semibold outline-none transition-colors
+                      ${
+                        value.chainId === chainId
+                          ? 'bg-accent/10 text-accent'
+                          : 'text-muted hover:bg-white/[0.04] hover:text-foreground'
+                      }
+                    `}
+                  >
+                    <div className="flex items-center gap-2">
+                      <Image
+                        src={value.img}
+                        height={18}
+                        width={18}
+                        alt={value.symbol}
+                        className="rounded-full"
+                      />
+                      <span>{value.name}</span>
+                    </div>
+                    {value.chainId === chainId && <CheckSquareIcon size={13} />}
+                  </DropdownMenu.Item>
+                ))}
+              </DropdownMenu.Content>
+            </DropdownMenu.Portal>
+          </DropdownMenu.Root>
 
-        <WalletConnectButton />
+          <WalletConnectButton />
+        </div>
       </div>
-    </div>
+    </header>
   );
 };

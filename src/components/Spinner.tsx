@@ -20,12 +20,12 @@ export function Spinner({ size = 'sm', className = '' }: SpinnerProps) {
       aria-label="Loading"
       style={{
         background:
-          'conic-gradient(from 0deg, transparent 0%, rgba(41, 98, 255, 0.4) 60%, #2962ff 100%)',
+          'conic-gradient(from 0deg, transparent 0%, rgba(38, 96, 245, 0.35) 60%, #2660f5 100%)',
         borderRadius: '50%',
         animation: 'spin 0.8s linear infinite',
       }}
     >
-      <span className={`block rounded-full bg-[#131525] ${inner}`} />
+      <span className={`block rounded-full bg-surface ${inner}`} />
     </span>
   );
 }

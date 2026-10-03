@@ -14,18 +14,16 @@ interface TableProps<T> {
 }
 
 export const Table = <T,>({ headers, data, renderRow, renderEmpty, onRowClick }: TableProps<T>) => (
-  <div className="w-full overflow-x-auto rounded-xl">
-    {/* Top border accent with glow */}
-    <div className="w-full h-[2px] bg-gradient-to-r from-[#2962ff]/90 via-[#9d4edd]/60 to-transparent shadow-[0_1px_8px_rgba(41,98,255,0.3)]" />
-    <table className="w-full text-xs font-mono border border-white/[0.06] border-t-0 rounded-b-xl overflow-hidden">
+  <div className="w-full overflow-x-auto rounded-2xl">
+    <table className="w-full overflow-hidden rounded-2xl border border-white/[0.06] text-sm">
       <thead>
-        <tr className="bg-gradient-to-r from-[#2962ff]/[0.04] to-transparent">
+        <tr className="bg-white/[0.02]">
           {headers.map((header, index) => (
             <th
               key={index}
               className={`
-                pb-3 pt-3.5 pr-4 text-[#2962ff]/70 uppercase tracking-widest text-[10px] font-bold
-                border-b border-white/[0.07]
+                border-b border-white/[0.06] pb-3 pt-3.5 pr-4 text-[11px] font-semibold
+                uppercase tracking-[0.12em] text-muted
                 ${
                   header.align === 'right'
                     ? 'text-right'
@@ -47,13 +45,10 @@ export const Table = <T,>({ headers, data, renderRow, renderEmpty, onRowClick }:
               key={index}
               onClick={() => onRowClick?.(item)}
               className={`
-                border-b border-white/[0.04]
-                transition-all duration-200
+                border-b border-white/[0.04] transition-colors duration-150
                 ${index % 2 === 0 ? 'bg-transparent' : 'bg-white/[0.015]'}
-                hover:bg-[#2962ff]/[0.06]
-                hover:border-b-[#2962ff]/20
-                hover:shadow-[inset_3px_0_0_#2962ff,inset_0_0_30px_rgba(41,98,255,0.04)]
-                ${onRowClick ? 'cursor-pointer group' : ''}
+                hover:bg-accent/[0.06]
+                ${onRowClick ? 'cursor-pointer' : ''}
               `}
             >
               {renderRow(item, index)}
@@ -61,21 +56,15 @@ export const Table = <T,>({ headers, data, renderRow, renderEmpty, onRowClick }:
           ))
         ) : (
           <tr>
-            <td
-              colSpan={headers.length}
-              className="py-16 text-center text-[#64748b] uppercase tracking-widest"
-            >
+            <td colSpan={headers.length} className="py-16 text-center text-muted">
               {renderEmpty ? (
                 renderEmpty()
               ) : (
                 <div className="flex flex-col items-center gap-3">
-                  <div className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center">
-                    <span className="text-[#2962ff]/40 font-mono text-lg">∅</span>
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full border border-white/10">
+                    <span className="font-mono text-lg text-accent/50">∅</span>
                   </div>
-                  <span className="text-[#334155] font-mono text-xs">
-                    <span className="text-[#2962ff]/40">{'>'}</span>
-                    {' --- NO DATA FOUND ---'}
-                  </span>
+                  <span className="font-mono text-xs text-dim">No data found</span>
                 </div>
               )}
             </td>

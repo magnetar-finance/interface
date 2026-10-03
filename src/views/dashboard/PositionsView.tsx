@@ -71,8 +71,10 @@ export const PositionsView: React.FC = () => {
       <FancyCard>
         <div className="flex flex-col gap-3 py-3 w-full justify-start items-center">
           <div className="w-full flex justify-between items-center gap-6">
-            <h4 className="text-white font-bold text-lg md:text-xl font-sans">Active Positions</h4>
-            <span className="text-[#94a3b8] font-normal text-sm md:text-lg">
+            <h4 className="text-foreground font-bold text-lg md:text-xl font-sans">
+              Active Positions
+            </h4>
+            <span className="text-muted font-normal text-sm md:text-lg">
               {isLoading ? '-' : accountInfo?.lpPositions.length || 0} positions
             </span>
           </div>
@@ -114,10 +116,10 @@ export const PositionsView: React.FC = () => {
                               alt={item.pool.token0.symbol}
                               width={24}
                               height={24}
-                              className="w-6 h-6 rounded-full border border-black bg-amber-100"
+                              className="w-6 h-6 rounded-full border border-surface bg-amber-100"
                             />
                           ) : (
-                            <div className="w-6 h-6 rounded-full border border-black bg-amber-100" />
+                            <div className="w-6 h-6 rounded-full border border-surface bg-amber-100" />
                           )}
                           {token1Info ? (
                             <Image
@@ -125,32 +127,32 @@ export const PositionsView: React.FC = () => {
                               alt={item.pool.token1.symbol}
                               width={24}
                               height={24}
-                              className="w-6 h-6 rounded-full border border-black bg-blue-100"
+                              className="w-6 h-6 rounded-full border border-surface bg-blue-100"
                             />
                           ) : (
-                            <div className="w-6 h-6 rounded-full border border-black bg-blue-100" />
+                            <div className="w-6 h-6 rounded-full border border-surface bg-blue-100" />
                           )}
                         </div>
                         <div className="flex flex-col gap-0 justify-start items-start">
-                          <h3 className="font-bold text-white uppercase whitespace-nowrap">
+                          <h3 className="font-bold text-foreground uppercase whitespace-nowrap">
                             {item.pool.name}
                           </h3>
-                          <p className="text-[#64748b] uppercase text-[10px] tracking-widest hidden sm:block">
+                          <p className="text-muted text-[10px] font-semibold tracking-wide hidden sm:block">
                             {item.pool.poolType}
                           </p>
                         </div>
                       </div>
                     </td>
-                    <td className="py-3 pr-4 text-white font-bold text-right w-1/4">
+                    <td className="py-3 pr-4 text-foreground font-bold text-right w-1/4">
                       {formatNumber(positionToUSD(item), 'en-US', 2, true)}
                     </td>
                     {!isMobile && (
                       <>
-                        <td className="py-3 pr-4 text-[#00ff9d] text-right font-bold w-1/6 drop-shadow-[0_0_8px_rgba(0,255,157,0.5)]">
+                        <td className="py-3 pr-4 text-accent-2 text-right font-bold w-1/6">
                           {formatNumber((item.pool.gauge?.rewardRate as string) || '0', 'en-US', 2)}
                           %
                         </td>
-                        <td className="py-3 pr-4 text-[#ffaf52] text-right font-bold w-1/6 drop-shadow-[0_0_8px_rgba(255,175,82,0.5)]">
+                        <td className="py-3 pr-4 text-warning text-right font-bold w-1/6">
                           {formatNumber(item.pool.totalFeesUSD as string, 'en-US', 2, true)}
                         </td>
                       </>
@@ -158,17 +160,17 @@ export const PositionsView: React.FC = () => {
                     <td className="py-3 text-right">
                       <DropdownMenu.Root key={item.id}>
                         <DropdownMenu.Trigger asChild>
-                          <button className="text-[#64748b] hover:text-white transition-colors">
+                          <button className="text-muted hover:text-foreground transition-colors">
                             <MoreVerticalIcon size={16} />
                           </button>
                         </DropdownMenu.Trigger>
                         <DropdownMenu.Portal>
                           <DropdownMenu.Content
-                            className="bg-[#131525]/90 backdrop-blur-xl border border-white/10 rounded-xl w-3xs px-2 py-2 space-y-1 z-50 font-sans text-xs shadow-[0_8px_32px_rgba(0,0,0,0.5),0_0_15px_rgba(41,98,255,0.08)] data-[state=open]:animate-dropdown-enter data-[state=closed]:animate-dropdown-exit"
+                            className="z-50 w-3xs space-y-1 rounded-2xl border border-white/[0.08] bg-surface/95 px-2 py-2 text-xs shadow-[0_16px_50px_rgba(0,0,0,0.4)] backdrop-blur-xl data-[state=open]:animate-dropdown-enter data-[state=closed]:animate-dropdown-exit"
                             sideOffset={4}
                           >
                             <DropdownMenu.Item
-                              className="flex justify-start items-center gap-2 text-[#94a3b8] cursor-pointer rounded-lg hover:bg-white/5 hover:text-white py-2 px-3 transition-all duration-150 outline-none"
+                              className="flex justify-start items-center gap-2 text-muted cursor-pointer rounded-lg hover:bg-white/5 hover:text-foreground py-2 px-3 transition-all duration-150 outline-none"
                               onClick={() => {
                                 setSelectedPosition(item);
                                 setStakeModalOpen(true);
@@ -177,7 +179,7 @@ export const PositionsView: React.FC = () => {
                               <ShieldPlusIcon size={14} /> <span>Stake</span>
                             </DropdownMenu.Item>
                             <DropdownMenu.Item
-                              className="flex justify-start items-center gap-2 text-[#94a3b8] cursor-pointer rounded-lg hover:bg-white/5 hover:text-white py-2 px-3 transition-all duration-150 outline-none"
+                              className="flex justify-start items-center gap-2 text-muted cursor-pointer rounded-lg hover:bg-white/5 hover:text-foreground py-2 px-3 transition-all duration-150 outline-none"
                               onClick={() => {
                                 setSelectedPosition(item);
                                 setUnstakeModalOpen(true);
@@ -187,7 +189,7 @@ export const PositionsView: React.FC = () => {
                             </DropdownMenu.Item>
                             {item.pool.poolType === 'CONCENTRATED' && (
                               <DropdownMenu.Item
-                                className="flex justify-start items-center gap-2 text-[#94a3b8] cursor-pointer rounded-lg hover:bg-white/5 hover:text-white py-2 px-3 transition-all duration-150 outline-none"
+                                className="flex justify-start items-center gap-2 text-muted cursor-pointer rounded-lg hover:bg-white/5 hover:text-foreground py-2 px-3 transition-all duration-150 outline-none"
                                 onClick={() => {
                                   setSelectedPosition(item);
                                   setIncreaseModalOpen(true);
@@ -197,7 +199,7 @@ export const PositionsView: React.FC = () => {
                               </DropdownMenu.Item>
                             )}
                             <DropdownMenu.Item
-                              className="flex justify-start items-center gap-2 text-[#ff4757] cursor-pointer rounded-lg hover:bg-[#ff4757]/10 py-2 px-3 transition-all duration-150 outline-none"
+                              className="flex justify-start items-center gap-2 text-alert cursor-pointer rounded-lg hover:bg-alert/10 py-2 px-3 transition-all duration-150 outline-none"
                               onClick={() => {
                                 setSelectedPosition(item);
                                 setRemoveModalOpen(true);
@@ -213,24 +215,22 @@ export const PositionsView: React.FC = () => {
                 );
               }}
               renderEmpty={() => (
-                <div className="w-full flex justify-center items-center my-20 flex-col py-5 gap-10">
-                  <div className="bg-[#2962ff]/5 border border-dashed border-[#2962ff]/20 flex justify-center items-center p-6 rounded-3xl">
-                    <DropletIcon size={90} className="text-[#2962ff]/40 animate-float" />
+                <div className="my-10 flex w-full flex-col items-center gap-4 py-2">
+                  <div className="flex items-center justify-center rounded-2xl border border-dashed border-accent/20 bg-accent/5 p-4">
+                    <DropletIcon size={36} className="text-accent/50" />
                   </div>
-                  <div className="w-full flex justify-center items-center flex-col py-2 gap-5">
-                    <h4 className="text-3xl md:text-4xl text-white font-extrabold font-sans">
+                  <div className="flex max-w-md flex-col items-center gap-1.5 text-center">
+                    <h4 className="text-xl font-semibold tracking-tight text-foreground">
                       No Active Positions
                     </h4>
-                    <p className="text-[#94a3b8] font-normal text-sm md:text-xl text-center text-wrap w-full lg:w-132">
+                    <p className="max-w-md text-center text-sm text-muted">
                       You haven&apos;t added liquidity to any pools yet. Add liquidity to start
                       earning fees and rewards
                     </p>
                   </div>
-                  <div className="w-full flex flex-col gap-7 justify-center items-center">
-                    <PrimaryButton className="py-4 px-4">
-                      <PlusIcon size={25} /> <span>Add Liquidity</span>
-                    </PrimaryButton>
-                  </div>
+                  <PrimaryButton>
+                    <PlusIcon size={15} /> <span>Add liquidity</span>
+                  </PrimaryButton>
                 </div>
               )}
             />

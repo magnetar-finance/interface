@@ -111,25 +111,25 @@ export const CreateLockModal: React.FC<CreateLockModalProps> = ({ open, onOpenCh
           {/* MGN amount input */}
           <div className="flex flex-col gap-2">
             <div className="flex justify-between items-center">
-              <label className="text-[#64748b] font-mono text-[10px] uppercase tracking-widest">
-                Amount to Lock
-              </label>
-              <span className="text-[#64748b] font-mono text-[10px]">
+              <label className="text-muted text-[11px] font-semibold">Amount to Lock</label>
+              <span className="text-muted font-mono text-[10px]">
                 Balance:{' '}
-                <span className="text-white">{formatNumber(formatEther(balance), 'en-US', 3)}</span>
+                <span className="text-foreground">
+                  {formatNumber(formatEther(balance), 'en-US', 3)}
+                </span>
               </span>
             </div>
 
-            <div className="flex items-center gap-2 border border-white/10 focus-within:border-[#2962ff]/60 transition-colors">
+            <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-background/50 px-3 py-2 transition-colors focus-within:border-accent/50">
               <input
                 type="number"
                 min="0"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 placeholder="0.00"
-                className="bg-transparent px-3 py-3 font-mono text-sm text-white placeholder:text-[#64748b] outline-none flex-1 min-w-0"
+                className="bg-transparent px-3 py-3 font-mono text-sm text-foreground placeholder:text-muted outline-none flex-1 min-w-0"
               />
-              <span className="text-[#64748b] font-mono text-xs px-3 shrink-0">MGN</span>
+              <span className="text-muted font-mono text-xs px-3 shrink-0">MGN</span>
             </div>
 
             {/* Quick percent buttons */}
@@ -138,7 +138,7 @@ export const CreateLockModal: React.FC<CreateLockModalProps> = ({ open, onOpenCh
                 <button
                   key={pct}
                   onClick={() => setAmount(String((pct * parseFloat(formatEther(balance))) / 100))}
-                  className="flex-1 border border-white/10 py-1 font-mono text-[10px] text-[#94a3b8] hover:border-[#2962ff]/50 hover:text-[#2962ff] transition-colors"
+                  className="flex-1 border border-white/10 py-1 font-mono text-[10px] text-muted hover:border-accent/50 hover:text-accent transition-colors"
                 >
                   {pct === 100 ? 'MAX' : `${pct}%`}
                 </button>
@@ -148,11 +148,9 @@ export const CreateLockModal: React.FC<CreateLockModalProps> = ({ open, onOpenCh
 
           {/* Lock duration input */}
           <div className="flex flex-col gap-2">
-            <label className="text-[#64748b] font-mono text-[10px] uppercase tracking-widest">
-              Lock Duration (days)
-            </label>
+            <label className="text-muted text-[11px] font-semibold">Lock Duration (days)</label>
 
-            <div className="flex items-center gap-2 border border-white/10 focus-within:border-[#2962ff]/60 transition-colors">
+            <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-background/50 px-3 py-2 transition-colors focus-within:border-accent/50">
               <input
                 type="number"
                 min="7"
@@ -160,9 +158,9 @@ export const CreateLockModal: React.FC<CreateLockModalProps> = ({ open, onOpenCh
                 value={days}
                 onChange={(e) => setDays(e.target.value)}
                 placeholder="e.g. 365"
-                className="bg-transparent px-3 py-3 font-mono text-sm text-white placeholder:text-[#64748b] outline-none flex-1 min-w-0"
+                className="bg-transparent px-3 py-3 font-mono text-sm text-foreground placeholder:text-muted outline-none flex-1 min-w-0"
               />
-              <span className="text-[#64748b] font-mono text-xs px-3 shrink-0">days</span>
+              <span className="text-muted font-mono text-xs px-3 shrink-0">days</span>
             </div>
 
             {/* Quick duration presets */}
@@ -173,8 +171,8 @@ export const CreateLockModal: React.FC<CreateLockModalProps> = ({ open, onOpenCh
                   onClick={() => setDays(String(preset.days))}
                   className={`flex-1 border py-1.5 font-mono text-[10px] transition-colors ${
                     parsedDays === preset.days
-                      ? 'border-[#2962ff] text-[#2962ff] bg-[#2962ff]/10'
-                      : 'border-white/10 text-[#94a3b8] hover:border-[#2962ff]/50 hover:text-[#2962ff]'
+                      ? 'border-accent text-accent bg-accent/10'
+                      : 'border-white/10 text-muted hover:border-accent/50 hover:text-accent'
                   }`}
                 >
                   {preset.label}
@@ -183,12 +181,10 @@ export const CreateLockModal: React.FC<CreateLockModalProps> = ({ open, onOpenCh
             </div>
 
             {parsedDays > 0 && parsedDays < 7 && (
-              <p className="text-[#ff4757] font-mono text-[10px]">
-                Minimum lock duration is 7 days.
-              </p>
+              <p className="text-alert font-mono text-[10px]">Minimum lock duration is 7 days.</p>
             )}
             {parsedDays > MAX_LOCK_DAYS && (
-              <p className="text-[#ff4757] font-mono text-[10px]">
+              <p className="text-alert font-mono text-[10px]">
                 Maximum lock duration is 4 years (1461 days).
               </p>
             )}
@@ -196,23 +192,23 @@ export const CreateLockModal: React.FC<CreateLockModalProps> = ({ open, onOpenCh
 
           {/* Preview card */}
           {isValid && (
-            <div className="flex flex-col gap-2 border border-[#2962ff]/20 bg-[#2962ff]/5 px-4 py-3">
+            <div className="flex flex-col gap-2 rounded-2xl border border-accent/20 bg-accent/5 px-4 py-3">
               <div className="flex justify-between items-center">
-                <span className="text-[#64748b] font-mono text-xs">Estimated veMGN</span>
-                <span className="text-[#2962ff] font-bold font-mono text-xs">
+                <span className="text-muted font-mono text-xs">Estimated veMGN</span>
+                <span className="text-accent font-bold font-mono text-xs">
                   {estimatedVeMGN.toLocaleString('en-US', { maximumFractionDigits: 4 })} veMGN
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-[#64748b] font-mono text-xs">Unlock Date</span>
-                <span className="text-white font-bold font-mono text-xs">{unlockDate}</span>
+                <span className="text-muted font-mono text-xs">Unlock Date</span>
+                <span className="text-foreground font-bold font-mono text-xs">{unlockDate}</span>
               </div>
             </div>
           )}
 
           <PrimaryButton
             disabled={!isValid || escrowApproval.isLoading || lockCreation.isLoading}
-            className="w-full py-3 gap-2 font-mono text-xs uppercase tracking-widest disabled:opacity-40 disabled:cursor-not-allowed"
+            className="w-full py-3 gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
             onClick={initiateTransaction}
           >
             <LockIcon size={14} />

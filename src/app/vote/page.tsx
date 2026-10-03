@@ -32,7 +32,7 @@ export default function Page() {
   }, [nextEpochStart]);
 
   return (
-    <main className="w-full flex flex-col gap-8 mt-10 md:mt-14 px-4 md:px-8">
+    <main className="flex w-full flex-col gap-8">
       <PageHeader
         title="Vote"
         subtitle="Direct MGN emissions to your favourite pools each epoch"

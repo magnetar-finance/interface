@@ -33,15 +33,15 @@ function parseQLDate(n: number) {
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 const TX_COLORS: Record<TxType, string> = {
-  Swap: 'text-[#2962ff] bg-[#2962ff]/10 border-[#2962ff]/30',
-  Add: 'text-[#00ff9d] bg-[#00ff9d]/10 border-[#00ff9d]/30',
-  Remove: 'text-[#ffaf52] bg-[#ffaf52]/10 border-[#ffaf52]/30',
+  Swap: 'text-accent bg-accent/10 border-accent/30',
+  Add: 'text-accent-2 bg-accent-2/10 border-accent-2/30',
+  Remove: 'text-warning bg-warning/10 border-warning/30',
 };
 
 const POOL_TYPE_COLORS: Record<PoolType, string> = {
-  STABLE: 'text-[#2962ff] bg-[#2962ff]/10',
-  VOLATILE: 'text-[#ffaf52] bg-[#ffaf52]/10',
-  CONCENTRATED: 'text-[#2962ff] bg-[#2962ff]/10',
+  STABLE: 'text-accent bg-accent/10',
+  VOLATILE: 'text-warning bg-warning/10',
+  CONCENTRATED: 'text-accent bg-accent/10',
 };
 
 type MergedTransaction = {
@@ -66,29 +66,19 @@ const StatCard: React.FC<{ label: string; value: string; sub?: string }> = ({
   value,
   sub,
 }) => (
-  <div className="flex-1 min-w-0 bg-[#131525]/80 backdrop-blur-md border border-[#2962ff]/15 p-4 relative overflow-hidden group hover:border-[#2962ff]/40 hover:shadow-[0_0_30px_rgba(41,98,255,0.1)] transition-all duration-300 rounded-xl">
-    {/* Top accent */}
-    <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-[#2962ff]/70 via-[#2962ff]/20 to-transparent" />
-    {/* Corner brackets */}
-    <div className="absolute top-0 left-0 w-3 h-3 border-t-[1.5px] border-l-[1.5px] border-[#2962ff]/60 rounded-tl-xl" />
-    <div className="absolute bottom-0 right-0 w-3 h-3 border-b-[1.5px] border-r-[1.5px] border-[#2962ff]/20 rounded-br-xl" />
-    <p className="text-[#475569] text-[9px] font-bold uppercase tracking-[0.15em] mb-2 font-sans">
-      {label}
-    </p>
-    <p className="text-white font-mono text-2xl font-bold tracking-wide group-hover:text-[#f8fafc] transition-colors">
-      {value}
-    </p>
-    {sub && <p className="text-[#475569] text-[10px] font-mono mt-1.5 tracking-wider">{sub}</p>}
+  <div className="group relative min-w-0 flex-1 overflow-hidden rounded-2xl border border-white/[0.07] bg-surface/80 p-4 backdrop-blur-md transition-colors hover:border-accent/25">
+    <div className="pointer-events-none absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-accent/40 to-transparent" />
+    <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted">{label}</p>
+    <p className="font-mono text-2xl font-semibold tracking-tight text-foreground">{value}</p>
+    {sub && <p className="mt-1.5 font-mono text-[11px] text-dim">{sub}</p>}
   </div>
 );
 
 const SectionHeader: React.FC<{ title: string }> = ({ title }) => (
-  <div className="flex items-center gap-2 mb-4">
-    <span className="text-[#2962ff]/60 font-mono text-[10px]">&gt;</span>
-    <h3 className="text-[#f8fafc] text-[10px] font-bold uppercase tracking-[0.15em] font-sans">
-      {title}
-    </h3>
-    <div className="flex-1 h-px bg-gradient-to-r from-[#2962ff]/30 to-transparent" />
+  <div className="mb-4 flex items-center gap-2">
+    <span className="font-mono text-[11px] text-accent">›</span>
+    <h3 className="text-sm font-semibold tracking-tight text-foreground">{title}</h3>
+    <div className="h-px flex-1 bg-gradient-to-r from-accent/25 to-transparent" />
   </div>
 );
 
@@ -367,19 +357,17 @@ export const AnalyticsMainView: React.FC = () => {
 
       {/* ── Charts ─────────────────────────────────────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div className="bg-[#131525]/50 backdrop-blur-sm border border-[#2962ff]/10 p-4 relative overflow-hidden rounded-xl">
-          <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-[#2962ff]/60 via-[#2962ff]/20 to-transparent" />
-          <div className="absolute top-0 left-0 w-3 h-3 border-t-[1.5px] border-l-[1.5px] border-[#2962ff]/50 rounded-tl-xl" />
+        <div className="relative overflow-hidden rounded-2xl border border-white/[0.07] bg-surface/80 p-4 backdrop-blur-sm">
+          <div className="pointer-events-none absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-accent/40 to-transparent" />
           <SectionHeader title="TVL" />
           {isLoading1Y || isLoading7D || isLoading30D ? (
             <Skeleton className="h-45 w-full" />
           ) : (
-            <TimeSeriesChart data={tvlSeries} color="#2962ff" height={180} />
+            <TimeSeriesChart data={tvlSeries} color="#2660f5" height={180} />
           )}
         </div>
-        <div className="bg-[#131525]/50 backdrop-blur-sm border border-[#2962ff]/10 p-4 relative overflow-hidden rounded-xl">
-          <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-[#2962ff]/50 via-[#2962ff]/15 to-transparent" />
-          <div className="absolute top-0 left-0 w-3 h-3 border-t-[1.5px] border-l-[1.5px] border-[#2962ff]/40 rounded-tl-xl" />
+        <div className="relative overflow-hidden rounded-2xl border border-white/[0.07] bg-surface/80 p-4 backdrop-blur-sm">
+          <div className="pointer-events-none absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-accent/40 to-transparent" />
           <SectionHeader title="Volume" />
           {isLoading1Y || isLoading7D || isLoading30D ? (
             <Skeleton className="h-45 w-full" />
@@ -390,9 +378,8 @@ export const AnalyticsMainView: React.FC = () => {
       </div>
 
       {/* ── Top Pools ──────────────────────────────────────────────────── */}
-      <div className="bg-[#131525]/50 backdrop-blur-sm border border-[#2962ff]/10 p-4 overflow-x-auto relative rounded-xl">
-        <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-[#2962ff]/60 via-[#2962ff]/20 to-transparent" />
-        <div className="absolute top-0 left-0 w-3 h-3 border-t-[1.5px] border-l-[1.5px] border-[#2962ff]/50 rounded-tl-xl" />
+      <div className="relative overflow-x-auto rounded-2xl border border-white/[0.07] bg-surface/80 p-4 backdrop-blur-sm">
+        <div className="pointer-events-none absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-accent/40 to-transparent" />
         <SectionHeader title="Top Pools" />
         {isLoadingPools ? (
           <div className="flex flex-col gap-2">
@@ -415,10 +402,10 @@ export const AnalyticsMainView: React.FC = () => {
               onRowClick={(pool) => router.push(`/analytics/pools/${encodeURIComponent(pool.id)}`)}
               renderRow={(pool, i) => (
                 <>
-                  <td className="py-3 pr-4 pl-3 text-[#475569] font-mono">
+                  <td className="py-3 pr-4 pl-3 text-dim font-mono">
                     {(poolsPage - 1) * POOLS_PER_PAGE + i + 1}
                   </td>
-                  <td className="py-3 pr-4 text-white font-bold">{pool.name}</td>
+                  <td className="py-3 pr-4 text-foreground font-bold">{pool.name}</td>
                   <td className="py-3 pr-4">
                     <span
                       className={`px-2 py-0.5 text-[10px] uppercase ${
@@ -428,13 +415,13 @@ export const AnalyticsMainView: React.FC = () => {
                       {pool.poolType.toLowerCase()}
                     </span>
                   </td>
-                  <td className="py-3 pr-4 text-right text-white font-mono">
+                  <td className="py-3 pr-4 text-right text-foreground font-mono">
                     {formatNumber(pool.reserveUSD as string, 'en-US', 2, true)}
                   </td>
-                  <td className="py-3 pr-4 text-right text-[#94a3b8] font-mono">
+                  <td className="py-3 pr-4 text-right text-muted font-mono">
                     {formatNumber(pool.volumeUSD as string, 'en-US', 2, true)}
                   </td>
-                  <td className="py-3 pr-4 text-right text-[#2962ff] font-mono drop-shadow-[0_0_6px_rgba(41,98,255,0.4)]">
+                  <td className="py-3 pr-4 text-right text-accent font-mono">
                     {formatNumber(pool.totalFeesUSD as string, 'en-US', 2, true)}
                   </td>
                 </>
@@ -454,9 +441,8 @@ export const AnalyticsMainView: React.FC = () => {
       </div>
 
       {/* ── Top Tokens ─────────────────────────────────────────────────── */}
-      <div className="bg-[#131525]/50 backdrop-blur-sm border border-[#2962ff]/10 p-4 overflow-x-auto relative rounded-xl">
-        <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-[#2962ff]/60 via-[#2962ff]/20 to-transparent" />
-        <div className="absolute top-0 left-0 w-3 h-3 border-t-[1.5px] border-l-[1.5px] border-[#2962ff]/50 rounded-tl-xl" />
+      <div className="relative overflow-x-auto rounded-2xl border border-white/[0.07] bg-surface/80 p-4 backdrop-blur-sm">
+        <div className="pointer-events-none absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-accent/40 to-transparent" />
         <SectionHeader title="Top Tokens" />
         {isLoadingTokens ? (
           <div className="flex flex-col gap-2">
@@ -480,20 +466,20 @@ export const AnalyticsMainView: React.FC = () => {
               }
               renderRow={(token, i) => (
                 <>
-                  <td className="py-3 pr-4 pl-3 text-[#475569] font-mono">
+                  <td className="py-3 pr-4 pl-3 text-dim font-mono">
                     {(tokensPage - 1) * TOKENS_PER_PAGE + i + 1}
                   </td>
                   <td className="py-3 pr-4">
-                    <span className="text-white font-bold">{token.symbol}</span>
-                    <span className="text-[#475569] ml-2 text-[10px]">{token.name}</span>
+                    <span className="text-foreground font-bold">{token.symbol}</span>
+                    <span className="text-dim ml-2 text-[10px]">{token.name}</span>
                   </td>
-                  <td className="py-3 pr-4 text-right text-white font-mono">
+                  <td className="py-3 pr-4 text-right text-foreground font-mono">
                     ${formatNumber(token.derivedUSD as string, 'en-US', 2)}
                   </td>
-                  <td className="py-3 pr-4 text-right text-[#94a3b8] font-mono">
+                  <td className="py-3 pr-4 text-right text-muted font-mono">
                     {formatNumber(token.tradeVolumeUSD as string, 'en-US', 2, true)}
                   </td>
-                  <td className="py-3 pr-4 text-right text-[#94a3b8] font-mono">
+                  <td className="py-3 pr-4 text-right text-muted font-mono">
                     {formatNumber(token.totalLiquidityUSD as string, 'en-US', 2, true)}
                   </td>
                 </>
@@ -513,9 +499,8 @@ export const AnalyticsMainView: React.FC = () => {
       </div>
 
       {/* ── Live Transactions ──────────────────────────────────────────── */}
-      <div className="bg-[#131525]/50 backdrop-blur-sm border border-[#2962ff]/10 p-4 mb-8 relative rounded-xl">
-        <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-[#2962ff]/50 via-[#2962ff]/15 to-transparent" />
-        <div className="absolute top-0 left-0 w-3 h-3 border-t-[1.5px] border-l-[1.5px] border-[#2962ff]/40 rounded-tl-xl" />
+      <div className="relative mb-8 overflow-x-auto rounded-2xl border border-white/[0.07] bg-surface/80 p-4 backdrop-blur-sm">
+        <div className="pointer-events-none absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-accent/40 to-transparent" />
         <SectionHeader title="Recent Transactions" />
         {isLoadingTxns ? (
           <div className="flex flex-col gap-2">
@@ -554,15 +539,15 @@ export const AnalyticsMainView: React.FC = () => {
                         {tx.transactionType}
                       </span>
                     </td>
-                    <td className="py-2 pr-4 text-[#94a3b8]">
+                    <td className="py-2 pr-4 text-muted">
                       {tx.token0.symbol} / {tx.token1.symbol}
                     </td>
-                    <td className="py-2 pr-4 text-right text-white">
+                    <td className="py-2 pr-4 text-right text-foreground">
                       ${formatNumber(tx.amountUSD, 'en-US', 0)}
                     </td>
                     <td className="py-2 pr-4 text-right">
                       <a href={`${explorerUrl}/address/${tx.from}`} target="_blank">
-                        <span className="text-[#2962ff] flex items-center justify-end gap-1">
+                        <span className="text-accent flex items-center justify-end gap-1">
                           {splitString(tx.from)}
                           <ExternalLinkIcon size={10} />
                         </span>
@@ -570,18 +555,18 @@ export const AnalyticsMainView: React.FC = () => {
                     </td>
                     <td className="py-2 pr-4 text-right">
                       <a href={`${explorerUrl}/address/${tx.to}`} target="_blank">
-                        <span className="text-[#2962ff] flex items-center justify-end gap-1">
+                        <span className="text-accent flex items-center justify-end gap-1">
                           {splitString(tx.to)}
                           <ExternalLinkIcon size={10} />
                         </span>
                       </a>
                     </td>
-                    <td className="py-2 pr-4 text-right text-[#64748b]">
+                    <td className="py-2 pr-4 text-right text-muted">
                       {moment(tx.timestamp).fromNow()}
                     </td>
                     <td className="py-2 pr-4 text-right">
                       <a href={`${explorerUrl}/tx/${tx.transactionHash}`} target="_blank">
-                        <span className="text-[#2962ff] flex items-center justify-end gap-1">
+                        <span className="text-accent flex items-center justify-end gap-1">
                           {splitString(tx.transactionHash)}
                           <ExternalLinkIcon size={10} />
                         </span>

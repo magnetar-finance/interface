@@ -58,39 +58,39 @@ const LockDropdown: React.FC<{
       <DropdownMenu.Trigger asChild>
         <button
           disabled={disabled}
-          className={`flex items-center justify-between gap-3 border rounded-xl px-3 py-2.5 w-full text-left font-mono text-xs transition-all duration-200 ${
+          className={`flex w-full items-center justify-between gap-3 rounded-2xl border px-3 py-2.5 text-left text-sm transition-colors ${
             disabled
-              ? 'border-white/5 text-[#64748b] cursor-not-allowed bg-white/3'
-              : 'border-white/10 text-white hover:border-[#2962ff]/50 hover:bg-[#2962ff]/5 bg-transparent cursor-pointer'
+              ? 'cursor-not-allowed border-white/5 bg-white/[0.03] text-muted'
+              : 'cursor-pointer border-white/10 bg-background/50 text-foreground hover:border-accent/40 hover:bg-accent/5'
           }`}
         >
           <div className="flex items-center gap-2 min-w-0">
-            <LockIcon size={12} className={disabled ? 'text-[#64748b]' : 'text-[#2962ff]'} />
+            <LockIcon size={12} className={disabled ? 'text-muted' : 'text-accent'} />
             <span className="truncate">
               {comingSoon ? (
-                <span className="text-[#64748b]">{label}</span>
+                <span className="text-muted">{label}</span>
               ) : selected ? (
                 <span>
                   Lock {selected.id}{' '}
-                  <span className="text-[#2962ff]">
+                  <span className="text-accent">
                     — {formatNumber(selected.position as string)} MGN
                   </span>
                 </span>
               ) : (
-                <span className="text-[#64748b]">{label}</span>
+                <span className="text-muted">{label}</span>
               )}
             </span>
           </div>
           <div className="flex items-center gap-2 shrink-0">
             {comingSoon && (
-              <span className="text-[8px] font-bold uppercase tracking-widest px-1.5 py-0.5 border border-[#ffaf52]/40 text-[#ffaf52]/80 bg-[#ffaf52]/5 rounded-md">
+              <span className="text-[8px] font-bold px-1.5 py-0.5 border border-warning/40 text-warning/80 bg-warning/5 rounded-md">
                 Coming Soon
               </span>
             )}
             {open ? (
-              <ChevronUp size={12} className="text-[#64748b]" />
+              <ChevronUp size={12} className="text-muted" />
             ) : (
-              <ChevronDown size={12} className="text-[#64748b]" />
+              <ChevronDown size={12} className="text-muted" />
             )}
           </div>
         </button>
@@ -99,11 +99,11 @@ const LockDropdown: React.FC<{
       {!disabled && !comingSoon && (
         <DropdownMenu.Portal>
           <DropdownMenu.Content
-            className="bg-[#131525]/90 backdrop-blur-xl border border-[#2962ff]/15 rounded-xl px-2 py-2 space-y-1 z-50 font-sans text-xs shadow-[0_8px_32px_rgba(0,0,0,0.5),0_0_15px_rgba(41,98,255,0.08)] data-[state=open]:animate-dropdown-enter data-[state=closed]:animate-dropdown-exit w-(--radix-popper-anchor-width)"
+            className="z-50 w-(--radix-popper-anchor-width) space-y-1 rounded-2xl border border-white/[0.08] bg-surface/95 px-1.5 py-2 text-xs shadow-[0_16px_50px_rgba(0,0,0,0.4)] backdrop-blur-xl data-[state=open]:animate-dropdown-enter data-[state=closed]:animate-dropdown-exit"
             sideOffset={4}
           >
             {locks.length === 0 ? (
-              <p className="text-[#64748b] px-3 py-2">No locks found</p>
+              <p className="text-muted px-3 py-2">No locks found</p>
             ) : (
               locks.map((lock) => (
                 <DropdownMenu.Item
@@ -111,13 +111,13 @@ const LockDropdown: React.FC<{
                   onClick={() => onSelect(lock.id)}
                   className={`flex items-center justify-between gap-3 px-3 py-2.5 cursor-pointer transition-all duration-150 rounded-lg outline-none ${
                     selectedId === lock.id
-                      ? 'bg-[#2962ff]/10 text-[#2962ff]'
-                      : 'text-[#94a3b8] hover:bg-white/5 hover:text-white'
+                      ? 'bg-accent/10 text-accent'
+                      : 'text-muted hover:bg-white/5 hover:text-foreground'
                   }`}
                 >
                   <div className="flex flex-col gap-0.5">
                     <span className="font-bold">Lock {lock.id}</span>
-                    <span className="text-[#64748b] text-[10px]">
+                    <span className="text-muted text-[10px]">
                       {formatNumber(lock.position as string)} · Expires{' '}
                       {new Date(parseInt(lock.unlockTime as string) * 1000).toLocaleString(
                         'en-US',
@@ -131,7 +131,7 @@ const LockDropdown: React.FC<{
                       )}
                     </span>
                   </div>
-                  <span className="text-[#00ff9d] font-bold whitespace-nowrap">
+                  <span className="text-accent-2 font-bold whitespace-nowrap">
                     {formatNumber(lock.position as string)} MGN
                   </span>
                 </DropdownMenu.Item>
@@ -228,11 +228,11 @@ export const MainView: React.FC = () => {
   const badgeColorForPoolType = useCallback((poolType: PoolType) => {
     switch (poolType) {
       case 'STABLE':
-        return 'bg-[#00ff9d]/10 text-[#00ff9d]';
+        return 'bg-accent-2/10 text-accent-2';
       case 'VOLATILE':
-        return 'bg-[#ffaf52]/10 text-[#ffaf52]';
+        return 'bg-warning/10 text-warning';
       case 'CONCENTRATED':
-        return 'bg-[#2962ff]/10 text-[#2962ff]';
+        return 'bg-accent/10 text-accent';
     }
   }, []);
 
@@ -320,9 +320,7 @@ export const MainView: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         {/* Owned locks */}
         <div className="flex flex-col gap-1.5">
-          <p className="text-[#64748b] text-[10px] font-bold uppercase tracking-widest font-mono">
-            Vote With Lock
-          </p>
+          <p className="text-muted text-[11px] font-semibold">Vote With Lock</p>
           <LockDropdown
             label="Select a lock…"
             selectedId={selectedLockId}
@@ -333,17 +331,17 @@ export const MainView: React.FC = () => {
             }}
           />
           {selectedLock && (
-            <p className="text-[10px] font-mono text-[#64748b]">
+            <p className="text-[10px] font-mono text-muted">
               Voting power:{' '}
-              <span className="text-[#00ff9d]">{formatNumber(formatEther(lockVP))} veMGN</span>
+              <span className="text-accent-2">{formatNumber(formatEther(lockVP))} veMGN</span>
             </p>
           )}
         </div>
 
         {/* Rented locks */}
         <div className="flex flex-col gap-1.5">
-          <p className="text-[#64748b] text-[10px] font-bold uppercase tracking-widest font-mono">
-            Rented Lock <span className="text-[#ffaf52]/70">(ve-Rentals)</span>
+          <p className="text-muted text-[11px] font-semibold">
+            Rented Lock <span className="text-warning/70">(ve-Rentals)</span>
           </p>
           <LockDropdown
             label="Rented locks…"
@@ -358,7 +356,7 @@ export const MainView: React.FC = () => {
               setSelectedRentalId(rentalId as string);
             }}
           />
-          <p className="text-[10px] font-mono text-[#64748b]">
+          <p className="text-[10px] font-mono text-muted">
             Rent veMGN locks to vote without locking your own tokens.
           </p>
         </div>
@@ -378,10 +376,10 @@ export const MainView: React.FC = () => {
               />
             </div>
 
-            <div className="border border-white/10 flex items-center gap-2 px-3 py-2 bg-transparent w-full xl:w-auto xl:min-w-56 focus-within:border-[#2962ff] focus-within:shadow-[0_0_15px_rgba(41,98,255,0.2)] transition-all duration-300">
-              <SearchIcon size={14} className="text-[#64748b] shrink-0" />
+            <div className="flex w-full items-center gap-2 rounded-2xl border border-white/[0.08] bg-surface/60 px-3 py-2 transition-colors focus-within:border-accent/40 xl:w-auto xl:min-w-56">
+              <SearchIcon size={14} className="text-muted shrink-0" />
               <input
-                className="bg-transparent text-xs font-mono text-white placeholder:text-[#64748b] outline-none w-full"
+                className="w-full bg-transparent text-sm text-foreground outline-none placeholder:text-muted"
                 placeholder="Search pools…"
                 value={searchValue}
                 onChange={(e) => setSearchValue(e.target.value)}
@@ -432,10 +430,10 @@ export const MainView: React.FC = () => {
                               alt={item.token0.symbol}
                               width={24}
                               height={24}
-                              className="w-6 h-6 rounded-full border border-black bg-amber-100"
+                              className="w-6 h-6 rounded-full border border-surface bg-amber-100"
                             />
                           ) : (
-                            <div className="w-6 h-6 rounded-full border border-black bg-amber-100" />
+                            <div className="w-6 h-6 rounded-full border border-surface bg-amber-100" />
                           )}
                           {token1Info ? (
                             <Image
@@ -443,14 +441,14 @@ export const MainView: React.FC = () => {
                               alt={item.token1.symbol}
                               width={24}
                               height={24}
-                              className="w-6 h-6 rounded-full border border-black bg-blue-100"
+                              className="w-6 h-6 rounded-full border border-surface bg-blue-100"
                             />
                           ) : (
-                            <div className="w-6 h-6 rounded-full border border-black bg-blue-100" />
+                            <div className="w-6 h-6 rounded-full border border-surface bg-blue-100" />
                           )}
                         </div>
                         <div className="flex gap-2 items-center">
-                          <h3 className="font-bold text-white uppercase whitespace-nowrap">
+                          <h3 className="font-bold text-foreground uppercase whitespace-nowrap">
                             {item.name}
                           </h3>
                           <span
@@ -467,13 +465,13 @@ export const MainView: React.FC = () => {
                     {/* Desktop-only columns */}
                     {!isMobile && (
                       <>
-                        <td className="py-3 pr-4 text-white text-right font-bold w-1/5">
+                        <td className="py-3 pr-4 text-foreground text-right font-bold w-1/5">
                           {formatNumber(item.reserveUSD as string, 'en-US', 2, true)}
                         </td>
-                        <td className="py-3 pr-4 text-[#00ff9d] text-right font-bold w-1/6 drop-shadow-[0_0_8px_rgba(0,255,157,0.5)]">
+                        <td className="py-3 pr-4 text-accent-2 text-right font-bold w-1/6">
                           {formatNumber((item.gauge?.rewardRate as string) || '0', 'en-US', 2)}%
                         </td>
-                        <td className="py-3 pr-4 text-[#64748b] text-right font-bold w-1/6">
+                        <td className="py-3 pr-4 text-muted text-right font-bold w-1/6">
                           {formatNumber((item.totalVotes as unknown as string) || '0', 'en-US', 0)}
                         </td>
                       </>
@@ -481,7 +479,7 @@ export const MainView: React.FC = () => {
 
                     {/* Mobile-only votes column */}
                     {isMobile && (
-                      <td className="py-3 pr-4 text-[#64748b] text-right font-bold w-1/5">
+                      <td className="py-3 pr-4 text-muted text-right font-bold w-1/5">
                         {formatNumber((item.totalVotes as unknown as string) || '0', 'en-US', 0)}
                       </td>
                     )}
@@ -499,13 +497,13 @@ export const MainView: React.FC = () => {
                           onChange={(e) =>
                             handleAllocationChange(item.address as string, e.target.value)
                           }
-                          className={`w-16 bg-transparent border text-right font-mono text-xs px-2 py-1.5 outline-none transition-all duration-300 focus:shadow-[0_0_10px_rgba(41,98,255,0.2)] ${
+                          className={`w-16 bg-transparent border text-right font-mono text-xs px-2 py-1.5 outline-none transition-all duration-300 ${
                             currentAlloc > 0
-                              ? 'border-[#2962ff] text-[#2962ff] shadow-[0_0_8px_rgba(41,98,255,0.15)]'
-                              : 'border-white/10 text-[#64748b] focus:border-[#2962ff] hover:border-white/20'
+                              ? 'border-accent text-accent'
+                              : 'border-white/10 text-muted focus:border-accent hover:border-white/20'
                           }`}
                         />
-                        <span className="text-[#64748b] text-xs font-mono">%</span>
+                        <span className="text-muted text-xs font-mono">%</span>
                       </div>
                     </td>
                   </>
@@ -516,14 +514,14 @@ export const MainView: React.FC = () => {
                   <div className="border-2 border-dashed border-white/10 p-6">
                     <VoteIcon
                       size={56}
-                      className="text-[#64748b] animate-[float_6s_ease-in-out_infinite]"
+                      className="text-muted animate-[float_6s_ease-in-out_infinite]"
                     />
                   </div>
                   <div className="text-center space-y-1">
-                    <h4 className="text-white font-bold text-lg uppercase tracking-widest font-mono">
+                    <h4 className="text-lg font-bold tracking-tight text-foreground">
                       No Eligible Pools
                     </h4>
-                    <p className="text-[#64748b] font-mono text-xs">
+                    <p className="text-muted font-mono text-xs">
                       No gauge pools match your search.
                     </p>
                   </div>
@@ -545,57 +543,38 @@ export const MainView: React.FC = () => {
 
       {/* ── Vote Summary Bar ───────────────────────────────────────────── */}
       <div
-        className={`bg-[#131525]/80 backdrop-blur-md border px-5 py-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 transition-all duration-300 rounded-xl relative overflow-hidden ${
+        className={`relative flex flex-col md:flex-row items-start md:items-center justify-between gap-4 overflow-hidden rounded-2xl border bg-surface/80 px-5 py-4 backdrop-blur-md transition-colors ${
           isOverAllocated
-            ? 'border-[#ff4757]/40 shadow-[0_0_20px_rgba(255,71,87,0.1)]'
+            ? 'border-alert/40'
             : selectedPoolCount > 0
-            ? 'border-[#2962ff]/40 shadow-[0_0_30px_rgba(41,98,255,0.15)]'
-            : 'border-[#2962ff]/15'
+            ? 'border-accent/40'
+            : 'border-white/[0.07]'
         }`}
       >
-        {/* Decorations */}
         <div
-          className={`absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r to-transparent ${
-            isOverAllocated
-              ? 'from-[#ff4757]/70 via-[#ff4757]/20'
-              : selectedPoolCount > 0
-              ? 'from-[#2962ff]/70 via-[#2962ff]/20'
-              : 'from-[#2962ff]/40 via-[#2962ff]/10'
-          }`}
-        />
-        <div
-          className={`absolute top-0 left-0 w-3 h-3 border-t-[1.5px] border-l-[1.5px] rounded-tl-xl ${
-            isOverAllocated ? 'border-[#ff4757]/60' : 'border-[#2962ff]/60'
-          }`}
-        />
-        <div
-          className={`absolute bottom-0 right-0 w-3 h-3 border-b-[1.5px] border-r-[1.5px] rounded-br-xl ${
-            isOverAllocated ? 'border-[#ff4757]/20' : 'border-[#2962ff]/20'
+          className={`pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent to-transparent ${
+            isOverAllocated ? 'via-alert/50' : 'via-accent/40'
           }`}
         />
 
         {/* Stats */}
         <div className="flex flex-wrap items-center gap-x-6 gap-y-2 font-mono text-xs relative z-10">
           <div className="flex flex-col gap-0.5">
-            <span className="text-[#64748b] uppercase tracking-widest text-[10px]">
-              Selected Pools
-            </span>
-            <span className="text-white font-bold text-sm">{selectedPoolCount}</span>
+            <span className="text-muted text-[10px]">Selected Pools</span>
+            <span className="text-foreground font-bold text-sm">{selectedPoolCount}</span>
           </div>
 
           <div className="w-px h-8 bg-white/10 hidden md:block" />
 
           <div className="flex flex-col gap-0.5">
-            <span className="text-[#64748b] uppercase tracking-widest text-[10px]">
-              Total Allocated
-            </span>
+            <span className="text-muted text-[10px]">Total Allocated</span>
             <span
               className={`font-bold text-sm ${
                 isOverAllocated
-                  ? 'text-[#ff4757]'
+                  ? 'text-alert'
                   : totalAllocated === 100
-                  ? 'text-[#00ff9d]'
-                  : 'text-white'
+                  ? 'text-accent-2'
+                  : 'text-foreground'
               }`}
             >
               {totalAllocated.toFixed(1)}%
@@ -605,29 +584,23 @@ export const MainView: React.FC = () => {
           <div className="w-px h-8 bg-white/10 hidden md:block" />
 
           <div className="flex flex-col gap-0.5">
-            <span className="text-[#64748b] uppercase tracking-widest text-[10px]">
-              Voting Lock
-            </span>
-            <span className="text-white font-bold text-sm">
+            <span className="text-muted text-[10px]">Voting Lock</span>
+            <span className="text-foreground font-bold text-sm">
               {selectedLock ? (
                 <>
                   Lock {selectedLock.lockId}{' '}
-                  <span className="text-[#2962ff]">
-                    ({formatNumber(formatEther(lockVP))} veMGN)
-                  </span>
+                  <span className="text-accent">({formatNumber(formatEther(lockVP))} veMGN)</span>
                 </>
               ) : (
-                <span className="text-[#64748b]">—</span>
+                <span className="text-muted">—</span>
               )}
             </span>
           </div>
 
           {isOverAllocated && (
-            <div className="flex items-center gap-1.5 text-[#ff4757]">
+            <div className="flex items-center gap-1.5 text-alert">
               <AlertCircleIcon size={12} />
-              <span className="text-[10px] uppercase tracking-widest">
-                Exceeds 100% — reduce allocation
-              </span>
+              <span className="text-[10px]">Exceeds 100% — reduce allocation</span>
             </div>
           )}
         </div>

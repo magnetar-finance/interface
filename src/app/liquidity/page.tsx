@@ -5,7 +5,7 @@ import { PageHeader } from '@/components/PageHeader';
 
 export default function Liquidity() {
   return (
-    <main className="w-full flex flex-col gap-6 mt-10 md:mt-14 px-4 md:px-8">
+    <main className="flex w-full flex-col gap-6">
       <PageHeader
         title="Liquidity"
         subtitle="Deposit into pools to earn fees & gauge rewards"

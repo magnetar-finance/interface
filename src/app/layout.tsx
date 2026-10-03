@@ -1,15 +1,15 @@
 import './globals.css';
 import '@rainbow-me/rainbowkit/styles.css';
 import type { Metadata } from 'next';
-import { Fira_Code, Inter } from 'next/font/google';
-import { Sidebar } from '@/partials/Sidebar';
+import { Inter, JetBrains_Mono } from 'next/font/google';
 import { StickyMobileNavbar } from '@/partials/StickyMobileNavbar';
 import { Header } from '@/partials/Header';
 import { Providers } from './providers';
 
-const firaCode = Fira_Code({
-  variable: '--font-fira-code',
+const jetbrainsMono = JetBrains_Mono({
+  variable: '--font-jetbrains-mono',
   subsets: ['latin'],
+  weight: ['400', '500'],
 });
 
 const inter = Inter({
@@ -31,20 +31,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${firaCode.variable} ${inter.variable} font-sans antialiased overflow-x-hidden`}
+        className={`${jetbrainsMono.variable} ${inter.variable} font-sans antialiased overflow-x-hidden`}
       >
         <Providers>
-          <div className="flex flex-col md:flex-row min-h-screen min-w-screen justify-center items-start gap-0 overflow-y-auto overflow-x-hidden relative">
-            <div className="hidden md:block w-[20%] min-h-screen">
-              <Sidebar />
+          <div className="relative z-10 flex min-h-screen min-w-screen flex-col overflow-x-hidden">
+            <Header />
+            <div className="mx-auto w-full max-w-7xl flex-1 px-4 py-5 pb-24 md:px-6 md:py-6 lg:pb-8">
+              {children}
             </div>
-            <div className="container mx-auto">
-              <div className="w-full flex justify-start items-center gap-10 flex-col pt-3 pb-28 md:py-6 px-4 md:px-8 overflow-x-hidden">
-                <Header />
-                {children}
-              </div>
-            </div>
-            <div className="md:hidden w-full px-3 pb-5 fixed bottom-0 left-0">
+            <div className="fixed bottom-0 left-0 z-40 w-full px-3 pb-4 lg:hidden">
               <StickyMobileNavbar />
             </div>
           </div>

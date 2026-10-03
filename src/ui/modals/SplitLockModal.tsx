@@ -67,26 +67,22 @@ export const SplitLockModal: React.FC<SplitLockModalProps> = ({
           {/* Lock info */}
           <div className="grid grid-cols-2 gap-2">
             <div className="border border-white/5 bg-white/3 px-3 py-2.5 flex flex-col gap-0.5">
-              <span className="text-[#64748b] font-mono text-[10px] uppercase tracking-widest">
-                Lock
-              </span>
-              <span className="text-white font-bold font-mono text-xs">{tokenId ?? '—'}</span>
+              <span className="text-muted text-[11px] font-semibold">Lock</span>
+              <span className="text-foreground font-bold font-mono text-xs">{tokenId ?? '—'}</span>
             </div>
             <div className="border border-white/5 bg-white/3 px-3 py-2.5 flex flex-col gap-0.5">
-              <span className="text-[#64748b] font-mono text-[10px] uppercase tracking-widest">
-                Total Locked
+              <span className="text-muted text-[11px] font-semibold">Total Locked</span>
+              <span className="text-foreground font-bold font-mono text-xs">
+                {currentAmount ?? '—'}
               </span>
-              <span className="text-white font-bold font-mono text-xs">{currentAmount ?? '—'}</span>
             </div>
           </div>
 
           {/* Slider */}
           <div className="flex flex-col gap-3">
             <div className="flex justify-between items-center">
-              <label className="text-[#64748b] font-mono text-[10px] uppercase tracking-widest">
-                Split Ratio
-              </label>
-              <span className="text-[#2962ff] font-bold font-mono text-xs">
+              <label className="text-muted text-[11px] font-semibold">Split Ratio</label>
+              <span className="text-accent font-bold font-mono text-xs">
                 {splitPct}% / {100 - splitPct}%
               </span>
             </div>
@@ -97,7 +93,7 @@ export const SplitLockModal: React.FC<SplitLockModalProps> = ({
               max={99}
               value={splitPct}
               onChange={(e) => setSplitPct(Number(e.target.value))}
-              className="w-full accent-[#2962ff] cursor-pointer"
+              className="w-full accent-accent cursor-pointer"
             />
 
             {/* Quick splits */}
@@ -108,8 +104,8 @@ export const SplitLockModal: React.FC<SplitLockModalProps> = ({
                   onClick={() => setSplitPct(v)}
                   className={`flex-1 border py-1 font-mono text-[10px] transition-colors ${
                     splitPct === v
-                      ? 'border-[#2962ff] text-[#2962ff] bg-[#2962ff]/10'
-                      : 'border-white/10 text-[#94a3b8] hover:border-white/30'
+                      ? 'border-accent text-accent bg-accent/10'
+                      : 'border-white/10 text-muted hover:border-white/30'
                   }`}
                 >
                   {v}/{100 - v}
@@ -120,24 +116,20 @@ export const SplitLockModal: React.FC<SplitLockModalProps> = ({
 
           {/* Result preview */}
           <div className="grid grid-cols-2 gap-2">
-            <div className="border border-[#2962ff]/20 bg-[#2962ff]/5 px-3 py-3 flex flex-col gap-1">
-              <span className="text-[#64748b] font-mono text-[10px] uppercase tracking-widest">
-                Lock A
-              </span>
-              <span className="text-white font-bold font-mono text-xs">{amountA} MGN</span>
-              {/* <span className="text-[#2962ff] font-mono text-[10px]">{vpA} veMGN</span> */}
+            <div className="flex flex-col gap-1 rounded-2xl border border-accent/20 bg-accent/5 px-3 py-3">
+              <span className="text-muted text-[11px] font-semibold">Lock A</span>
+              <span className="text-foreground font-bold font-mono text-xs">{amountA} MGN</span>
+              {/* <span className="text-accent font-mono text-[10px]">{vpA} veMGN</span> */}
             </div>
-            <div className="border border-[#2962ff]/20 bg-[#2962ff]/5 px-3 py-3 flex flex-col gap-1">
-              <span className="text-[#64748b] font-mono text-[10px] uppercase tracking-widest">
-                Lock B (new)
-              </span>
-              <span className="text-white font-bold font-mono text-xs">{amountB} MGN</span>
-              {/* <span className="text-[#2962ff] font-mono text-[10px]">{vpB} veMGN</span> */}
+            <div className="flex flex-col gap-1 rounded-2xl border border-accent/20 bg-accent/5 px-3 py-3">
+              <span className="text-muted text-[11px] font-semibold">Lock B (new)</span>
+              <span className="text-foreground font-bold font-mono text-xs">{amountB} MGN</span>
+              {/* <span className="text-accent font-mono text-[10px]">{vpB} veMGN</span> */}
             </div>
           </div>
 
           <PrimaryButton
-            className="w-full py-3 gap-2 font-mono text-xs uppercase tracking-widest"
+            className="w-full py-3 gap-2"
             onClick={splitLock.execute}
             disabled={splitLock.isLoading}
           >

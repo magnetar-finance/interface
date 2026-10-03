@@ -1,5 +1,3 @@
-'use client';
-
 import { AssetResponseType } from '@/config/github-assets.config';
 import { formatNumber } from '@/utils';
 import Image from 'next/image';
@@ -25,25 +23,24 @@ export const TokenInputRow: React.FC<TokenInputRowProps> = ({
   usdValue = '0.00',
 }) => {
   return (
-    <div className="w-full flex flex-col bg-[#131525]/50 backdrop-blur-sm border border-white/10 rounded-xl p-4 transition-all duration-300 group hover:border-[#2962ff]/30 focus-within:border-[#2962ff] focus-within:shadow-[0_0_15px_rgba(41,98,255,0.2)]">
-      <div className="flex justify-between items-center mb-3">
-        <span className="text-[#64748b] text-xs font-bold tracking-widest uppercase">{label}</span>
-        <div className="text-xs text-[#64748b] flex gap-2">
+    <div className="group w-full flex flex-col rounded-2xl border border-white/[0.06] bg-background/55 p-4 transition-colors duration-200 focus-within:border-accent/35 hover:border-accent/20">
+      <div className="mb-3 flex items-center justify-between">
+        <span className="text-xs font-semibold text-muted">{label}</span>
+        <div className="flex gap-2 text-xs text-muted">
           <span>Balance: {formatNumber(balance, 'en-US', 3)}</span>
           <button
             onClick={() => onAmountChange(balance)}
-            className="text-[#2962ff] font-bold hover:text-[#00ff9d] transition-colors uppercase cursor-pointer"
+            className="cursor-pointer rounded-lg bg-accent/10 px-1.5 font-bold text-accent transition-colors hover:bg-accent/20 hover:text-foreground"
           >
             Max
           </button>
         </div>
       </div>
 
-      <div className="flex justify-between items-center gap-4">
-        {/* Token Selector */}
+      <div className="flex items-center justify-between gap-4">
         <button
           onClick={onSelectClick}
-          className="flex items-center gap-2 bg-white/5 border border-white/10 hover:bg-[#2962ff]/10 hover:border-[#2962ff]/50 px-3 py-2 transition-all duration-200 min-w-30 rounded-xl"
+          className="flex min-w-30 items-center gap-2 rounded-full border border-white/10 bg-raised px-3 py-2 transition-all duration-200 hover:border-accent/40 hover:bg-accent/10"
         >
           {token ? (
             <>
@@ -53,25 +50,24 @@ export const TokenInputRow: React.FC<TokenInputRowProps> = ({
                   alt={token.symbol}
                   width={24}
                   height={24}
-                  className="rounded-full w-6 h-6 bg-white/10"
+                  className="h-6 w-6 rounded-full bg-white/10"
                 />
               ) : (
-                <div className="w-6 h-6 rounded-full bg-[#2962ff]/20 flex items-center justify-center">
-                  <span className="text-[#2962ff] text-[10px] font-bold">
+                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-accent/20">
+                  <span className="text-[10px] font-bold text-accent">
                     {token.symbol.slice(0, 2)}
                   </span>
                 </div>
               )}
-              <span className="text-white font-semibold text-lg">{token.symbol}</span>
+              <span className="text-lg font-semibold text-foreground">{token.symbol}</span>
             </>
           ) : (
-            <span className="text-[#2962ff] font-semibold text-lg w-full text-center">Select</span>
+            <span className="w-full text-center text-lg font-semibold text-accent">Select</span>
           )}
-          <span className="text-[#64748b] ml-auto text-xs">▼</span>
+          <span className="ml-auto text-xs text-muted">▼</span>
         </button>
 
-        {/* Amount Input */}
-        <div className="flex flex-col items-end flex-1 w-full overflow-hidden">
+        <div className="flex w-full flex-1 flex-col items-end overflow-hidden">
           <input
             type="text"
             value={amount}
@@ -80,9 +76,9 @@ export const TokenInputRow: React.FC<TokenInputRowProps> = ({
               if (val === '' || /^\d*\.?\d*$/.test(val)) onAmountChange(val);
             }}
             placeholder="0.0"
-            className="w-full bg-transparent text-right text-3xl md:text-4xl text-[#00ff9d] font-mono outline-none placeholder:text-[#64748b]/50 border-none ring-0 focus:outline-none"
+            className="w-full border-none bg-transparent text-right font-mono text-2xl text-foreground outline-none ring-0 placeholder:text-dim focus:outline-none"
           />
-          <span className="text-[#64748b] text-xs font-mono mt-1">${amount ? usdValue : ''}</span>
+          <span className="mt-1 font-mono text-xs text-muted">${amount ? usdValue : ''}</span>
         </div>
       </div>
     </div>
